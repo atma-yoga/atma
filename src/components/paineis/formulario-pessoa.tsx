@@ -25,6 +25,16 @@ type Acao = (
 /** O formulário é um grid de duas colunas; isto ocupa a linha inteira. */
 const LINHA = "sm:col-span-2";
 
+/** Campos que vêm do CEP — número e complemento são digitados à mão. */
+const CAMPOS_DO_CEP = ["logradouro", "bairro", "cidade", "uf"] as const;
+
+function limparCamposDoCep(form: HTMLFormElement) {
+  for (const campo of CAMPOS_DO_CEP) {
+    const el = form.elements.namedItem(campo) as HTMLInputElement | null;
+    if (el) el.value = "";
+  }
+}
+
 export function FormularioPessoa({
   acao,
   demo = false,
@@ -60,18 +70,25 @@ export function FormularioPessoa({
     const achado = await buscarCep(valor);
     setBuscandoCep(false);
 
+    const form = formRef.current;
+    if (!form) return;
+
     if (!achado) {
+      // Limpa o que veio do CEP anterior: manter ali um endereço de outro
+      // lugar é pior que deixar em branco, porque seria salvo sem ninguém
+      // reparar.
+      limparCamposDoCep(form);
       setErroCep("CEP não encontrado. Preencha à mão.");
       return;
     }
 
-    const form = formRef.current;
-    if (!form) return;
-
-    // Só preenche o que veio vazio, para não apagar correção feita à mão.
+    // Sobrescreve sempre. A tentação é preservar o que já foi digitado, mas
+    // aí trocar o CEP não muda o endereço: o campo antigo continua ali e a
+    // pessoa vê a rua errada. Quem mudou o CEP quer o endereço novo.
+    // Número e complemento não vêm do CEP e ficam intactos.
     const preencher = (campo: string, valor: string) => {
       const el = form.elements.namedItem(campo) as HTMLInputElement | null;
-      if (el && !el.value && valor) el.value = valor;
+      if (el) el.value = valor;
     };
 
     preencher("logradouro", achado.logradouro);
