@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ATMA yoga estúdio — sistema de gestão
 
-## Getting Started
+Agenda, turmas, planos, alunos e financeiro do estúdio, com três olhares:
+administração, professor e aluno.
 
-First, run the development server:
+Next.js 16 (App Router) · React 19 · Tailwind v4 · Supabase (Postgres + Auth + RLS)
+
+## Começar
 
 ```bash
+npm install
+cp .env.example .env.local   # preencher com URL e publishable key do Supabase
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Banco
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O schema inteiro vive em [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql).
+Aplicar pelo SQL Editor do painel Supabase, ou:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+supabase link --project-ref <ref> && supabase db push
+```
 
-## Learn More
+Depois de aplicar, promover o primeiro admin (o cadastro nunca cria admin
+sozinho):
 
-To learn more about Next.js, take a look at the following resources:
+```sql
+insert into public.user_roles (user_id, role)
+select id, 'admin' from auth.users where email = 'SEU@EMAIL'
+on conflict do nothing;
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+E materializar a grade em sessões concretas:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sql
+select generate_sessions(current_date, current_date + 60);
+```
 
-## Deploy on Vercel
+### Estrutura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Área | Tabelas |
+|---|---|
+| Identidade | `profiles`, `user_roles`, `teachers`, `students` |
+| Catálogo | `modalities`, `rooms`, `plans` |
+| Agenda | `class_schedules` (grade recorrente) → `class_sessions` (ocorrência) |
+| Aulas | `bookings` com lista de espera automática |
+| Financeiro | `subscriptions`, `credit_ledger`, `payments`, `teacher_payouts` |
+| Comunicação | `announcements` |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`class_schedules` é o template ("Vinyasa toda terça 19h"); `class_sessions` é a
+aula concreta numa data, e é o que o aluno agenda. `generate_sessions()`
+materializa uma da outra.
+
+Regras que vivem no banco, não na aplicação:
+
+- Turma cheia manda o agendamento para lista de espera, com posição.
+- Crédito é debitado ao agendar e estornado ao cancelar — falta não estorna.
+- Duas aulas não ocupam a mesma sala no mesmo horário (constraint de exclusão).
+
+### Permissões
+
+RLS em todas as tabelas. Resumo:
+
+| | Admin | Professor | Aluno |
+|---|---|---|---|
+| Perfis | tudo | alunos que já agendaram com ele | o próprio |
+| Grade e sessões | CRUD | edita as próprias aulas | leitura |
+| Agendamentos | tudo | vê os da sua aula, faz check-in | cria o próprio, só pode cancelar |
+| Financeiro | tudo | o próprio repasse | as próprias cobranças |
+
+O cadastro público não consegue se atribuir `admin`: `handle_new_user()` força
+`student` (ou `teacher`, quando vem no metadata). Promoção é manual.
+
+### Tipos
+
+[`src/lib/database.types.ts`](src/lib/database.types.ts) é escrito à mão e
+espelha a migration. Ao mexer em uma, mexer na outra — ou regerar:
+
+```bash
+supabase gen types typescript --project-id <ref> > src/lib/database.types.ts
+```
+
+## Marca
+
+Arquivos e regras em [`public/brand/`](public/brand/). A paleta está codificada
+como tokens em [`src/app/globals.css`](src/app/globals.css). O que não pode
+mudar:
+
+1. **Só duas cores de letra: marrom (`#3A2A20`) e papel (`#F5F1E8`).** Palha e
+   mel são fundo, nunca texto.
+2. Mínimo de 4,5:1 para texto corrido.
+3. Verde sobre palha dá 3,6:1 — parece que funciona e não funciona.
+4. Não recompor a assinatura; as proporções símbolo/texto são fixas.
+
+O modo escuro usa marrom como fundo e papel como letra, seguindo a regra da
+marca — não inverte para preto.
+
+## Pendências
+
+- Arquivos da marca em versão horizontal e nas variantes coloridas (azul,
+  verde, palha, mel). Hoje só existem símbolo e vertical, em marrom e papel.
+- Definir se as variantes coloridas entram no sistema — o guia atual diz que a
+  marca só existe em marrom e papel, o que conflita com os arquivos coloridos.
+- Telas internas de agenda, alunos, turmas, plano e financeiro.
