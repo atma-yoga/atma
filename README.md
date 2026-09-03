@@ -26,14 +26,22 @@ Aplicar pelo SQL Editor do painel Supabase, ou:
 supabase link --project-ref <ref> && supabase db push
 ```
 
-Depois de aplicar, promover o primeiro admin (o cadastro nunca cria admin
-sozinho):
+### O primeiro admin
+
+Só um admin cadastra pessoas, mas no banco vazio não existe admin — ovo e
+galinha. A saída é autorizar o e-mail **antes** da conta existir:
 
 ```sql
-insert into public.user_roles (user_id, role)
-select id, 'admin' from auth.users where email = 'SEU@EMAIL'
-on conflict do nothing;
+insert into public.pending_admins (email, username)
+values ('SEU@EMAIL', 'seuusuario');
 ```
+
+Depois crie a conta normalmente (Supabase → Authentication → Users → Add user,
+com *Auto Confirm*). O gatilho vê o e-mail pré-autorizado, concede admin e
+consome a linha — uso único.
+
+Isso não afrouxa a regra de que ninguém se promove sozinho: escrever em
+`pending_admins` exige já ser admin ou usar a chave secreta.
 
 E materializar a grade em sessões concretas:
 
@@ -115,6 +123,4 @@ marca — não inverte para preto.
   marca só existe em marrom e papel, o que conflita com os arquivos coloridos.
 - Troca obrigatória da senha no primeiro acesso: a coluna
   `profiles.must_change_password` já é gravada, mas nada ainda a exige.
-- Desativar o cadastro público no painel do Supabase (Authentication →
-  Providers → Email → *Allow new users to sign up*), já que só a adm cadastra.
 - Telas de agenda, turmas, plano e financeiro.
