@@ -6,17 +6,10 @@ import type {
 
 /**
  * Dados fictícios só para revisar o layout. Nada aqui toca o banco.
- * As cores são as mesmas do seed de `modalities`, dentro da paleta ATMA.
+ *
+ * O estúdio pratica estilo livre, então quase toda aula vem sem título e
+ * aparece como "Yoga". As poucas com título mostram como as exceções ficam.
  */
-
-const CORES = {
-  hatha: "#516D3B", // verde aberto
-  vinyasa: "#BE8E55", // mel
-  yin: "#4E6E86", // azul ganesha
-  ashtanga: "#3A2A20", // marrom esquadria
-  meditacao: "#DFC9A2", // palha
-  pranayama: "#3E5430", // verde profundo (derivado)
-} as const;
 
 /** Hoje às HH:MM, ou daqui a `dias` dias. */
 function em(dias: number, hora: number, minuto = 0): string {
@@ -30,8 +23,7 @@ export const AULAS_DE_HOJE: AulaNaAgenda[] = [
   {
     id: "s1",
     inicio: em(0, 7, 0),
-    modalidade: "Hatha Yoga",
-    cor: CORES.hatha,
+    titulo: null,
     professor: "Marina Vieira",
     sala: "Sala Principal",
     ocupadas: 14,
@@ -41,8 +33,7 @@ export const AULAS_DE_HOJE: AulaNaAgenda[] = [
   {
     id: "s2",
     inicio: em(0, 12, 15),
-    modalidade: "Pranayama",
-    cor: CORES.pranayama,
+    titulo: "Yoga no almoço",
     professor: "Marina Vieira",
     sala: "Sala Shanti",
     ocupadas: 9,
@@ -52,8 +43,7 @@ export const AULAS_DE_HOJE: AulaNaAgenda[] = [
   {
     id: "s3",
     inicio: em(0, 19, 0),
-    modalidade: "Vinyasa Flow",
-    cor: CORES.vinyasa,
+    titulo: null,
     professor: "Marina Vieira",
     sala: "Sala Principal",
     ocupadas: 20,
@@ -66,8 +56,7 @@ export const AULAS_DA_SEMANA: AulaNaAgenda[] = [
   {
     id: "s4",
     inicio: em(1, 7, 0),
-    modalidade: "Hatha Yoga",
-    cor: CORES.hatha,
+    titulo: null,
     professor: "Marina Vieira",
     sala: "Sala Principal",
     ocupadas: 11,
@@ -77,8 +66,7 @@ export const AULAS_DA_SEMANA: AulaNaAgenda[] = [
   {
     id: "s5",
     inicio: em(2, 19, 0),
-    modalidade: "Yin Yoga",
-    cor: CORES.yin,
+    titulo: "Yoga restaurativa",
     professor: "Marina Vieira",
     sala: "Sala Shanti",
     ocupadas: 12,
@@ -88,8 +76,7 @@ export const AULAS_DA_SEMANA: AulaNaAgenda[] = [
   {
     id: "s6",
     inicio: em(4, 6, 30),
-    modalidade: "Ashtanga",
-    cor: CORES.ashtanga,
+    titulo: null,
     professor: "Marina Vieira",
     sala: "Sala Principal",
     ocupadas: 8,
@@ -103,8 +90,7 @@ export const AGENDA_DO_ESTUDIO: AulaNaAgenda[] = [
   {
     id: "s7",
     inicio: em(1, 8, 30),
-    modalidade: "Meditação",
-    cor: CORES.meditacao,
+    titulo: null,
     professor: "Rafael Nunes",
     sala: "Sala Shanti",
     ocupadas: 6,
@@ -115,8 +101,7 @@ export const AGENDA_DO_ESTUDIO: AulaNaAgenda[] = [
   {
     id: "s8",
     inicio: em(3, 19, 0),
-    modalidade: "Vinyasa Flow",
-    cor: CORES.vinyasa,
+    titulo: null,
     professor: "Rafael Nunes",
     sala: "Sala Principal",
     ocupadas: 17,
@@ -140,7 +125,7 @@ export const AGENDAMENTOS_DO_ALUNO: AgendamentoDoAluno[] = [
   {
     id: "b1",
     inicio: em(0, 19, 0),
-    modalidade: "Vinyasa Flow",
+    titulo: null,
     professor: "Marina Vieira",
     status: "booked",
     posicaoNaEspera: null,
@@ -148,7 +133,7 @@ export const AGENDAMENTOS_DO_ALUNO: AgendamentoDoAluno[] = [
   {
     id: "b2",
     inicio: em(2, 19, 0),
-    modalidade: "Yin Yoga",
+    titulo: "Yoga restaurativa",
     professor: "Marina Vieira",
     status: "waitlisted",
     posicaoNaEspera: 2,
@@ -156,7 +141,7 @@ export const AGENDAMENTOS_DO_ALUNO: AgendamentoDoAluno[] = [
   {
     id: "b3",
     inicio: em(4, 6, 30),
-    modalidade: "Ashtanga",
+    titulo: null,
     professor: "Rafael Nunes",
     status: "booked",
     posicaoNaEspera: null,
@@ -171,4 +156,55 @@ export const NUMEROS_DO_ADMIN = {
   recebidoNoMes: 21480,
   totalEmAtraso: 1320,
   cobrancasEmAtraso: 4,
+};
+
+/** Pessoas fictícias para a tela de cadastro da administração. */
+export const PESSOAS = {
+  professores: [
+    {
+      id: "t1",
+      nome: "Marina Vieira",
+      email: "marina@atma.com.br",
+      telefone: "(22) 99812-4471",
+      ativo: true,
+      desde: "2024-03-11",
+    },
+    {
+      id: "t2",
+      nome: "Rafael Nunes",
+      email: "rafael@atma.com.br",
+      telefone: "(22) 99745-2210",
+      ativo: true,
+      desde: "2025-08-02",
+    },
+  ],
+  alunos: [
+    {
+      id: "a1",
+      nome: "Helena Costa",
+      email: "helena@exemplo.com",
+      telefone: "(22) 99631-8890",
+      ativo: true,
+      desde: "2025-11-20",
+      plano: "Mensal 3x semana",
+    },
+    {
+      id: "a2",
+      nome: "Bruno Almeida",
+      email: "bruno@exemplo.com",
+      telefone: "(22) 99502-3317",
+      ativo: true,
+      desde: "2026-01-14",
+      plano: "Pacote 10 aulas",
+    },
+    {
+      id: "a3",
+      nome: "Sofia Marques",
+      email: "sofia@exemplo.com",
+      telefone: "(22) 99417-6624",
+      ativo: false,
+      desde: "2025-05-09",
+      plano: null,
+    },
+  ],
 };

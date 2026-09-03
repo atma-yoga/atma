@@ -1,6 +1,6 @@
 import { Cartao, Numero, TituloSecao, Vazio, dataHora, hora } from "@/components/ui";
 import { primeiroNome } from "@/lib/auth";
-import type { AulaNaAgenda } from "./tipos";
+import { nomeDaAula, type AulaNaAgenda } from "./tipos";
 
 export function PainelProfessor({
   nome,
@@ -33,11 +33,11 @@ export function PainelProfessor({
               <Cartao key={a.id} className="flex items-center gap-4 px-5 py-4">
                 <span
                   className="h-10 w-1 shrink-0 rounded-full"
-                  style={{ backgroundColor: a.cor ?? "var(--color-mel)" }}
+                  style={{ backgroundColor: "var(--color-mel)" }}
                 />
                 <span className="flex-1">
                   <span className="block text-sm">
-                    {hora(a.inicio)} · {a.modalidade}
+                    {hora(a.inicio)} · {nomeDaAula(a.titulo)}
                   </span>
                   <span className="block text-xs text-[var(--color-muted)]">
                     {a.sala ?? "Sem sala"} · {a.ocupadas}/{a.capacidade} alunos
@@ -62,7 +62,7 @@ export function PainelProfessor({
                 className="flex items-center justify-between gap-4 px-5 py-3"
               >
                 <span className="text-sm">
-                  {dataHora(a.inicio)} · {a.modalidade}
+                  {dataHora(a.inicio)} · {nomeDaAula(a.titulo)}
                 </span>
                 <span className="text-xs text-[var(--color-muted)]">
                   {a.ocupadas}/{a.capacidade}

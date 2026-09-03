@@ -27,7 +27,7 @@ export default async function AlunoPage() {
         .from("bookings")
         .select(
           // teacher_id aponta para teachers, então o nome vem de teachers → profiles.
-          "id, status, waitlist_pos, class_sessions!inner(starts_at, modalities(name), teachers(profiles(full_name)))",
+          "id, status, waitlist_pos, class_sessions!inner(starts_at, title, teachers(profiles(full_name)))",
         )
         .eq("student_id", sessao.userId)
         .in("status", ["booked", "waitlisted"])
@@ -47,7 +47,7 @@ export default async function AlunoPage() {
   const proximas: AgendamentoDoAluno[] = (agendados ?? []).map((b) => ({
     id: b.id,
     inicio: b.class_sessions?.starts_at ?? agora,
-    modalidade: b.class_sessions?.modalities?.name ?? "Aula",
+    titulo: b.class_sessions?.title ?? null,
     professor: b.class_sessions?.teachers?.profiles?.full_name ?? null,
     status: b.status,
     posicaoNaEspera: b.waitlist_pos,
@@ -56,8 +56,7 @@ export default async function AlunoPage() {
   const disponiveis: AulaNaAgenda[] = (sessoes ?? []).map((s) => ({
     id: s.session_id ?? crypto.randomUUID(),
     inicio: s.starts_at ?? agora,
-    modalidade: s.modality ?? "Aula",
-    cor: s.modality_color,
+    titulo: s.title,
     professor: s.teacher_name,
     sala: s.room,
     ocupadas: s.booked_count ?? 0,

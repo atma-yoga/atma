@@ -9,6 +9,7 @@ import {
 import { COR_STATUS_AGENDAMENTO, STATUS_AGENDAMENTO } from "@/lib/tipos";
 import { primeiroNome } from "@/lib/auth";
 import {
+  nomeDaAula,
   vagasLivres,
   type AgendamentoDoAluno,
   type AulaNaAgenda,
@@ -63,7 +64,7 @@ export function PainelAluno({
                   className="flex items-center justify-between gap-4 px-5 py-4"
                 >
                   <span>
-                    <span className="block text-sm">{a.modalidade}</span>
+                    <span className="block text-sm">{nomeDaAula(a.titulo)}</span>
                     <span className="block text-xs text-[var(--color-muted)]">
                       {dataHora(a.inicio)}
                       {a.professor ? ` · ${a.professor}` : ""}
@@ -92,9 +93,9 @@ export function PainelAluno({
                 <Cartao key={a.id} className="p-5">
                   <span
                     className="mb-3 block h-1 w-10 rounded-full"
-                    style={{ backgroundColor: a.cor ?? "var(--color-mel)" }}
+                    style={{ backgroundColor: "var(--color-mel)" }}
                   />
-                  <p className="text-sm">{a.modalidade}</p>
+                  <p className="text-sm">{nomeDaAula(a.titulo)}</p>
                   <p className="mt-1 text-xs text-[var(--color-muted)]">
                     {dataHora(a.inicio)}
                     {a.professor ? ` · ${a.professor}` : ""}

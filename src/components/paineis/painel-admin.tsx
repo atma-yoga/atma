@@ -1,5 +1,5 @@
 import { Cartao, Numero, TituloSecao, Vazio, brl, dataHora } from "@/components/ui";
-import type { AulaNaAgenda } from "./tipos";
+import { nomeDaAula, type AulaNaAgenda } from "./tipos";
 
 export function PainelAdmin({
   alunosAtivos,
@@ -52,11 +52,11 @@ export function PainelAdmin({
                 <Cartao key={a.id} className="flex items-center gap-4 px-5 py-4">
                   <span
                     className="h-10 w-1 shrink-0 rounded-full"
-                    style={{ backgroundColor: a.cor ?? "var(--color-mel)" }}
+                    style={{ backgroundColor: "var(--color-mel)" }}
                   />
                   <span className="flex-1">
                     <span className="block text-sm">
-                      {a.modalidade}
+                      {nomeDaAula(a.titulo)}
                       {a.professor ? ` · ${a.professor}` : ""}
                     </span>
                     <span className="block text-xs text-[var(--color-muted)]">

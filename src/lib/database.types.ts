@@ -32,6 +32,7 @@ export type Database = {
           document_id: string | null;
           address: Json | null;
           is_active: boolean;
+          must_change_password: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -45,6 +46,7 @@ export type Database = {
           document_id?: string | null;
           address?: Json | null;
           is_active?: boolean;
+          must_change_password?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -58,6 +60,7 @@ export type Database = {
           document_id?: string | null;
           address?: Json | null;
           is_active?: boolean;
+          must_change_password?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -184,40 +187,6 @@ export type Database = {
         ];
       };
 
-      modalities: {
-        Row: {
-          id: string;
-          name: string;
-          slug: string;
-          description: string | null;
-          color: string | null;
-          default_duration_min: number;
-          is_active: boolean;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          slug: string;
-          description?: string | null;
-          color?: string | null;
-          default_duration_min?: number;
-          is_active?: boolean;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          slug?: string;
-          description?: string | null;
-          color?: string | null;
-          default_duration_min?: number;
-          is_active?: boolean;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-
       rooms: {
         Row: {
           id: string;
@@ -249,7 +218,7 @@ export type Database = {
       class_schedules: {
         Row: {
           id: string;
-          modality_id: string;
+          title?: string | null;
           teacher_id: string;
           room_id: string | null;
           weekday: number;
@@ -265,7 +234,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          modality_id: string;
+          title?: string | null;
           teacher_id: string;
           room_id?: string | null;
           weekday: number;
@@ -281,7 +250,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          modality_id?: string;
+          title?: string | null;
           teacher_id?: string;
           room_id?: string | null;
           weekday?: number;
@@ -296,13 +265,6 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
-          {
-            foreignKeyName: "class_schedules_modality_id_fkey";
-            columns: ["modality_id"];
-            referencedRelation: "modalities";
-            referencedColumns: ["id"];
-            isOneToOne: false;
-          },
           {
             foreignKeyName: "class_schedules_teacher_id_fkey";
             columns: ["teacher_id"];
@@ -324,7 +286,7 @@ export type Database = {
         Row: {
           id: string;
           schedule_id: string | null;
-          modality_id: string;
+          title?: string | null;
           teacher_id: string;
           room_id: string | null;
           starts_at: string;
@@ -340,7 +302,7 @@ export type Database = {
         Insert: {
           id?: string;
           schedule_id?: string | null;
-          modality_id: string;
+          title?: string | null;
           teacher_id: string;
           room_id?: string | null;
           starts_at: string;
@@ -356,7 +318,7 @@ export type Database = {
         Update: {
           id?: string;
           schedule_id?: string | null;
-          modality_id?: string;
+          title?: string | null;
           teacher_id?: string;
           room_id?: string | null;
           starts_at?: string;
@@ -374,13 +336,6 @@ export type Database = {
             foreignKeyName: "class_sessions_schedule_id_fkey";
             columns: ["schedule_id"];
             referencedRelation: "class_schedules";
-            referencedColumns: ["id"];
-            isOneToOne: false;
-          },
-          {
-            foreignKeyName: "class_sessions_modality_id_fkey";
-            columns: ["modality_id"];
-            referencedRelation: "modalities";
             referencedColumns: ["id"];
             isOneToOne: false;
           },
@@ -411,7 +366,6 @@ export type Database = {
           duration_days: number | null;
           class_credits: number | null;
           credits_per_week: number | null;
-          allowed_modalities: string[];
           is_active: boolean;
           sort_order: number;
           created_at: string;
@@ -426,7 +380,6 @@ export type Database = {
           duration_days?: number | null;
           class_credits?: number | null;
           credits_per_week?: number | null;
-          allowed_modalities?: string[];
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
@@ -441,7 +394,6 @@ export type Database = {
           duration_days?: number | null;
           class_credits?: number | null;
           credits_per_week?: number | null;
-          allowed_modalities?: string[];
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
@@ -803,12 +755,11 @@ export type Database = {
       v_session_availability: {
         Row: {
           session_id: string | null;
+          title: string | null;
           starts_at: string | null;
           ends_at: string | null;
           status: Database["public"]["Enums"]["session_status"] | null;
           level: Database["public"]["Enums"]["class_level"] | null;
-          modality: string | null;
-          modality_color: string | null;
           room: string | null;
           teacher_name: string | null;
           teacher_id: string | null;

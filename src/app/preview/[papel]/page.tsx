@@ -1,39 +1,41 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { FormularioPessoa } from "@/components/paineis/formulario-pessoa";
+import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
 import { PainelAluno } from "@/components/paineis/painel-aluno";
 import { PainelProfessor } from "@/components/paineis/painel-professor";
 import { Shell } from "@/components/shell";
-import { PAPEL, type Papel } from "@/lib/tipos";
+import { TituloSecao } from "@/components/ui";
+import type { Papel } from "@/lib/tipos";
 import {
   AGENDA_DO_ESTUDIO,
   AGENDAMENTOS_DO_ALUNO,
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
   NUMEROS_DO_ADMIN,
+  PESSOAS,
   RESUMO_DO_ALUNO,
   VAGAS_ABERTAS,
 } from "../dados";
 
 export const dynamic = "force-dynamic";
 
-const SEGMENTOS = {
-  aluno: "student",
-  professor: "teacher",
-  admin: "admin",
-} as const satisfies Record<string, Papel>;
+const TELAS = {
+  aluno: { papel: "student", rotulo: "Aluno", nome: "Helena Costa" },
+  professor: { papel: "teacher", rotulo: "Professor", nome: "Marina Vieira" },
+  admin: { papel: "admin", rotulo: "Administração", nome: "Ana Prado" },
+  pessoas: { papel: "admin", rotulo: "Cadastro", nome: "Ana Prado" },
+} as const satisfies Record<
+  string,
+  { papel: Papel; rotulo: string; nome: string }
+>;
 
-type Segmento = keyof typeof SEGMENTOS;
-
-const NOMES: Record<Segmento, string> = {
-  aluno: "Helena Costa",
-  professor: "Marina Vieira",
-  admin: "Ana Prado",
-};
+type Tela = keyof typeof TELAS;
 
 export function generateStaticParams() {
-  return Object.keys(SEGMENTOS).map((papel) => ({ papel }));
+  return Object.keys(TELAS).map((papel) => ({ papel }));
 }
 
 export default async function PreviewPage({
@@ -42,38 +44,66 @@ export default async function PreviewPage({
   params: Promise<{ papel: string }>;
 }) {
   const { papel } = await params;
-  if (!(papel in SEGMENTOS)) notFound();
+  if (!(papel in TELAS)) notFound();
 
-  const segmento = papel as Segmento;
-  const nome = NOMES[segmento];
+  const tela = papel as Tela;
+  const { nome, papel: papelDoShell } = TELAS[tela];
 
   return (
     <>
-      <FaixaDePreview atual={segmento} />
-      <Shell papel={SEGMENTOS[segmento]} nome={nome}>
-        {segmento === "aluno" ? (
+      <FaixaDePreview atual={tela} />
+      <Shell papel={papelDoShell} nome={nome}>
+        {tela === "aluno" ? (
           <PainelAluno
             nome={nome}
             resumo={RESUMO_DO_ALUNO}
             proximas={AGENDAMENTOS_DO_ALUNO}
             disponiveis={VAGAS_ABERTAS}
           />
-        ) : segmento === "professor" ? (
+        ) : tela === "professor" ? (
           <PainelProfessor
             nome={nome}
             hoje={AULAS_DE_HOJE}
             semana={AULAS_DA_SEMANA}
           />
-        ) : (
+        ) : tela === "admin" ? (
           <PainelAdmin {...NUMEROS_DO_ADMIN} proximas={AGENDA_DO_ESTUDIO} />
+        ) : (
+          <TelaDePessoas />
         )}
       </Shell>
     </>
   );
 }
 
-/** Deixa explícito que a tela é maquete, e permite pular entre os papéis. */
-function FaixaDePreview({ atual }: { atual: Segmento }) {
+function TelaDePessoas() {
+  return (
+    <>
+      <h1 className="mb-8 text-2xl font-light">Pessoas</h1>
+      <div className="grid gap-10 lg:grid-cols-[1fr_20rem] lg:items-start">
+        <div>
+          <ListaDePessoas
+            titulo="Professores"
+            pessoas={PESSOAS.professores}
+            vazio="Nenhum professor cadastrado ainda."
+          />
+          <ListaDePessoas
+            titulo="Alunos"
+            pessoas={PESSOAS.alunos.map((a) => ({ ...a, detalhe: a.plano }))}
+            vazio="Nenhum aluno cadastrado ainda."
+          />
+        </div>
+        <div className="lg:sticky lg:top-6">
+          <TituloSecao>Cadastrar</TituloSecao>
+          <FormularioPessoa demo />
+        </div>
+      </div>
+    </>
+  );
+}
+
+/** Deixa explícito que a tela é maquete, e permite pular entre as visões. */
+function FaixaDePreview({ atual }: { atual: Tela }) {
   return (
     <div className="bg-[var(--color-marrom)] px-6 py-2.5 text-[var(--color-on-marrom)]">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
@@ -81,18 +111,18 @@ function FaixaDePreview({ atual }: { atual: Segmento }) {
           Maquete · dados fictícios
         </span>
         <nav className="flex gap-2">
-          {(Object.keys(SEGMENTOS) as Segmento[]).map((s) => (
+          {(Object.keys(TELAS) as Tela[]).map((t) => (
             <Link
-              key={s}
-              href={`/preview/${s}`}
-              aria-current={s === atual ? "page" : undefined}
+              key={t}
+              href={`/preview/${t}`}
+              aria-current={t === atual ? "page" : undefined}
               className={`rounded-full px-3 py-1 text-xs transition ${
-                s === atual
+                t === atual
                   ? "bg-[var(--color-palha)] text-[var(--color-on-palha)]"
                   : "opacity-70 hover:opacity-100"
               }`}
             >
-              {PAPEL[SEGMENTOS[s]]}
+              {TELAS[t].rotulo}
             </Link>
           ))}
         </nav>

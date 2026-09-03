@@ -60,8 +60,7 @@ export default async function AdminPage() {
   const proximas: AulaNaAgenda[] = (sessoes ?? []).map((s) => ({
     id: s.session_id ?? crypto.randomUUID(),
     inicio: s.starts_at ?? agora.toISOString(),
-    modalidade: s.modality ?? "Aula",
-    cor: s.modality_color,
+    titulo: s.title,
     professor: s.teacher_name,
     sala: s.room,
     ocupadas: s.booked_count ?? 0,

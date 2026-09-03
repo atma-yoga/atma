@@ -9,9 +9,13 @@ Next.js 16 (App Router) · React 19 · Tailwind v4 · Supabase (Postgres + Auth 
 
 ```bash
 npm install
-cp .env.example .env.local   # preencher com URL e publishable key do Supabase
+cp .env.example .env.local   # preencher com as chaves do Supabase
 npm run dev
 ```
+
+`SUPABASE_SECRET_KEY` é obrigatória para a administração cadastrar pessoas —
+sem ela a tela de Pessoas mostra erro. Ela ignora RLS por completo: só no
+servidor, nunca no cliente, nunca no git.
 
 ## Banco
 
@@ -42,18 +46,25 @@ select generate_sessions(current_date, current_date + 60);
 | Área | Tabelas |
 |---|---|
 | Identidade | `profiles`, `user_roles`, `teachers`, `students` |
-| Catálogo | `modalities`, `rooms`, `plans` |
+| Catálogo | `rooms`, `plans` |
 | Agenda | `class_schedules` (grade recorrente) → `class_sessions` (ocorrência) |
 | Aulas | `bookings` com lista de espera automática |
 | Financeiro | `subscriptions`, `credit_ledger`, `payments`, `teacher_payouts` |
 | Comunicação | `announcements` |
 
-`class_schedules` é o template ("Vinyasa toda terça 19h"); `class_sessions` é a
-aula concreta numa data, e é o que o aluno agenda. `generate_sessions()`
-materializa uma da outra.
+`class_schedules` é o template ("terça, 19h"); `class_sessions` é a aula
+concreta numa data, e é o que o aluno agenda. `generate_sessions()` materializa
+uma da outra.
+
+O estúdio pratica **estilo livre**: não há Hatha, Vinyasa ou Yin. Uma aula sem
+`title` é simplesmente "Yoga"; o título existe só para as exceções ("Yoga
+restaurativa").
 
 Regras que vivem no banco, não na aplicação:
 
+- Ninguém se cadastra sozinho: a administração cria as contas de professor e
+  de aluno, com senha temporária. O gatilho de signup obedece ao papel que a
+  adm mandou, mas é incapaz de criar um admin — promoção a admin só por SQL.
 - Turma cheia manda o agendamento para lista de espera, com posição.
 - Crédito é debitado ao agendar e estornado ao cancelar — falta não estorna.
 - Duas aulas não ocupam a mesma sala no mesmo horário (constraint de exclusão).
@@ -102,4 +113,8 @@ marca — não inverte para preto.
   verde, palha, mel). Hoje só existem símbolo e vertical, em marrom e papel.
 - Definir se as variantes coloridas entram no sistema — o guia atual diz que a
   marca só existe em marrom e papel, o que conflita com os arquivos coloridos.
-- Telas internas de agenda, alunos, turmas, plano e financeiro.
+- Troca obrigatória da senha no primeiro acesso: a coluna
+  `profiles.must_change_password` já é gravada, mas nada ainda a exige.
+- Desativar o cadastro público no painel do Supabase (Authentication →
+  Providers → Email → *Allow new users to sign up*), já que só a adm cadastra.
+- Telas de agenda, turmas, plano e financeiro.

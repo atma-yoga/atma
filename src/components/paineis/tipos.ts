@@ -9,8 +9,7 @@ import type { StatusAgendamento } from "@/lib/tipos";
 export type AulaNaAgenda = {
   id: string;
   inicio: string; // ISO
-  modalidade: string;
-  cor: string | null;
+  titulo: string | null; // null = aula comum
   professor: string | null;
   sala: string | null;
   ocupadas: number;
@@ -21,7 +20,7 @@ export type AulaNaAgenda = {
 export type AgendamentoDoAluno = {
   id: string;
   inicio: string;
-  modalidade: string;
+  titulo: string | null;
   professor: string | null;
   status: StatusAgendamento;
   posicaoNaEspera: number | null;
@@ -33,6 +32,13 @@ export type ResumoDoAluno = {
   aulasFeitas: number;
   planoVenceEm: string | null; // YYYY-MM-DD
 };
+
+/**
+ * O estúdio pratica estilo livre: não há Hatha, Vinyasa ou Yin. Uma aula sem
+ * título é simplesmente "Yoga"; o título existe para as exceções ("Yoga
+ * restaurativa", "Aula aberta").
+ */
+export const nomeDaAula = (titulo: string | null) => titulo?.trim() || "Yoga";
 
 export const vagasLivres = (a: AulaNaAgenda) =>
   Math.max(a.capacidade - a.ocupadas, 0);

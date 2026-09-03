@@ -12,8 +12,7 @@ export const metadata = { title: "Minhas aulas" };
 const paraAula = (s: Views<"v_session_availability">): AulaNaAgenda => ({
   id: s.session_id ?? crypto.randomUUID(),
   inicio: s.starts_at ?? new Date().toISOString(),
-  modalidade: s.modality ?? "Aula",
-  cor: s.modality_color,
+  titulo: s.title,
   professor: s.teacher_name,
   sala: s.room,
   ocupadas: s.booked_count ?? 0,
