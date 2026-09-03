@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "tipos": "node scripts/gerar-tipos.mjs $SUPABASE_PROJECT_REF > src/lib/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",

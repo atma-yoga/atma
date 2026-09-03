@@ -38,6 +38,7 @@ export async function salvarTurma(
   const hora = String(form.get("hora") ?? "").trim();
   const duracao = Number(form.get("duracao") || 60);
   const dias = form.getAll("dias").map((d) => Number(d));
+  const mensalidade = Number(form.get("mensalidade") || 0);
 
   if (!nome) return { erro: "Dê um nome à turma." };
   if (!HORA.test(hora)) return { erro: "Horário deve estar no formato HH:MM." };
@@ -46,6 +47,9 @@ export async function salvarTurma(
   }
   if (capacidade < 1 || capacidade > 99) {
     return { erro: "Capacidade deve ficar entre 1 e 99." };
+  }
+  if (!Number.isFinite(mensalidade) || mensalidade < 0) {
+    return { erro: "Mensalidade inválida." };
   }
   if (!dias.length) {
     return { erro: "Escolha ao menos um dia da semana." };
@@ -61,6 +65,7 @@ export async function salvarTurma(
     teacher_id: professor || null,
     room_id: sala || null,
     capacity: capacidade,
+    monthly_price: mensalidade,
   };
 
   let turmaId = id;

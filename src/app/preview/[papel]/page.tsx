@@ -7,18 +7,20 @@ import {
   CartaoDaTurma,
   GradeSemanal,
 } from "@/components/paineis/grade-semanal";
+import { ListaDeChamada } from "@/components/paineis/lista-de-chamada";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
 import { PainelAluno } from "@/components/paineis/painel-aluno";
 import { PainelProfessor } from "@/components/paineis/painel-professor";
 import { Shell } from "@/components/shell";
-import { TituloSecao } from "@/components/ui";
+import { Etiqueta, TituloSecao } from "@/components/ui";
 import type { Papel } from "@/lib/tipos";
 import {
   AGENDA_DO_ESTUDIO,
   AGENDAMENTOS_DO_ALUNO,
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
+  CHAMADA,
   ENCONTROS,
   NUMEROS_DO_ADMIN,
   PESSOAS,
@@ -37,6 +39,7 @@ const TELAS = {
   admin: { papel: "admin", rotulo: "Administração", nome: "Ana Prado" },
   pessoas: { papel: "admin", rotulo: "Cadastro", nome: "Ana Prado" },
   grade: { papel: "admin", rotulo: "Grade semanal", nome: "Ana Prado" },
+  chamada: { papel: "teacher", rotulo: "Chamada", nome: "Marina Vieira" },
 } as const satisfies Record<
   string,
   { papel: Papel; rotulo: string; nome: string }
@@ -80,8 +83,10 @@ export default async function PreviewPage({
           <PainelAdmin {...NUMEROS_DO_ADMIN} semana={ENCONTROS} />
         ) : tela === "pessoas" ? (
           <TelaDePessoas />
-        ) : (
+        ) : tela === "grade" ? (
           <TelaDaGrade />
+        ) : (
+          <TelaDaChamada />
         )}
       </Shell>
     </>
@@ -148,6 +153,41 @@ function TelaDaGrade() {
           />
         </div>
       </div>
+    </>
+  );
+}
+
+function TelaDaChamada() {
+  const presentes = CHAMADA.filter((a) => a.status === "attended").length;
+  const faltas = CHAMADA.filter((a) => a.status === "no_show").length;
+  const semMarcar = CHAMADA.filter((a) => a.status === "booked").length;
+
+  return (
+    <>
+      <div className="mb-8">
+        <h1 className="text-2xl font-light">Manhã 07:00</h1>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">
+          seg, qua, sex · 07:00 · Estúdio
+        </p>
+      </div>
+
+      <TituloSecao
+        acao={
+          <span className="flex gap-2">
+            <Etiqueta fundo="var(--color-verde)" letra="var(--color-on-verde)">
+              {presentes} presentes
+            </Etiqueta>
+            <Etiqueta fundo="var(--color-mel)" letra="var(--color-on-mel)">
+              {faltas} faltas
+            </Etiqueta>
+            <Etiqueta>{semMarcar} sem marcar</Etiqueta>
+          </span>
+        }
+      >
+        Chamada de hoje
+      </TituloSecao>
+
+      <ListaDeChamada alunos={CHAMADA} turmaId="c1" demo />
     </>
   );
 }

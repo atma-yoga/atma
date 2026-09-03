@@ -15,6 +15,7 @@ export type TurmaEmEdicao = {
   professorId: string | null;
   salaId: string | null;
   capacidade: number;
+  mensalidade: number;
   hora: string;
   duracao: number;
   dias: number[];
@@ -26,6 +27,7 @@ const VAZIA: TurmaEmEdicao = {
   professorId: null,
   salaId: null,
   capacidade: 12,
+  mensalidade: 0,
   hora: "07:00",
   duracao: 60,
   dias: [],
@@ -181,6 +183,22 @@ export function FormularioTurma({
             max={99}
             defaultValue={turma.capacidade}
           />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Campo
+            rotulo="Mensalidade (R$)"
+            name="mensalidade"
+            type="number"
+            min={0}
+            step="0.01"
+            defaultValue={turma.mensalidade}
+            placeholder="220,00"
+          />
+          <p className="text-xs text-[var(--color-muted)]">
+            Cobrada de cada aluno, com vencimento no dia 5. Quem entra no meio
+            do mês paga proporcional ao quarto em que entrou.
+          </p>
         </div>
 
         {estado && "erro" in estado ? (

@@ -262,6 +262,8 @@ export const TURMAS = TURMAS_BASE.map((t) => ({
   ativa: true,
 }));
 
+export const MENSALIDADE_EXEMPLO = 220;
+
 export const SALAS = [
   { valor: "r1", rotulo: "Estúdio" },
   { valor: "r2", rotulo: "Iate Clube" },
@@ -270,4 +272,13 @@ export const SALAS = [
 export const PROFESSORES_OPCOES = [
   { valor: "t1", rotulo: "Marina Vieira" },
   { valor: "t2", rotulo: "Rafael Nunes" },
+];
+
+/** Uma chamada em andamento, para conferir a tela do professor. */
+export const CHAMADA = [
+  { id: "b1", nome: "Helena Costa", status: "attended" as const, frequencia: 92, presencas: 11, totalRegistrado: 12 },
+  { id: "b2", nome: "Bruno Almeida", status: "attended" as const, frequencia: 75, presencas: 9, totalRegistrado: 12 },
+  { id: "b3", nome: "Carla Ribeiro", status: "no_show" as const, frequencia: 58, presencas: 7, totalRegistrado: 12 },
+  { id: "b4", nome: "Diego Farias", status: "booked" as const, frequencia: 100, presencas: 12, totalRegistrado: 12 },
+  { id: "b5", nome: "Elisa Monteiro", status: "booked" as const, frequencia: null, presencas: 0, totalRegistrado: 0 },
 ];

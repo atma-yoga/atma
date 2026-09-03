@@ -204,6 +204,7 @@ export default async function TurmaPage({
               professorId: turma.teacher_id,
               salaId: turma.room_id,
               capacidade: turma.capacity,
+              mensalidade: Number(turma.monthly_price),
               hora,
               duracao,
               dias,
