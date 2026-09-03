@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { PainelAdmin } from "@/components/paineis/painel-admin";
-import type { AulaNaAgenda } from "@/components/paineis/tipos";
+import type { EncontroNaGrade } from "@/components/paineis/grade-semanal";
 import { Shell } from "@/components/shell";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -14,17 +14,18 @@ export default async function AdminPage() {
   if (!sessao.papeis.includes("admin")) redirect("/");
 
   const supabase = await createClient();
-
-  const agora = new Date();
-  const emSeteDias = new Date(agora.getTime() + 7 * 864e5);
-  const inicioDoMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
+  const inicioDoMes = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    1,
+  );
 
   const [
     { count: alunosAtivos },
     { count: matriculasAtivas },
     { data: vencidos },
     { data: recebido },
-    { data: sessoes },
+    { data: grade },
   ] = await Promise.all([
     supabase
       .from("students")
@@ -44,28 +45,31 @@ export default async function AdminPage() {
       .eq("status", "paid")
       .gte("paid_at", inicioDoMes.toISOString()),
 
+    // A semana vem da grade de turmas, não das aulas geradas: assim a tela
+    // mostra algo útil desde o primeiro dia, sem depender de materialização.
     supabase
-      .from("v_session_availability")
+      .from("v_grade_semanal")
       .select("*")
-      .eq("status", "scheduled")
-      .gte("starts_at", agora.toISOString())
-      .lte("starts_at", emSeteDias.toISOString())
-      .order("starts_at")
-      .limit(8),
+      .eq("is_active", true)
+      .order("start_time"),
   ]);
 
   const soma = (linhas: { amount: number }[] | null) =>
     (linhas ?? []).reduce((t, l) => t + Number(l.amount), 0);
 
-  const proximas: AulaNaAgenda[] = (sessoes ?? []).map((s) => ({
-    id: s.session_id ?? crypto.randomUUID(),
-    inicio: s.starts_at ?? agora.toISOString(),
-    titulo: s.title,
-    professor: s.teacher_name,
-    sala: s.room,
-    ocupadas: s.booked_count ?? 0,
-    capacidade: s.capacity ?? 0,
-    naEspera: s.waitlist_count ?? 0,
+  const semana: EncontroNaGrade[] = (grade ?? []).map((g) => ({
+    meetingId: g.meeting_id ?? "",
+    turmaId: g.class_id ?? "",
+    turma: g.turma ?? "sem nome",
+    weekday: g.weekday ?? 0,
+    hora: String(g.start_time ?? "").slice(0, 5),
+    duracao: g.duration_min ?? 60,
+    capacidade: g.capacity ?? 0,
+    matriculados: Number(g.matriculados ?? 0),
+    sala: g.sala,
+    aoArLivre: g.is_outdoor ?? false,
+    professor: g.professor_chamado,
+    ativa: g.is_active ?? true,
   }));
 
   return (
@@ -76,7 +80,7 @@ export default async function AdminPage() {
         recebidoNoMes={soma(recebido)}
         totalEmAtraso={soma(vencidos)}
         cobrancasEmAtraso={vencidos?.length ?? 0}
-        proximas={proximas}
+        semana={semana}
       />
     </Shell>
   );

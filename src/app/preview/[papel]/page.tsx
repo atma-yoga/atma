@@ -77,7 +77,7 @@ export default async function PreviewPage({
             semana={AULAS_DA_SEMANA}
           />
         ) : tela === "admin" ? (
-          <PainelAdmin {...NUMEROS_DO_ADMIN} proximas={AGENDA_DO_ESTUDIO} />
+          <PainelAdmin {...NUMEROS_DO_ADMIN} semana={ENCONTROS} />
         ) : tela === "pessoas" ? (
           <TelaDePessoas />
         ) : (
