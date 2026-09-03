@@ -11,12 +11,24 @@ import type {
  * aparece como "Yoga". As poucas com título mostram como as exceções ficam.
  */
 
-/** Hoje às HH:MM, ou daqui a `dias` dias. */
+/**
+ * Hoje às HH:MM em horário de Brasília, ou daqui a `dias` dias.
+ *
+ * O offset é escrito à mão de propósito: em produção isto roda num servidor
+ * em UTC, e `setHours` usaria o fuso do servidor — a aula das 19:00 apareceria
+ * como 16:00 para o aluno.
+ */
 function em(dias: number, hora: number, minuto = 0): string {
   const d = new Date();
   d.setDate(d.getDate() + dias);
-  d.setHours(hora, minuto, 0, 0);
-  return d.toISOString();
+
+  const aa = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const HH = String(hora).padStart(2, "0");
+  const MM = String(minuto).padStart(2, "0");
+
+  return new Date(`${aa}-${mm}-${dd}T${HH}:${MM}:00-03:00`).toISOString();
 }
 
 export const AULAS_DE_HOJE: AulaNaAgenda[] = [
