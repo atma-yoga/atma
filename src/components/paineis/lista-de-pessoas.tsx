@@ -8,6 +8,7 @@ export type PessoaNaLista = {
   ativo: boolean;
   desde: string | null; // YYYY-MM-DD
   detalhe?: string | null; // plano, para alunos
+  senhaPadrao?: boolean; // ainda não trocou a senha inicial
 };
 
 const dataCurta = (iso: string | null) =>
@@ -61,6 +62,15 @@ export function ListaDePessoas({
               <span className="text-xs text-[var(--color-muted)]">
                 desde {dataCurta(p.desde)}
               </span>
+
+              {p.senhaPadrao ? (
+                <Etiqueta
+                  fundo="var(--color-mel)"
+                  letra="var(--color-on-mel)"
+                >
+                  senha padrão
+                </Etiqueta>
+              ) : null}
 
               {p.ativo ? (
                 <Etiqueta>Ativo</Etiqueta>

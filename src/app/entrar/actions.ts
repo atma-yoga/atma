@@ -3,24 +3,39 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { cpfValido, soDigitos } from "@/lib/ficha";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export type EstadoForm = { erro?: string } | undefined;
 
 /**
- * Traduz nome de usuário em e-mail.
+ * Traduz CPF ou nome de usuário em e-mail.
  *
  * Roda com a chave secreta e não é exposta como função do banco de propósito:
  * uma tradução pública deixaria qualquer pessoa descobrir o e-mail de um aluno
- * testando nomes até acertar.
+ * testando CPFs ou nomes até acertar.
  */
-async function emailDoUsuario(usuario: string): Promise<string | null> {
+async function emailDoIdentificador(entrada: string): Promise<string | null> {
   const admin = createAdminClient();
+
+  // Só dígitos: é CPF. O aluno digita com ou sem pontuação, e o banco guarda
+  // sem — por isso comparamos pelo que sobra.
+  const digitos = soDigitos(entrada);
+  if (digitos.length === 11 && cpfValido(digitos)) {
+    const { data } = await admin
+      .from("profiles")
+      .select("email")
+      .eq("document_id", digitos)
+      .maybeSingle();
+
+    return data?.email ?? null;
+  }
+
   const { data } = await admin
     .from("profiles")
     .select("email")
-    .eq("username", usuario.toLowerCase())
+    .eq("username", entrada.toLowerCase())
     .maybeSingle();
 
   return data?.email ?? null;
@@ -35,17 +50,17 @@ export async function entrar(
   const proximo = String(form.get("proximo") ?? "/");
 
   if (!identificador || !senha) {
-    return { erro: "Preencha usuário e senha." };
+    return { erro: "Preencha o acesso e a senha." };
   }
 
-  // Com "@" tratamos como e-mail; sem, procuramos o nome de usuário.
+  // Com "@" é e-mail; sem, pode ser CPF ou nome de usuário.
   const email = identificador.includes("@")
     ? identificador.toLowerCase()
-    : await emailDoUsuario(identificador);
+    : await emailDoIdentificador(identificador);
 
-  // Mensagem única em todos os casos — inclusive quando o usuário nem existe.
+  // Mensagem única em todos os casos — inclusive quando a pessoa nem existe.
   // Diferenciar "não existe" de "senha errada" entrega metade da credencial.
-  const generico = { erro: "Usuário ou senha incorretos." };
+  const generico = { erro: "Acesso ou senha incorretos." };
 
   if (!email) return generico;
 

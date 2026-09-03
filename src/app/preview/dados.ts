@@ -208,6 +208,7 @@ export const PESSOAS = {
       ativo: true,
       desde: "2026-01-14",
       plano: "Pacote 10 aulas",
+      senhaPadrao: true,
     },
     {
       id: "a3",

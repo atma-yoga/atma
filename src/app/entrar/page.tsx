@@ -29,7 +29,7 @@ export default function EntrarPage({
             <input type="hidden" name="proximo" value={proximo ?? "/"} />
 
             <Campo
-              rotulo="Usuário ou e-mail"
+              rotulo="E-mail ou CPF"
               name="identificador"
               type="text"
               autoComplete="username"
@@ -37,7 +37,7 @@ export default function EntrarPage({
               spellCheck={false}
               required
               autoFocus
-              placeholder="crisatma"
+              placeholder="voce@exemplo.com"
             />
             <Campo
               rotulo="Senha"

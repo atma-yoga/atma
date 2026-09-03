@@ -25,6 +25,7 @@ export type Database = {
         Row: {
           id: string;
           full_name: string;
+          social_name: string | null;
           username: string | null;
           email: string | null;
           phone: string | null;
@@ -33,6 +34,7 @@ export type Database = {
           document_id: string | null;
           address: Json | null;
           health_notes: string | null;
+          health_conditions: string[];
           is_active: boolean;
           must_change_password: boolean;
           created_at: string;
@@ -41,6 +43,7 @@ export type Database = {
         Insert: {
           id: string;
           full_name?: string;
+          social_name?: string | null;
           username?: string | null;
           email?: string | null;
           phone?: string | null;
@@ -49,6 +52,7 @@ export type Database = {
           document_id?: string | null;
           address?: Json | null;
           health_notes?: string | null;
+          health_conditions?: string[];
           is_active?: boolean;
           must_change_password?: boolean;
           created_at?: string;
@@ -57,6 +61,7 @@ export type Database = {
         Update: {
           id?: string;
           full_name?: string;
+          social_name?: string | null;
           username?: string | null;
           email?: string | null;
           phone?: string | null;
@@ -65,6 +70,7 @@ export type Database = {
           document_id?: string | null;
           address?: Json | null;
           health_notes?: string | null;
+          health_conditions?: string[];
           is_active?: boolean;
           must_change_password?: boolean;
           created_at?: string;

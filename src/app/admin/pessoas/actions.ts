@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { getSessao } from "@/lib/auth";
+import { cpfValido, soDigitos } from "@/lib/ficha";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Papel } from "@/lib/tipos";
 
@@ -12,7 +13,6 @@ export type EstadoCadastro =
   | undefined;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const USUARIO = /^[a-z0-9._-]{3,30}$/;
 
 /** Campos do endereço, na ordem em que aparecem no formulário. */
 const CAMPOS_ENDERECO = [
@@ -41,13 +41,19 @@ function montarEndereco(form: FormData): Record<string, string> | null {
   return Object.keys(endereco).length ? endereco : null;
 }
 
+/** Valores marcados num grupo de caixas, sem duplicatas nem vazios. */
+const marcados = (form: FormData, campo: string) => [
+  ...new Set(
+    form
+      .getAll(campo)
+      .map((v) => String(v).trim())
+      .filter(Boolean),
+  ),
+];
+
 /**
  * Cadastra professor ou aluno. Só a administração pode chamar — a checagem
  * é feita aqui, no servidor, porque esconder o botão não é segurança.
- *
- * A conta nasce com uma senha temporária que a adm entrega pessoalmente, e
- * com `must_change_password`, para a aplicação exigir a troca no primeiro
- * acesso.
  */
 export async function cadastrarPessoa(
   _anterior: EstadoCadastro,
@@ -59,26 +65,20 @@ export async function cadastrarPessoa(
   }
 
   const nome = String(form.get("nome") ?? "").trim();
+  const nomeSocial = String(form.get("nome_social") ?? "").trim();
   const email = String(form.get("email") ?? "")
     .trim()
     .toLowerCase();
   const telefone = String(form.get("telefone") ?? "").trim();
-  const usuario = String(form.get("usuario") ?? "")
-    .trim()
-    .toLowerCase();
+  const cpf = soDigitos(String(form.get("cpf") ?? ""));
   const senha = String(form.get("senha") ?? "");
   const papel = String(form.get("papel") ?? "") as Papel;
 
   if (!nome) return { erro: "Informe o nome completo." };
   if (!EMAIL.test(email)) return { erro: "E-mail inválido." };
-  if (usuario && !USUARIO.test(usuario)) {
-    return {
-      erro:
-        "Usuário: 3 a 30 caracteres, só letras, números, ponto, hífen e _.",
-    };
-  }
-  if (senha.length < 8) {
-    return { erro: "A senha temporária precisa de ao menos 8 caracteres." };
+  if (cpf && !cpfValido(cpf)) return { erro: "CPF inválido." };
+  if (senha.length < 6) {
+    return { erro: "A senha precisa de ao menos 6 caracteres." };
   }
   if (papel !== "teacher" && papel !== "student") {
     return { erro: "Escolha professor ou aluno." };
@@ -86,16 +86,28 @@ export async function cadastrarPessoa(
 
   const admin = createAdminClient();
 
-  // O gatilho handle_new_user lê este metadata para montar profile,
-  // user_roles e a linha em teachers ou students.
+  // O CPF é login do aluno, então precisa ser único. Checamos antes de criar
+  // a conta: sem isto, o usuário nasceria no Auth e o gatilho estouraria ao
+  // gravar o perfil, deixando uma conta órfã sem perfil.
+  if (cpf) {
+    const { data: jaTem } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("document_id", cpf)
+      .maybeSingle();
+
+    if (jaTem) return { erro: "Já existe alguém cadastrado com esse CPF." };
+  }
+
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password: senha,
     email_confirm: true,
     user_metadata: {
       full_name: nome,
+      social_name: nomeSocial || null,
       phone: telefone || null,
-      username: usuario || null,
+      document_id: cpf || null,
       role: papel,
     },
   });
@@ -105,34 +117,38 @@ export async function cadastrarPessoa(
     if (msg.includes("already") || msg.includes("registered")) {
       return { erro: "Já existe uma conta com esse e-mail." };
     }
-    if (msg.includes("profiles_username_uniq") || msg.includes("username")) {
-      return { erro: "Esse nome de usuário já está em uso." };
-    }
     return { erro: `Não foi possível cadastrar: ${error.message}` };
   }
 
   if (data.user) {
-    // Guardamos só o que foi preenchido: um endereço com todos os campos
-    // vazios vira NULL em vez de um objeto de strings em branco.
-    const endereco = montarEndereco(form);
-    const saude = String(form.get("saude") ?? "").trim();
+    const observacoes = String(form.get("observacoes_saude") ?? "").trim();
 
     await admin
       .from("profiles")
       .update({
         must_change_password: true,
-        address: endereco,
-        health_notes: saude || null,
+        address: montarEndereco(form),
+        health_conditions: marcados(form, "saude"),
+        health_notes: observacoes || null,
       })
       .eq("id", data.user.id);
+
+    if (papel === "teacher") {
+      await admin
+        .from("teachers")
+        .update({ specialties: marcados(form, "tecnicas") })
+        .eq("profile_id", data.user.id);
+    }
   }
 
   revalidatePath("/admin/pessoas");
 
+  const comoEntra = papel === "student" && cpf ? "e-mail ou CPF" : "e-mail";
+
   return {
     sucesso: `${
       papel === "teacher" ? "Professor" : "Aluno"
-    } ${nome} cadastrado. Entregue a senha temporária.`,
+    } ${nomeSocial || nome} cadastrado. Entra com ${comoEntra} e a senha informada.`,
   };
 }
 

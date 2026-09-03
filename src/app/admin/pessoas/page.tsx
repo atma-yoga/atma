@@ -23,31 +23,33 @@ export default async function PessoasPage() {
   const [{ data: professores }, { data: alunos }] = await Promise.all([
     supabase
       .from("teachers")
-      .select("profile_id, is_active, hired_at, profiles(full_name, email, phone)")
+      .select("profile_id, is_active, hired_at, profiles(full_name, social_name, email, phone, must_change_password)")
       .order("hired_at", { ascending: false }),
 
     supabase
       .from("students")
-      .select("profile_id, is_active, start_date, profiles(full_name, email, phone)")
+      .select("profile_id, is_active, start_date, profiles(full_name, social_name, email, phone, must_change_password)")
       .order("start_date", { ascending: false }),
   ]);
 
   const listaProfessores: PessoaNaLista[] = (professores ?? []).map((t) => ({
     id: t.profile_id,
-    nome: t.profiles?.full_name || "sem nome",
+    nome: t.profiles?.social_name || t.profiles?.full_name || "sem nome",
     email: t.profiles?.email ?? null,
     telefone: t.profiles?.phone ?? null,
     ativo: t.is_active,
     desde: t.hired_at,
+    senhaPadrao: t.profiles?.must_change_password ?? false,
   }));
 
   const listaAlunos: PessoaNaLista[] = (alunos ?? []).map((a) => ({
     id: a.profile_id,
-    nome: a.profiles?.full_name || "sem nome",
+    nome: a.profiles?.social_name || a.profiles?.full_name || "sem nome",
     email: a.profiles?.email ?? null,
     telefone: a.profiles?.phone ?? null,
     ativo: a.is_active,
     desde: a.start_date,
+    senhaPadrao: a.profiles?.must_change_password ?? false,
   }));
 
   const botaoAtivar = (papel: "teacher" | "student") =>

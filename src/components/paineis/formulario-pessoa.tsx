@@ -1,26 +1,26 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 
+import { Caixas } from "@/components/paineis/caixas";
 import { AreaDeTexto, Botao, Campo, Cartao, Divisao } from "@/components/ui";
 import type { EstadoCadastro } from "@/app/admin/pessoas/actions";
+import {
+  CONDICOES_DE_SAUDE,
+  SENHA_PADRAO,
+  TECNICAS,
+  buscarCep,
+  cpfValido,
+  formatarCep,
+  formatarCpf,
+  soDigitos,
+} from "@/lib/ficha";
 import type { Papel } from "@/lib/tipos";
 
 type Acao = (
   anterior: EstadoCadastro,
   form: FormData,
 ) => Promise<EstadoCadastro>;
-
-/** Sugere uma senha legível de dizer em voz alta na recepção. */
-function sugerirSenha() {
-  const palavras = [
-    "lotus", "prana", "asana", "mantra", "chakra",
-    "sereno", "raiz", "monte", "rio", "manha",
-  ];
-  const p = () => palavras[Math.floor(Math.random() * palavras.length)];
-  const n = Math.floor(Math.random() * 90 + 10);
-  return `${p()}-${p()}-${n}`;
-}
 
 /** O formulário é um grid de duas colunas; isto ocupa a linha inteira. */
 const LINHA = "sm:col-span-2";
@@ -35,16 +35,55 @@ export function FormularioPessoa({
   const [papel, setPapel] = useState<Extract<Papel, "teacher" | "student">>(
     "student",
   );
-  const [senha, setSenha] = useState(sugerirSenha);
+  const [cpf, setCpf] = useState("");
+  const [cep, setCep] = useState("");
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const [erroCep, setErroCep] = useState<string | null>(null);
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [estado, enviar, pendente] = useActionState<EstadoCadastro, FormData>(
     acao ?? (async () => ({ erro: "Ação indisponível." })),
     undefined,
   );
 
+  const cpfIncompleto = soDigitos(cpf).length > 0 && soDigitos(cpf).length < 11;
+  const cpfErrado = soDigitos(cpf).length === 11 && !cpfValido(cpf);
+
+  /** Preenche logradouro, bairro, cidade e UF a partir do CEP. */
+  async function completarPeloCep(valor: string) {
+    if (soDigitos(valor).length !== 8) return;
+
+    setBuscandoCep(true);
+    setErroCep(null);
+
+    const achado = await buscarCep(valor);
+    setBuscandoCep(false);
+
+    if (!achado) {
+      setErroCep("CEP não encontrado. Preencha à mão.");
+      return;
+    }
+
+    const form = formRef.current;
+    if (!form) return;
+
+    // Só preenche o que veio vazio, para não apagar correção feita à mão.
+    const preencher = (campo: string, valor: string) => {
+      const el = form.elements.namedItem(campo) as HTMLInputElement | null;
+      if (el && !el.value && valor) el.value = valor;
+    };
+
+    preencher("logradouro", achado.logradouro);
+    preencher("bairro", achado.bairro);
+    preencher("cidade", achado.cidade);
+    preencher("uf", achado.uf);
+  }
+
   return (
     <Cartao className="p-6">
       <form
+        ref={formRef}
         action={demo ? undefined : enviar}
         onSubmit={demo ? (e) => e.preventDefault() : undefined}
         className="grid gap-x-4 gap-y-5 sm:grid-cols-2"
@@ -68,8 +107,7 @@ export function FormularioPessoa({
                 onClick={() => setPapel(valor)}
                 aria-pressed={papel === valor}
                 // Palha como marca de seleção: é fundo legítimo nos dois
-                // temas. Marrom sumiria contra o cartão no modo escuro, e a
-                // opção não selecionada pareceria a escolhida.
+                // temas. Marrom sumiria contra o cartão no modo escuro.
                 className={`h-9 rounded-[var(--radius-md)] px-4 text-sm transition ${
                   papel === valor
                     ? "bg-[var(--color-palha)] font-medium text-[var(--color-on-palha)]"
@@ -89,33 +127,76 @@ export function FormularioPessoa({
           autoComplete="off"
           classeExterna={LINHA}
         />
+        <Campo
+          rotulo="Nome social (como prefere ser chamado)"
+          name="nome_social"
+          autoComplete="off"
+          placeholder="opcional"
+          classeExterna={LINHA}
+        />
+
         <Campo rotulo="E-mail" name="email" type="email" required autoComplete="off" />
         <Campo
-          rotulo="Telefone"
+          rotulo="WhatsApp"
           name="telefone"
           autoComplete="off"
           placeholder="(22) 99999-0000"
         />
 
-        <div className={`flex flex-col gap-1.5 ${LINHA}`}>
+        <div className="flex flex-col gap-1.5">
           <Campo
-            rotulo="Nome de usuário (opcional)"
-            name="usuario"
+            rotulo="CPF"
+            name="cpf"
+            value={cpf}
+            onChange={(e) => setCpf(formatarCpf(e.target.value))}
+            inputMode="numeric"
             autoComplete="off"
-            autoCapitalize="none"
-            spellCheck={false}
-            pattern="[a-zA-Z0-9._-]{3,30}"
-            placeholder="crisatma"
+            placeholder="000.000.000-00"
+            aria-invalid={cpfErrado}
           />
-          <p className="text-xs text-[var(--color-muted)]">
-            Atalho para entrar sem digitar o e-mail. Sem espaços nem acentos.
-          </p>
+          {cpfErrado ? (
+            <p className="text-xs text-[var(--color-danger)]">
+              CPF inválido — confira os números.
+            </p>
+          ) : (
+            <p className="text-xs text-[var(--color-muted)]">
+              {papel === "student"
+                ? "Serve de login, junto com o e-mail."
+                : "Opcional."}
+            </p>
+          )}
         </div>
 
         <Divisao>Endereço</Divisao>
 
-        <Campo rotulo="CEP" name="cep" autoComplete="off" placeholder="28900-000" />
+        <div className="flex flex-col gap-1.5">
+          <Campo
+            rotulo="CEP"
+            name="cep"
+            value={cep}
+            onChange={(e) => {
+              const v = formatarCep(e.target.value);
+              setCep(v);
+              setErroCep(null);
+              if (soDigitos(v).length === 8) void completarPeloCep(v);
+            }}
+            onBlur={(e) => void completarPeloCep(e.target.value)}
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="28900-000"
+          />
+          {buscandoCep ? (
+            <p className="text-xs text-[var(--color-muted)]">buscando…</p>
+          ) : erroCep ? (
+            <p className="text-xs text-[var(--color-danger)]">{erroCep}</p>
+          ) : (
+            <p className="text-xs text-[var(--color-muted)]">
+              Preenche o resto sozinho.
+            </p>
+          )}
+        </div>
         <Campo rotulo="Número" name="numero" autoComplete="off" />
+
         <Campo
           rotulo="Logradouro"
           name="logradouro"
@@ -133,14 +214,27 @@ export function FormularioPessoa({
           className="uppercase"
         />
 
+        {papel === "teacher" ? (
+          <>
+            <Divisao>Técnicas</Divisao>
+            <div className={LINHA}>
+              <Caixas name="tecnicas" opcoes={TECNICAS} colunas={3} />
+            </div>
+          </>
+        ) : null}
+
         <Divisao>Saúde</Divisao>
 
+        <div className={LINHA}>
+          <Caixas name="saude" opcoes={CONDICOES_DE_SAUDE} colunas={2} />
+        </div>
+
         <AreaDeTexto
-          rotulo="Observações de saúde"
-          name="saude"
+          rotulo="Observações"
+          name="observacoes_saude"
           rows={3}
           classeExterna={LINHA}
-          placeholder="Lesões, cirurgias, gravidez, pressão, restrições de movimento…"
+          placeholder="Cirurgias, medicação contínua, limites de movimento…"
           dica={
             papel === "student"
               ? "O professor da aula também vê, para adaptar as posturas."
@@ -151,29 +245,18 @@ export function FormularioPessoa({
         <Divisao>Acesso</Divisao>
 
         <div className={`flex flex-col gap-1.5 ${LINHA}`}>
-          <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
-            Senha temporária
-          </span>
-          <div className="flex gap-2">
-            <input
-              name="senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
-              minLength={8}
-              autoComplete="off"
-              className="h-10 flex-1 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 font-mono text-sm text-[var(--color-foreground)]"
-            />
-            <Botao
-              type="button"
-              variante="fantasma"
-              onClick={() => setSenha(sugerirSenha())}
-            >
-              Sortear
-            </Botao>
-          </div>
+          <Campo
+            rotulo="Senha inicial"
+            name="senha"
+            defaultValue={SENHA_PADRAO}
+            required
+            minLength={6}
+            autoComplete="off"
+            className="font-mono"
+          />
           <p className="text-xs text-[var(--color-muted)]">
-            Anote e entregue pessoalmente. A pessoa troca no primeiro acesso.
+            Senha padrão do estúdio. A pessoa entra com ela e troca quando
+            quiser, no próprio perfil.
           </p>
         </div>
 
@@ -189,7 +272,11 @@ export function FormularioPessoa({
           </p>
         ) : null}
 
-        <Botao type="submit" disabled={pendente || demo} className={LINHA}>
+        <Botao
+          type="submit"
+          disabled={pendente || demo || cpfErrado || cpfIncompleto}
+          className={LINHA}
+        >
           {pendente ? "Cadastrando…" : "Cadastrar"}
         </Botao>
 
