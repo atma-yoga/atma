@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 
-import { Botao, Campo, Cartao } from "@/components/ui";
+import { AreaDeTexto, Botao, Campo, Cartao, Divisao } from "@/components/ui";
 import type { EstadoCadastro } from "@/app/admin/pessoas/actions";
 import type { Papel } from "@/lib/tipos";
 
@@ -21,6 +21,9 @@ function sugerirSenha() {
   const n = Math.floor(Math.random() * 90 + 10);
   return `${p()}-${p()}-${n}`;
 }
+
+/** O formulário é um grid de duas colunas; isto ocupa a linha inteira. */
+const LINHA = "sm:col-span-2";
 
 export function FormularioPessoa({
   acao,
@@ -44,11 +47,11 @@ export function FormularioPessoa({
       <form
         action={demo ? undefined : enviar}
         onSubmit={demo ? (e) => e.preventDefault() : undefined}
-        className="flex flex-col gap-5"
+        className="grid gap-x-4 gap-y-5 sm:grid-cols-2"
       >
         <input type="hidden" name="papel" value={papel} />
 
-        <fieldset className="flex flex-col gap-2">
+        <fieldset className={`flex flex-col gap-2 ${LINHA}`}>
           <legend className="mb-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
             Cadastrar como
           </legend>
@@ -64,10 +67,13 @@ export function FormularioPessoa({
                 type="button"
                 onClick={() => setPapel(valor)}
                 aria-pressed={papel === valor}
+                // Palha como marca de seleção: é fundo legítimo nos dois
+                // temas. Marrom sumiria contra o cartão no modo escuro, e a
+                // opção não selecionada pareceria a escolhida.
                 className={`h-9 rounded-[var(--radius-md)] px-4 text-sm transition ${
                   papel === valor
-                    ? "bg-[var(--color-marrom)] text-[var(--color-on-marrom)]"
-                    : "border border-[var(--color-border-strong)] text-[var(--color-foreground)]"
+                    ? "bg-[var(--color-palha)] font-medium text-[var(--color-on-palha)]"
+                    : "border border-[var(--color-border-strong)] text-[var(--color-muted)]"
                 }`}
               >
                 {rotulo}
@@ -76,11 +82,22 @@ export function FormularioPessoa({
           </div>
         </fieldset>
 
-        <Campo rotulo="Nome completo" name="nome" required autoComplete="off" />
+        <Campo
+          rotulo="Nome completo"
+          name="nome"
+          required
+          autoComplete="off"
+          classeExterna={LINHA}
+        />
         <Campo rotulo="E-mail" name="email" type="email" required autoComplete="off" />
-        <Campo rotulo="Telefone" name="telefone" autoComplete="off" placeholder="(22) 99999-0000" />
+        <Campo
+          rotulo="Telefone"
+          name="telefone"
+          autoComplete="off"
+          placeholder="(22) 99999-0000"
+        />
 
-        <div className="flex flex-col gap-1.5">
+        <div className={`flex flex-col gap-1.5 ${LINHA}`}>
           <Campo
             rotulo="Nome de usuário (opcional)"
             name="usuario"
@@ -95,7 +112,45 @@ export function FormularioPessoa({
           </p>
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <Divisao>Endereço</Divisao>
+
+        <Campo rotulo="CEP" name="cep" autoComplete="off" placeholder="28900-000" />
+        <Campo rotulo="Número" name="numero" autoComplete="off" />
+        <Campo
+          rotulo="Logradouro"
+          name="logradouro"
+          autoComplete="off"
+          classeExterna={LINHA}
+        />
+        <Campo rotulo="Complemento" name="complemento" autoComplete="off" />
+        <Campo rotulo="Bairro" name="bairro" autoComplete="off" />
+        <Campo rotulo="Cidade" name="cidade" autoComplete="off" />
+        <Campo
+          rotulo="UF"
+          name="uf"
+          autoComplete="off"
+          maxLength={2}
+          className="uppercase"
+        />
+
+        <Divisao>Saúde</Divisao>
+
+        <AreaDeTexto
+          rotulo="Observações de saúde"
+          name="saude"
+          rows={3}
+          classeExterna={LINHA}
+          placeholder="Lesões, cirurgias, gravidez, pressão, restrições de movimento…"
+          dica={
+            papel === "student"
+              ? "O professor da aula também vê, para adaptar as posturas."
+              : "Restrições que afetem o que o professor demonstra em aula."
+          }
+        />
+
+        <Divisao>Acesso</Divisao>
+
+        <div className={`flex flex-col gap-1.5 ${LINHA}`}>
           <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
             Senha temporária
           </span>
@@ -123,23 +178,23 @@ export function FormularioPessoa({
         </div>
 
         {estado && "erro" in estado ? (
-          <p role="alert" className="text-sm text-[var(--color-danger)]">
+          <p role="alert" className={`text-sm text-[var(--color-danger)] ${LINHA}`}>
             {estado.erro}
           </p>
         ) : null}
 
         {estado && "sucesso" in estado ? (
-          <p role="status" className="text-sm text-[var(--color-success)]">
+          <p role="status" className={`text-sm text-[var(--color-success)] ${LINHA}`}>
             {estado.sucesso}
           </p>
         ) : null}
 
-        <Botao type="submit" disabled={pendente || demo}>
+        <Botao type="submit" disabled={pendente || demo} className={LINHA}>
           {pendente ? "Cadastrando…" : "Cadastrar"}
         </Botao>
 
         {demo ? (
-          <p className="text-center text-xs text-[var(--color-muted)]">
+          <p className={`text-center text-xs text-[var(--color-muted)] ${LINHA}`}>
             Maquete — o cadastro não é enviado.
           </p>
         ) : null}

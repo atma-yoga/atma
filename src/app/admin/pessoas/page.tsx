@@ -71,7 +71,7 @@ export default async function PessoasPage() {
     <Shell papel="admin" nome={sessao.perfil?.full_name ?? ""}>
       <h1 className="mb-8 text-2xl font-light">Pessoas</h1>
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_20rem] lg:items-start">
+      <div className="grid gap-10 xl:grid-cols-[1fr_30rem] xl:items-start">
         <div>
           <ListaDePessoas
             titulo="Professores"
@@ -87,7 +87,7 @@ export default async function PessoasPage() {
           />
         </div>
 
-        <div className="lg:sticky lg:top-6">
+        <div className="xl:sticky xl:top-6">
           <TituloSecao>Cadastrar</TituloSecao>
           <FormularioPessoa acao={cadastrarPessoa} />
         </div>

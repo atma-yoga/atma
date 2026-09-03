@@ -68,10 +68,15 @@ export function Botao({
 export function Campo({
   rotulo,
   className = "",
+  classeExterna = "",
   ...rest
-}: ComponentProps<"input"> & { rotulo: string }) {
+}: ComponentProps<"input"> & {
+  rotulo: string;
+  /** Vai no <label>, que é o item do grid — use para col-span. */
+  classeExterna?: string;
+}) {
   return (
-    <label className="flex flex-col gap-1.5">
+    <label className={`flex flex-col gap-1.5 ${classeExterna}`}>
       <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
         {rotulo}
       </span>
@@ -80,6 +85,46 @@ export function Campo({
         {...rest}
       />
     </label>
+  );
+}
+
+export function AreaDeTexto({
+  rotulo,
+  dica,
+  className = "",
+  classeExterna = "",
+  ...rest
+}: ComponentProps<"textarea"> & {
+  rotulo: string;
+  dica?: string;
+  /** Vai no <label>, que é o item do grid — use para col-span. */
+  classeExterna?: string;
+}) {
+  return (
+    <label className={`flex flex-col gap-1.5 ${classeExterna}`}>
+      <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+        {rotulo}
+      </span>
+      <textarea
+        className={`min-h-20 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-sm leading-relaxed text-[var(--color-foreground)] placeholder:text-[var(--color-subtle)] ${className}`}
+        {...rest}
+      />
+      {dica ? (
+        <span className="text-xs text-[var(--color-muted)]">{dica}</span>
+      ) : null}
+    </label>
+  );
+}
+
+/** Separador de seção dentro de um formulário longo. */
+export function Divisao({ children }: { children: ReactNode }) {
+  return (
+    <div className="mt-2 flex items-center gap-3 sm:col-span-2">
+      <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+        {children}
+      </span>
+      <span className="h-px flex-1 bg-[var(--color-border)]" />
+    </div>
   );
 }
 

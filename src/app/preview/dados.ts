@@ -208,3 +208,41 @@ export const PESSOAS = {
     },
   ],
 };
+
+/** A grade real do estúdio, para conferir o editor sem estar logado. */
+export const GRADE = [
+  [1, "07:00", "Estúdio", false],
+  [1, "18:00", "Estúdio", false],
+  [2, "08:30", "Estúdio", false],
+  [2, "19:00", "Estúdio", false],
+  [3, "07:00", "Estúdio", false],
+  [3, "08:30", "Iate Clube", true],
+  [3, "18:00", "Estúdio", false],
+  [4, "08:30", "Estúdio", false],
+  [4, "19:00", "Estúdio", false],
+  [5, "07:00", "Estúdio", false],
+  [5, "08:30", "Iate Clube", true],
+].map(([weekday, hora, sala, aoArLivre], i) => ({
+  id: `g${i}`,
+  weekday: weekday as number,
+  hora: hora as string,
+  duracao: 60,
+  capacidade: aoArLivre ? 25 : 15,
+  salaId: aoArLivre ? "r2" : "r1",
+  sala: sala as string,
+  aoArLivre: aoArLivre as boolean,
+  professorId: null,
+  professor: null,
+  titulo: null,
+  ativo: true,
+}));
+
+export const SALAS = [
+  { id: "r1", nome: "Estúdio" },
+  { id: "r2", nome: "Iate Clube" },
+];
+
+export const PROFESSORES_OPCOES = [
+  { id: "t1", nome: "Marina Vieira" },
+  { id: "t2", nome: "Rafael Nunes" },
+];

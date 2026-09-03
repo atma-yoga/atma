@@ -32,6 +32,7 @@ export type Database = {
           birth_date: string | null;
           document_id: string | null;
           address: Json | null;
+          health_notes: string | null;
           is_active: boolean;
           must_change_password: boolean;
           created_at: string;
@@ -47,6 +48,7 @@ export type Database = {
           birth_date?: string | null;
           document_id?: string | null;
           address?: Json | null;
+          health_notes?: string | null;
           is_active?: boolean;
           must_change_password?: boolean;
           created_at?: string;
@@ -62,6 +64,7 @@ export type Database = {
           birth_date?: string | null;
           document_id?: string | null;
           address?: Json | null;
+          health_notes?: string | null;
           is_active?: boolean;
           must_change_password?: boolean;
           created_at?: string;
@@ -146,7 +149,6 @@ export type Database = {
         Row: {
           profile_id: string;
           emergency_contact: Json | null;
-          health_notes: string | null;
           goals: string | null;
           experience_level: Database["public"]["Enums"]["class_level"];
           how_found_us: string | null;
@@ -158,7 +160,6 @@ export type Database = {
         Insert: {
           profile_id: string;
           emergency_contact?: Json | null;
-          health_notes?: string | null;
           goals?: string | null;
           experience_level?: Database["public"]["Enums"]["class_level"];
           how_found_us?: string | null;
@@ -170,7 +171,6 @@ export type Database = {
         Update: {
           profile_id?: string;
           emergency_contact?: Json | null;
-          health_notes?: string | null;
           goals?: string | null;
           experience_level?: Database["public"]["Enums"]["class_level"];
           how_found_us?: string | null;
@@ -195,6 +195,7 @@ export type Database = {
           id: string;
           name: string;
           capacity: number;
+          is_outdoor: boolean;
           notes: string | null;
           is_active: boolean;
           created_at: string;
@@ -203,6 +204,7 @@ export type Database = {
           id?: string;
           name: string;
           capacity: number;
+          is_outdoor?: boolean;
           notes?: string | null;
           is_active?: boolean;
           created_at?: string;
@@ -211,6 +213,7 @@ export type Database = {
           id?: string;
           name?: string;
           capacity?: number;
+          is_outdoor?: boolean;
           notes?: string | null;
           is_active?: boolean;
           created_at?: string;
@@ -222,7 +225,7 @@ export type Database = {
         Row: {
           id: string;
           title?: string | null;
-          teacher_id: string;
+          teacher_id?: string | null;
           room_id: string | null;
           weekday: number;
           start_time: string;
@@ -238,7 +241,7 @@ export type Database = {
         Insert: {
           id?: string;
           title?: string | null;
-          teacher_id: string;
+          teacher_id?: string | null;
           room_id?: string | null;
           weekday: number;
           start_time: string;
@@ -254,7 +257,7 @@ export type Database = {
         Update: {
           id?: string;
           title?: string | null;
-          teacher_id?: string;
+          teacher_id?: string | null;
           room_id?: string | null;
           weekday?: number;
           start_time?: string;
@@ -290,7 +293,7 @@ export type Database = {
           id: string;
           schedule_id: string | null;
           title?: string | null;
-          teacher_id: string;
+          teacher_id?: string | null;
           room_id: string | null;
           starts_at: string;
           ends_at: string;
@@ -306,7 +309,7 @@ export type Database = {
           id?: string;
           schedule_id?: string | null;
           title?: string | null;
-          teacher_id: string;
+          teacher_id?: string | null;
           room_id?: string | null;
           starts_at: string;
           ends_at: string;
@@ -322,7 +325,7 @@ export type Database = {
           id?: string;
           schedule_id?: string | null;
           title?: string | null;
-          teacher_id?: string;
+          teacher_id?: string | null;
           room_id?: string | null;
           starts_at?: string;
           ends_at?: string;
@@ -764,6 +767,7 @@ export type Database = {
           status: Database["public"]["Enums"]["session_status"] | null;
           level: Database["public"]["Enums"]["class_level"] | null;
           room: string | null;
+          is_outdoor: boolean | null;
           teacher_name: string | null;
           teacher_id: string | null;
           capacity: number | null;

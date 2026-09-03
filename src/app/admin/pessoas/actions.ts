@@ -14,6 +14,33 @@ export type EstadoCadastro =
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USUARIO = /^[a-z0-9._-]{3,30}$/;
 
+/** Campos do endereço, na ordem em que aparecem no formulário. */
+const CAMPOS_ENDERECO = [
+  "cep",
+  "logradouro",
+  "numero",
+  "complemento",
+  "bairro",
+  "cidade",
+  "uf",
+] as const;
+
+/**
+ * Monta o endereço a partir do formulário, ou devolve null quando nada foi
+ * preenchido — evita gravar um objeto de strings vazias que depois passa por
+ * "tem endereço" em qualquer verificação ingênua.
+ */
+function montarEndereco(form: FormData): Record<string, string> | null {
+  const endereco: Record<string, string> = {};
+
+  for (const campo of CAMPOS_ENDERECO) {
+    const valor = String(form.get(campo) ?? "").trim();
+    if (valor) endereco[campo] = campo === "uf" ? valor.toUpperCase() : valor;
+  }
+
+  return Object.keys(endereco).length ? endereco : null;
+}
+
 /**
  * Cadastra professor ou aluno. Só a administração pode chamar — a checagem
  * é feita aqui, no servidor, porque esconder o botão não é segurança.
@@ -85,9 +112,18 @@ export async function cadastrarPessoa(
   }
 
   if (data.user) {
+    // Guardamos só o que foi preenchido: um endereço com todos os campos
+    // vazios vira NULL em vez de um objeto de strings em branco.
+    const endereco = montarEndereco(form);
+    const saude = String(form.get("saude") ?? "").trim();
+
     await admin
       .from("profiles")
-      .update({ must_change_password: true })
+      .update({
+        must_change_password: true,
+        address: endereco,
+        health_notes: saude || null,
+      })
       .eq("id", data.user.id);
   }
 

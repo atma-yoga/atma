@@ -54,7 +54,7 @@ select generate_sessions(current_date, current_date + 60);
 | Área | Tabelas |
 |---|---|
 | Identidade | `profiles`, `user_roles`, `teachers`, `students` |
-| Catálogo | `rooms`, `plans` |
+| Catálogo | `rooms` (com `is_outdoor`), `plans` |
 | Agenda | `class_schedules` (grade recorrente) → `class_sessions` (ocorrência) |
 | Aulas | `bookings` com lista de espera automática |
 | Financeiro | `subscriptions`, `credit_ledger`, `payments`, `teacher_payouts` |
@@ -67,6 +67,13 @@ uma da outra.
 O estúdio pratica **estilo livre**: não há Hatha, Vinyasa ou Yin. Uma aula sem
 `title` é simplesmente "Yoga"; o título existe só para as exceções ("Yoga
 restaurativa").
+
+Aula tem lugar, e nem todo lugar é sala: parte das aulas de 08:30 acontece ao
+ar livre, no Iate Clube da Praia dos Ossos. Daí `rooms.is_outdoor` — a agenda
+marca sala fechada em verde e ar livre em azul.
+
+A grade atual (segunda a sexta, aulas de 1 hora) está na migration `0006` e é
+editável em **Agenda**, no painel da administração.
 
 Regras que vivem no banco, não na aplicação:
 
@@ -123,4 +130,4 @@ marca — não inverte para preto.
   marca só existe em marrom e papel, o que conflita com os arquivos coloridos.
 - Troca obrigatória da senha no primeiro acesso: a coluna
   `profiles.must_change_password` já é gravada, mas nada ainda a exige.
-- Telas de agenda, turmas, plano e financeiro.
+- Telas de turmas, plano e financeiro.

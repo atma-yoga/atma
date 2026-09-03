@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { FormularioPessoa } from "@/components/paineis/formulario-pessoa";
+import { GradeDeHorarios } from "@/components/paineis/grade-de-horarios";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
 import { PainelAluno } from "@/components/paineis/painel-aluno";
@@ -14,8 +15,11 @@ import {
   AGENDAMENTOS_DO_ALUNO,
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
+  GRADE,
   NUMEROS_DO_ADMIN,
   PESSOAS,
+  PROFESSORES_OPCOES,
+  SALAS,
   RESUMO_DO_ALUNO,
   VAGAS_ABERTAS,
 } from "../dados";
@@ -27,6 +31,7 @@ const TELAS = {
   professor: { papel: "teacher", rotulo: "Professor", nome: "Marina Vieira" },
   admin: { papel: "admin", rotulo: "Administração", nome: "Ana Prado" },
   pessoas: { papel: "admin", rotulo: "Cadastro", nome: "Ana Prado" },
+  grade: { papel: "admin", rotulo: "Grade", nome: "Ana Prado" },
 } as const satisfies Record<
   string,
   { papel: Papel; rotulo: string; nome: string }
@@ -68,8 +73,10 @@ export default async function PreviewPage({
           />
         ) : tela === "admin" ? (
           <PainelAdmin {...NUMEROS_DO_ADMIN} proximas={AGENDA_DO_ESTUDIO} />
-        ) : (
+        ) : tela === "pessoas" ? (
           <TelaDePessoas />
+        ) : (
+          <TelaDaGrade />
         )}
       </Shell>
     </>
@@ -80,7 +87,7 @@ function TelaDePessoas() {
   return (
     <>
       <h1 className="mb-8 text-2xl font-light">Pessoas</h1>
-      <div className="grid gap-10 lg:grid-cols-[1fr_20rem] lg:items-start">
+      <div className="grid gap-10 xl:grid-cols-[1fr_30rem] xl:items-start">
         <div>
           <ListaDePessoas
             titulo="Professores"
@@ -93,11 +100,30 @@ function TelaDePessoas() {
             vazio="Nenhum aluno cadastrado ainda."
           />
         </div>
-        <div className="lg:sticky lg:top-6">
+        <div className="xl:sticky xl:top-6">
           <TituloSecao>Cadastrar</TituloSecao>
           <FormularioPessoa demo />
         </div>
       </div>
+    </>
+  );
+}
+
+function TelaDaGrade() {
+  return (
+    <>
+      <div className="mb-8">
+        <h1 className="text-2xl font-light">Grade de horários</h1>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">
+          O que se repete toda semana. Aulas concretas saem daqui.
+        </p>
+      </div>
+      <GradeDeHorarios
+        horarios={GRADE}
+        salas={SALAS}
+        professores={PROFESSORES_OPCOES}
+        demo
+      />
     </>
   );
 }
