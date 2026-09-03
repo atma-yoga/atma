@@ -183,7 +183,7 @@ export function FormularioPessoa({
             onBlur={(e) => void completarPeloCep(e.target.value)}
             inputMode="numeric"
             autoComplete="off"
-            placeholder="28900-000"
+            placeholder="28950-700"
           />
           {buscandoCep ? (
             <p className="text-xs text-[var(--color-muted)]">buscando…</p>
