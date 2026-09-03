@@ -790,6 +790,46 @@ export type Database = {
         ];
       };
 
+      invites: {
+        Row: {
+          id: string;
+          token: string;
+          role: Database["public"]["Enums"]["app_role"];
+          label: string | null;
+          created_by: string | null;
+          expires_at: string;
+          max_uses: number | null;
+          uses: number;
+          revoked_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          token: string;
+          role: Database["public"]["Enums"]["app_role"];
+          label?: string | null;
+          created_by?: string | null;
+          expires_at: string;
+          max_uses?: number | null;
+          uses?: number;
+          revoked_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          token?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          label?: string | null;
+          created_by?: string | null;
+          expires_at?: string;
+          max_uses?: number | null;
+          uses?: number;
+          revoked_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+
       announcements: {
         Row: {
           id: string;
@@ -914,6 +954,10 @@ export type Database = {
         Returns: number;
       };
       expire_subscriptions: { Args: Record<string, never>; Returns: number };
+      consumir_convite: {
+        Args: { token_convite: string };
+        Returns: Database["public"]["Enums"]["app_role"];
+      };
     };
 
     Enums: {

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { Convites, type ConviteNaLista } from "@/components/paineis/convites";
 import { FormularioPessoa } from "@/components/paineis/formulario-pessoa";
 import {
   ListaDePessoas,
@@ -9,7 +10,13 @@ import { Shell } from "@/components/shell";
 import { TituloSecao } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { alternarAtivo, cadastrarPessoa } from "./actions";
+import { headers } from "next/headers";
+import {
+  alternarAtivo,
+  cadastrarPessoa,
+  gerarConvite,
+  revogarConvite,
+} from "./actions";
 
 export const metadata = { title: "Pessoas" };
 
@@ -20,7 +27,8 @@ export default async function PessoasPage() {
 
   const supabase = await createClient();
 
-  const [{ data: professores }, { data: alunos }] = await Promise.all([
+  const [{ data: professores }, { data: alunos }, { data: convites }] =
+    await Promise.all([
     supabase
       .from("teachers")
       .select("profile_id, is_active, hired_at, profiles(full_name, social_name, email, phone, must_change_password)")
@@ -30,7 +38,29 @@ export default async function PessoasPage() {
       .from("students")
       .select("profile_id, is_active, start_date, profiles(full_name, social_name, email, phone, must_change_password)")
       .order("start_date", { ascending: false }),
-  ]);
+
+      supabase
+        .from("invites")
+        .select("id, token, role, expires_at, uses, max_uses, revoked_at")
+        .is("revoked_at", null)
+        .order("created_at", { ascending: false }),
+    ]);
+
+  // O link precisa ser absoluto para a pessoa abrir de outro aparelho.
+  const cabecalhos = await headers();
+  const host = cabecalhos.get("host") ?? "localhost:3000";
+  const protocolo = host.startsWith("localhost") ? "http" : "https";
+  const base = `${protocolo}://${host}`;
+
+  const listaConvites: ConviteNaLista[] = (convites ?? []).map((c) => ({
+    id: c.id,
+    token: c.token,
+    papel: c.role,
+    expiraEm: c.expires_at,
+    usos: c.uses,
+    maxUsos: c.max_uses,
+    revogado: Boolean(c.revoked_at),
+  }));
 
   const listaProfessores: PessoaNaLista[] = (professores ?? []).map((t) => ({
     id: t.profile_id,
@@ -72,6 +102,13 @@ export default async function PessoasPage() {
   return (
     <Shell papel="admin" nome={sessao.perfil?.full_name ?? ""}>
       <h1 className="mb-8 text-2xl font-light">Pessoas</h1>
+
+      <Convites
+        convites={listaConvites}
+        base={base}
+        gerar={gerarConvite}
+        revogar={revogarConvite}
+      />
 
       <div className="grid gap-10 xl:grid-cols-[1fr_30rem] xl:items-start">
         <div>

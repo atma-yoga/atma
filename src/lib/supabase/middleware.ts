@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   "/recuperar-senha",
   "/auth",
   "/preview",
+  "/convite",
 ];
 
 export async function updateSession(request: NextRequest) {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { BuscarAluno, type AlunoBuscavel } from "@/components/paineis/buscar-aluno";
 import { FormularioTurma } from "@/components/paineis/formulario-turma";
 import { DIAS_CURTOS } from "@/components/paineis/grade-semanal";
 import { Shell } from "@/components/shell";
@@ -60,7 +61,7 @@ export default async function TurmaPage({
 
     supabase
       .from("students")
-      .select("profile_id, profiles(full_name, social_name)")
+      .select("profile_id, profiles(full_name, social_name, email, document_id)")
       .eq("is_active", true),
   ]);
 
@@ -69,7 +70,15 @@ export default async function TurmaPage({
   const duracao = encontros?.[0]?.duration_min ?? 60;
 
   const naTurma = new Set((matriculas ?? []).map((m) => m.student_id));
-  const disponiveis = (alunos ?? []).filter((a) => !naTurma.has(a.profile_id));
+
+  const disponiveis: AlunoBuscavel[] = (alunos ?? [])
+    .filter((a) => !naTurma.has(a.profile_id))
+    .map((a) => ({
+      id: a.profile_id,
+      nome: a.profiles?.social_name || a.profiles?.full_name || "sem nome",
+      email: a.profiles?.email ?? null,
+      cpf: a.profiles?.document_id ?? null,
+    }));
 
   const lotada = (matriculas?.length ?? 0) >= turma.capacity;
 
@@ -173,27 +182,11 @@ export default async function TurmaPage({
               </p>
             </Cartao>
           ) : disponiveis.length ? (
-            <Cartao className="p-5">
-              <form action={matricular} className="flex flex-wrap gap-3">
-                <input type="hidden" name="turma" value={turma.id} />
-                <select
-                  name="aluno"
-                  required
-                  defaultValue=""
-                  className="h-10 min-w-48 flex-1 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 text-sm"
-                >
-                  <option value="" disabled>
-                    escolha um aluno
-                  </option>
-                  {disponiveis.map((a) => (
-                    <option key={a.profile_id} value={a.profile_id}>
-                      {a.profiles?.social_name || a.profiles?.full_name}
-                    </option>
-                  ))}
-                </select>
-                <Botao type="submit">Colocar na turma</Botao>
-              </form>
-            </Cartao>
+            <BuscarAluno
+              alunos={disponiveis}
+              turmaId={turma.id}
+              matricular={matricular}
+            />
           ) : (
             <Vazio>
               Todos os alunos cadastrados já estão nesta turma. Cadastre mais

@@ -173,3 +173,58 @@ export async function alternarAtivo(form: FormData) {
 
   revalidatePath("/admin/pessoas");
 }
+
+/* ===========================================================================
+   Convites por link
+   =========================================================================== */
+
+/**
+ * Token do link. `randomUUID` duas vezes dá 256 bits de aleatoriedade —
+ * o link é a única credencial que protege o cadastro, então precisa ser
+ * grande o bastante para não se adivinhar.
+ */
+function gerarToken() {
+  return (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, "");
+}
+
+export async function gerarConvite(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao?.papeis.includes("admin")) return;
+
+  const papel = String(form.get("papel") ?? "");
+  if (papel !== "student" && papel !== "teacher") return;
+
+  const dias = Math.min(Math.max(Number(form.get("dias") || 7), 1), 90);
+  const usoUnico = String(form.get("uso_unico") ?? "") === "1";
+
+  const expira = new Date(Date.now() + dias * 864e5);
+
+  const admin = createAdminClient();
+  await admin.from("invites").insert({
+    token: gerarToken(),
+    role: papel,
+    created_by: sessao.userId,
+    expires_at: expira.toISOString(),
+    max_uses: usoUnico ? 1 : null,
+    label: usoUnico ? "uma pessoa" : "aberto",
+  });
+
+  revalidatePath("/admin/pessoas");
+}
+
+/** Cancela um link. O que já foi cadastrado por ele continua valendo. */
+export async function revogarConvite(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao?.papeis.includes("admin")) return;
+
+  const id = String(form.get("id") ?? "");
+  if (!id) return;
+
+  const admin = createAdminClient();
+  await admin
+    .from("invites")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("id", id);
+
+  revalidatePath("/admin/pessoas");
+}
