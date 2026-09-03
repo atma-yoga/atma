@@ -1,26 +1,149 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* =============================================================================
+   ATMA yoga estúdio — design tokens
+   Paleta fechada de 6 cores. Ver public/brand/LEIA-ME.txt e a matriz de
+   contraste em public/brand/ATMA_paleta_de_cores.pdf.
+
+   REGRAS DURAS
+   1. Só existem DUAS cores de letra: marrom (#3A2A20) e papel (#F5F1E8).
+   2. Palha e mel são fundo, nunca cor de letra.
+   3. Verde sobre palha dá 3,6:1 — proibido.
+   4. Mínimo 4,5:1 para texto corrido.
+   ============================================================================= */
+
+@theme {
+  /* --- as seis cores, cruas --- */
+  --color-marrom: #3a2a20; /* 60% — a marca, títulos, texto */
+  --color-papel: #f5f1e8; /* base — fundo de tudo */
+  --color-palha: #dfc9a2; /* 25% — fundos de bloco, faixas, cartão */
+  --color-verde: #516d3b; /* 10% — 2ª cor escura */
+  --color-mel: #be8e55; /* 10% — detalhe quente, filete */
+  --color-azul: #4e6e86; /*  5% — acento raro */
+
+  /* Derivado: mais escuro que verde, logo mais contrastado. Único tom fora
+     das seis, usado só para diferenciar modalidades na agenda. */
+  --color-verde-profundo: #3e5430;
+
+  /* --- semânticos --- */
+  --color-background: #f5f1e8; /* papel */
+  --color-surface: #fbf8f1; /* cartão: papel puxado para cima */
+  --color-surface-sunken: #efe9dc; /* área rebaixada */
+  --color-foreground: #3a2a20; /* marrom — 12,2:1 sobre papel */
+  --color-muted: rgb(58 42 32 / 0.62); /* marrom translúcido ≈ 7,2:1 */
+  --color-subtle: rgb(58 42 32 / 0.42); /* só rótulo/ícone, não texto corrido */
+  --color-border: rgb(58 42 32 / 0.14);
+  --color-border-strong: #dfc9a2; /* palha como filete */
+  --color-rule: #be8e55; /* mel — linha, moldura */
+
+  /* Sobre fundo escuro a letra vira papel. */
+  --color-on-marrom: #f5f1e8; /* 12,2:1 */
+  --color-on-verde: #f5f1e8; /*  5,2:1 */
+  --color-on-azul: #f5f1e8; /*  4,8:1 */
+  --color-on-palha: #3a2a20; /*  8,5:1 */
+  --color-on-mel: #3a2a20; /*  4,7:1 */
+
+  /* --- estados --- */
+  --color-success: #516d3b; /* verde */
+  --color-info: #4e6e86; /* azul */
+  --color-warning: #be8e55; /* mel */
+  --color-danger: #8c3a2a; /* derivado do marrom, 5,9:1 sobre papel */
+
+  /* --- tipografia --- */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --tracking-marca: 0.32em; /* ATMA na assinatura */
+  --tracking-titulo: 0.08em;
+
+  /* --- forma --- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  --shadow-card: 0 1px 2px rgb(58 42 32 / 0.05), 0 1px 12px rgb(58 42 32 / 0.04);
+  --shadow-raised: 0 2px 4px rgb(58 42 32 / 0.06), 0 8px 24px rgb(58 42 32 / 0.08);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* =============================================================================
+   Modo escuro — regra 2 da marca: papel sobre fundo escuro (marrom ou verde).
+   Nunca inverter para preto puro; o fundo escuro da ATMA é o marrom.
+   ============================================================================= */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --color-background: #2b1f18; /* marrom rebaixado */
+    --color-surface: #3a2a20; /* marrom */
+    --color-surface-sunken: #241a14;
+    --color-foreground: #f5f1e8; /* papel */
+    --color-muted: rgb(245 241 232 / 0.68);
+    --color-subtle: rgb(245 241 232 / 0.45);
+    --color-border: rgb(245 241 232 / 0.14);
+    --color-border-strong: rgb(223 201 162 / 0.35);
+    --color-danger: #d98b76; /* clareado para contrastar no escuro */
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root[data-theme="dark"] {
+  --color-background: #2b1f18;
+  --color-surface: #3a2a20;
+  --color-surface-sunken: #241a14;
+  --color-foreground: #f5f1e8;
+  --color-muted: rgb(245 241 232 / 0.68);
+  --color-subtle: rgb(245 241 232 / 0.45);
+  --color-border: rgb(245 241 232 / 0.14);
+  --color-border-strong: rgb(223 201 162 / 0.35);
+  --color-danger: #d98b76;
+}
+
+/* =============================================================================
+   Base
+   ============================================================================= */
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-palha);
+    color: var(--color-marrom);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-azul);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: var(--tracking-titulo);
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  /* Assinatura ATMA em caixa alta espaçada, como na marca. */
+  .marca {
+    letter-spacing: var(--tracking-marca);
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  /* Filete mel — moldura fina, regra 3 da paleta. */
+  .filete {
+    border-top: 1px solid var(--color-rule);
+  }
 }

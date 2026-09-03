@@ -1,0 +1,42 @@
+ATMA yoga estúdio — marca e paleta
+==================================
+
+PALETA
+------
+marrom esquadria  #3A2A20   a marca: símbolo, ATMA, títulos, texto   60%
+papel             #F5F1E8   fundo base de tudo                       base
+palha             #DFC9A2   fundos de bloco, faixas, cartão          25%
+verde aberto      #516D3B   2ª cor escura, fundo cheio alternativo   10%
+mel               #BE8E55   detalhe quente, linha, moldura, filete   10%
+azul ganesha      #4E6E86   acento raro: botão, selo, destaque        5%
+
+Só existem duas cores de LETRA: marrom e papel.
+Palha e mel são fundos, nunca cor de letra.
+Armadilha: verde sobre palha dá 3,6:1 — não usar.
+
+ARQUIVOS
+--------
+ATMA_paleta_de_cores.pdf      2 páginas A4: cores, proporção, contraste, regras
+ATMA_paleta.png               a página 1 em imagem
+ATMA_logo_vertical_marrom.*   assinatura completa, marrom, fundo transparente
+ATMA_logo_vertical_papel.*    mesma, em papel, para fundo escuro
+ATMA_simbolo_marrom.*         só a mandala
+ATMA_simbolo_papel.*          só a mandala, para fundo escuro
+
+ATENÇÃO — ISTO NÃO É A LOGO DEFINITIVA
+--------------------------------------
+Estes arquivos vêm do SVG exportado do Canva (ATMAN (1).svg).
+Servem para redes sociais e tela. NÃO servem para fachada, bordado,
+gravação ou estêncil de parede.
+
+Ainda pendente:
+1. Redesenho em vetor de verdade (Illustrator/Figma), sem auto-traço.
+2. Preservar a leve irregularidade do traço das pétalas — é qualidade,
+   não defeito. Pedir para NÃO "limpar".
+3. Versões a pedir: vertical, horizontal, símbolo isolado, micro
+   (2 anéis, traço ~1,8%), monocromática P&B.
+4. Fontes convertidas em curvas + nome exato das fontes usadas.
+
+Obs.: este arquivo tem QUATRO anéis de pétalas. A versão mestre decidida
+é de TRÊS anéis, traço ~1,0% do diâmetro. A diferença se resolve no
+redesenho vetorial.
