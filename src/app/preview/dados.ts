@@ -222,40 +222,52 @@ export const PESSOAS = {
   ],
 };
 
-/** A grade real do estúdio, para conferir o editor sem estar logado. */
-export const GRADE = [
-  [1, "07:00", "Estúdio", false],
-  [1, "18:00", "Estúdio", false],
-  [2, "08:30", "Estúdio", false],
-  [2, "19:00", "Estúdio", false],
-  [3, "07:00", "Estúdio", false],
-  [3, "08:30", "Iate Clube", true],
-  [3, "18:00", "Estúdio", false],
-  [4, "08:30", "Estúdio", false],
-  [4, "19:00", "Estúdio", false],
-  [5, "07:00", "Estúdio", false],
-  [5, "08:30", "Iate Clube", true],
-].map(([weekday, hora, sala, aoArLivre], i) => ({
-  id: `g${i}`,
-  weekday: weekday as number,
-  hora: hora as string,
-  duracao: 60,
-  capacidade: aoArLivre ? 25 : 15,
-  salaId: aoArLivre ? "r2" : "r1",
-  sala: sala as string,
-  aoArLivre: aoArLivre as boolean,
-  professorId: null,
-  professor: null,
-  titulo: null,
-  ativo: true,
+/** A grade real do estúdio, em turmas — como a administração a vê. */
+const TURMAS_BASE = [
+  { id: "c1", turma: "Manhã 07:00", dias: [1, 3, 5], hora: "07:00", sala: "Estúdio", arLivre: false, professor: "Marina Vieira", alunos: 9 },
+  { id: "c2", turma: "Manhã 08:30", dias: [2, 4], hora: "08:30", sala: "Estúdio", arLivre: false, professor: "Marina Vieira", alunos: 12 },
+  { id: "c3", turma: "Manhã 08:30 · ar livre", dias: [3, 5], hora: "08:30", sala: "Iate Clube", arLivre: true, professor: "Rafael Nunes", alunos: 7 },
+  { id: "c4", turma: "Noite 18:00", dias: [1, 3], hora: "18:00", sala: "Estúdio", arLivre: false, professor: "Rafael Nunes", alunos: 11 },
+  { id: "c5", turma: "Noite 19:00", dias: [2, 4], hora: "19:00", sala: "Estúdio", arLivre: false, professor: null, alunos: 4 },
+];
+
+/** Um encontro por dia de cada turma — o formato que a grade consome. */
+export const ENCONTROS = TURMAS_BASE.flatMap((t) =>
+  t.dias.map((weekday) => ({
+    meetingId: `${t.id}-${weekday}`,
+    turmaId: t.id,
+    turma: t.turma,
+    weekday,
+    hora: t.hora,
+    duracao: 60,
+    capacidade: 12,
+    matriculados: t.alunos,
+    sala: t.sala,
+    aoArLivre: t.arLivre,
+    professor: t.professor,
+    ativa: true,
+  })),
+);
+
+export const TURMAS = TURMAS_BASE.map((t) => ({
+  id: t.id,
+  nome: t.turma,
+  dias: t.dias,
+  hora: t.hora,
+  sala: t.sala,
+  aoArLivre: t.arLivre,
+  professor: t.professor,
+  matriculados: t.alunos,
+  capacidade: 12,
+  ativa: true,
 }));
 
 export const SALAS = [
-  { id: "r1", nome: "Estúdio" },
-  { id: "r2", nome: "Iate Clube" },
+  { valor: "r1", rotulo: "Estúdio" },
+  { valor: "r2", rotulo: "Iate Clube" },
 ];
 
 export const PROFESSORES_OPCOES = [
-  { id: "t1", nome: "Marina Vieira" },
-  { id: "t2", nome: "Rafael Nunes" },
+  { valor: "t1", rotulo: "Marina Vieira" },
+  { valor: "t2", rotulo: "Rafael Nunes" },
 ];

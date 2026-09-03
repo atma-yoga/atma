@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { FormularioPessoa } from "@/components/paineis/formulario-pessoa";
-import { GradeDeHorarios } from "@/components/paineis/grade-de-horarios";
+import { FormularioTurma } from "@/components/paineis/formulario-turma";
+import {
+  CartaoDaTurma,
+  GradeSemanal,
+} from "@/components/paineis/grade-semanal";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
 import { PainelAluno } from "@/components/paineis/painel-aluno";
@@ -15,11 +19,12 @@ import {
   AGENDAMENTOS_DO_ALUNO,
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
-  GRADE,
+  ENCONTROS,
   NUMEROS_DO_ADMIN,
   PESSOAS,
   PROFESSORES_OPCOES,
   SALAS,
+  TURMAS,
   RESUMO_DO_ALUNO,
   VAGAS_ABERTAS,
 } from "../dados";
@@ -31,7 +36,7 @@ const TELAS = {
   professor: { papel: "teacher", rotulo: "Professor", nome: "Marina Vieira" },
   admin: { papel: "admin", rotulo: "Administração", nome: "Ana Prado" },
   pessoas: { papel: "admin", rotulo: "Cadastro", nome: "Ana Prado" },
-  grade: { papel: "admin", rotulo: "Grade", nome: "Ana Prado" },
+  grade: { papel: "admin", rotulo: "Grade semanal", nome: "Ana Prado" },
 } as const satisfies Record<
   string,
   { papel: Papel; rotulo: string; nome: string }
@@ -113,17 +118,36 @@ function TelaDaGrade() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-2xl font-light">Grade de horários</h1>
+        <h1 className="text-2xl font-light">Grade de aula semanal</h1>
         <p className="mt-1 text-sm text-[var(--color-muted)]">
-          O que se repete toda semana. Aulas concretas saem daqui.
+          Cada turma tem professor, dias fixos e alunos matriculados.
         </p>
       </div>
-      <GradeDeHorarios
-        horarios={GRADE}
-        salas={SALAS}
-        professores={PROFESSORES_OPCOES}
-        demo
-      />
+
+      <section className="mb-12">
+        <TituloSecao>A semana</TituloSecao>
+        <GradeSemanal encontros={ENCONTROS} clicavel={false} />
+      </section>
+
+      <div className="grid gap-10 xl:grid-cols-[1fr_24rem] xl:items-start">
+        <section>
+          <TituloSecao>Turmas</TituloSecao>
+          <div className="flex flex-col gap-2">
+            {TURMAS.map((t) => (
+              <CartaoDaTurma key={t.id} {...t} clicavel={false} />
+            ))}
+          </div>
+        </section>
+
+        <div className="xl:sticky xl:top-6">
+          <TituloSecao>Nova turma</TituloSecao>
+          <FormularioTurma
+            salas={SALAS}
+            professores={PROFESSORES_OPCOES}
+            demo
+          />
+        </div>
+      </div>
     </>
   );
 }

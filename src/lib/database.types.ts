@@ -227,68 +227,141 @@ export type Database = {
         Relationships: [];
       };
 
-      class_schedules: {
+      classes: {
         Row: {
           id: string;
-          title?: string | null;
-          teacher_id?: string | null;
+          name: string;
+          teacher_id: string | null;
           room_id: string | null;
-          weekday: number;
-          start_time: string;
-          duration_min: number;
           capacity: number;
           level: Database["public"]["Enums"]["class_level"];
           valid_from: string;
           valid_until: string | null;
           is_active: boolean;
+          notes: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          title?: string | null;
+          name: string;
           teacher_id?: string | null;
           room_id?: string | null;
-          weekday: number;
-          start_time: string;
-          duration_min?: number;
-          capacity: number;
-          level?: Database["public"]["Enums"]["class_level"];
-          valid_from?: string;
-          valid_until?: string | null;
-          is_active?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string | null;
-          teacher_id?: string | null;
-          room_id?: string | null;
-          weekday?: number;
-          start_time?: string;
-          duration_min?: number;
           capacity?: number;
           level?: Database["public"]["Enums"]["class_level"];
           valid_from?: string;
           valid_until?: string | null;
           is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          teacher_id?: string | null;
+          room_id?: string | null;
+          capacity?: number;
+          level?: Database["public"]["Enums"]["class_level"];
+          valid_from?: string;
+          valid_until?: string | null;
+          is_active?: boolean;
+          notes?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "class_schedules_teacher_id_fkey";
+            foreignKeyName: "classes_teacher_id_fkey";
             columns: ["teacher_id"];
             referencedRelation: "teachers";
             referencedColumns: ["profile_id"];
             isOneToOne: false;
           },
           {
-            foreignKeyName: "class_schedules_room_id_fkey";
+            foreignKeyName: "classes_room_id_fkey";
             columns: ["room_id"];
             referencedRelation: "rooms";
             referencedColumns: ["id"];
+            isOneToOne: false;
+          },
+        ];
+      };
+
+      class_meetings: {
+        Row: {
+          id: string;
+          class_id: string;
+          weekday: number;
+          start_time: string;
+          duration_min: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          class_id: string;
+          weekday: number;
+          start_time: string;
+          duration_min?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          class_id?: string;
+          weekday?: number;
+          start_time?: string;
+          duration_min?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "class_meetings_class_id_fkey";
+            columns: ["class_id"];
+            referencedRelation: "classes";
+            referencedColumns: ["id"];
+            isOneToOne: false;
+          },
+        ];
+      };
+
+      class_enrollments: {
+        Row: {
+          id: string;
+          class_id: string;
+          student_id: string;
+          enrolled_at: string;
+          is_active: boolean;
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          class_id: string;
+          student_id: string;
+          enrolled_at?: string;
+          is_active?: boolean;
+          notes?: string | null;
+        };
+        Update: {
+          id?: string;
+          class_id?: string;
+          student_id?: string;
+          enrolled_at?: string;
+          is_active?: boolean;
+          notes?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "class_enrollments_class_id_fkey";
+            columns: ["class_id"];
+            referencedRelation: "classes";
+            referencedColumns: ["id"];
+            isOneToOne: false;
+          },
+          {
+            foreignKeyName: "class_enrollments_student_id_fkey";
+            columns: ["student_id"];
+            referencedRelation: "students";
+            referencedColumns: ["profile_id"];
             isOneToOne: false;
           },
         ];
@@ -764,6 +837,26 @@ export type Database = {
     };
 
     Views: {
+      v_grade_semanal: {
+        Row: {
+          meeting_id: string | null;
+          class_id: string | null;
+          turma: string | null;
+          weekday: number | null;
+          start_time: string | null;
+          duration_min: number | null;
+          capacity: number | null;
+          is_active: boolean | null;
+          sala: string | null;
+          is_outdoor: boolean | null;
+          teacher_id: string | null;
+          professor: string | null;
+          professor_chamado: string | null;
+          matriculados: number | null;
+        };
+        Relationships: [];
+      };
+
       v_session_availability: {
         Row: {
           session_id: string | null;
