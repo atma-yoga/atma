@@ -146,4 +146,34 @@
   .filete {
     border-top: 1px solid var(--color-rule);
   }
+
+  /* Regra 2 da marca: marrom sobre fundo claro, papel sobre fundo escuro.
+     Os dois arquivos são renderizados e o CSS escolhe — o tema é do
+     visitante, então isso não pode ser decidido no servidor. */
+  .marca-escura {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .marca-clara {
+      display: none;
+    }
+    :root:not([data-theme="light"]) .marca-escura {
+      display: block;
+    }
+  }
+
+  :root[data-theme="dark"] .marca-clara {
+    display: none;
+  }
+  :root[data-theme="dark"] .marca-escura {
+    display: block;
+  }
+
+  :root[data-theme="light"] .marca-clara {
+    display: block;
+  }
+  :root[data-theme="light"] .marca-escura {
+    display: none;
+  }
 }

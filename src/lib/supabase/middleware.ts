@@ -3,8 +3,17 @@ import { createServerClient } from "@supabase/ssr";
 
 import type { Database } from "@/lib/database.types";
 
-/** Rotas abertas a quem não fez login. */
-const PUBLIC_PATHS = ["/entrar", "/cadastro", "/recuperar-senha", "/auth"];
+/**
+ * Rotas abertas a quem não fez login.
+ * `/preview` é a maquete com dados fictícios — remover antes de ir ao ar.
+ */
+const PUBLIC_PATHS = [
+  "/entrar",
+  "/cadastro",
+  "/recuperar-senha",
+  "/auth",
+  "/preview",
+];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
