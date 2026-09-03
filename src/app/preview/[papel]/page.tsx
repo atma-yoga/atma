@@ -7,13 +7,14 @@ import {
   CartaoDaTurma,
   GradeSemanal,
 } from "@/components/paineis/grade-semanal";
+import { ListaDeCobrancas } from "@/components/paineis/cobrancas";
 import { ListaDeChamada } from "@/components/paineis/lista-de-chamada";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
 import { PainelAluno } from "@/components/paineis/painel-aluno";
 import { PainelProfessor } from "@/components/paineis/painel-professor";
 import { Shell } from "@/components/shell";
-import { Etiqueta, TituloSecao } from "@/components/ui";
+import { Etiqueta, Numero, TituloSecao, brl } from "@/components/ui";
 import type { Papel } from "@/lib/tipos";
 import {
   AGENDA_DO_ESTUDIO,
@@ -21,6 +22,8 @@ import {
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
   CHAMADA,
+  COBRANCAS,
+  HOJE_ISO,
   ENCONTROS,
   NUMEROS_DO_ADMIN,
   PESSOAS,
@@ -40,6 +43,7 @@ const TELAS = {
   pessoas: { papel: "admin", rotulo: "Cadastro", nome: "Ana Prado" },
   grade: { papel: "admin", rotulo: "Grade semanal", nome: "Ana Prado" },
   chamada: { papel: "teacher", rotulo: "Chamada", nome: "Marina Vieira" },
+  financeiro: { papel: "admin", rotulo: "Financeiro", nome: "Ana Prado" },
 } as const satisfies Record<
   string,
   { papel: Papel; rotulo: string; nome: string }
@@ -85,8 +89,10 @@ export default async function PreviewPage({
           <TelaDePessoas />
         ) : tela === "grade" ? (
           <TelaDaGrade />
-        ) : (
+        ) : tela === "chamada" ? (
           <TelaDaChamada />
+        ) : (
+          <TelaDoFinanceiro />
         )}
       </Shell>
     </>
@@ -153,6 +159,39 @@ function TelaDaGrade() {
           />
         </div>
       </div>
+    </>
+  );
+}
+
+function TelaDoFinanceiro() {
+  const total = COBRANCAS.reduce((s, c) => s + c.valor, 0);
+  const recebido = COBRANCAS.filter((c) => c.status === "paid").reduce(
+    (s, c) => s + c.valor,
+    0,
+  );
+  const mes = new Date().toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
+
+  return (
+    <>
+      <div className="mb-8">
+        <h1 className="text-2xl font-light">Financeiro</h1>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">
+          Mensalidades das turmas, com vencimento no dia 5.
+        </p>
+      </div>
+
+      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Numero rotulo="Previsto" valor={brl(total)} detalhe={`${COBRANCAS.length} cobranças`} />
+        <Numero rotulo="Recebido" valor={brl(recebido)} />
+        <Numero rotulo="A vencer" valor={brl(total - recebido)} />
+        <Numero rotulo="Em atraso" valor={brl(0)} />
+      </div>
+
+      <TituloSecao>Cobranças de {mes}</TituloSecao>
+      <ListaDeCobrancas cobrancas={COBRANCAS} hoje={HOJE_ISO} demo />
     </>
   );
 }

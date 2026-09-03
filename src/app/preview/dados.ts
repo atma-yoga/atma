@@ -282,3 +282,17 @@ export const CHAMADA = [
   { id: "b4", nome: "Diego Farias", status: "booked" as const, frequencia: 100, presencas: 12, totalRegistrado: 12 },
   { id: "b5", nome: "Elisa Monteiro", status: "booked" as const, frequencia: null, presencas: 0, totalRegistrado: 0 },
 ];
+
+/** Cobranças de exemplo para a tela de financeiro. */
+const hojeIso = new Date().toISOString().slice(0, 10);
+const noMes = (dia: number) => `${hojeIso.slice(0, 7)}-${String(dia).padStart(2, "0")}`;
+
+export const COBRANCAS = [
+  { id: "p1", aluno: "Helena Costa", turma: "Manhã 07:00", valor: 220, proporcao: 1, vencimento: noMes(5), status: "paid" as const, pagoEm: noMes(3), forma: "pix" as const },
+  { id: "p2", aluno: "Bruno Almeida", turma: "Manhã 07:00", valor: 220, proporcao: 1, vencimento: noMes(5), status: "paid" as const, pagoEm: noMes(5), forma: "cash" as const },
+  { id: "p3", aluno: "Carla Ribeiro", turma: "Noite 19:00", valor: 220, proporcao: 1, vencimento: noMes(5), status: "pending" as const, pagoEm: null, forma: null },
+  { id: "p4", aluno: "Diego Farias", turma: "Manhã 08:30", valor: 165, proporcao: 0.75, vencimento: noMes(5), status: "pending" as const, pagoEm: null, forma: null },
+  { id: "p5", aluno: "Elisa Monteiro", turma: "Noite 18:00", valor: 55, proporcao: 0.25, vencimento: noMes(28), status: "pending" as const, pagoEm: null, forma: null },
+];
+
+export const HOJE_ISO = hojeIso;
