@@ -12,6 +12,7 @@ export type EstadoCadastro =
   | undefined;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USUARIO = /^[a-z0-9._-]{3,30}$/;
 
 /**
  * Cadastra professor ou aluno. Só a administração pode chamar — a checagem
@@ -35,11 +36,20 @@ export async function cadastrarPessoa(
     .trim()
     .toLowerCase();
   const telefone = String(form.get("telefone") ?? "").trim();
+  const usuario = String(form.get("usuario") ?? "")
+    .trim()
+    .toLowerCase();
   const senha = String(form.get("senha") ?? "");
   const papel = String(form.get("papel") ?? "") as Papel;
 
   if (!nome) return { erro: "Informe o nome completo." };
   if (!EMAIL.test(email)) return { erro: "E-mail inválido." };
+  if (usuario && !USUARIO.test(usuario)) {
+    return {
+      erro:
+        "Usuário: 3 a 30 caracteres, só letras, números, ponto, hífen e _.",
+    };
+  }
   if (senha.length < 8) {
     return { erro: "A senha temporária precisa de ao menos 8 caracteres." };
   }
@@ -55,17 +65,23 @@ export async function cadastrarPessoa(
     email,
     password: senha,
     email_confirm: true,
-    user_metadata: { full_name: nome, phone: telefone || null, role: papel },
+    user_metadata: {
+      full_name: nome,
+      phone: telefone || null,
+      username: usuario || null,
+      role: papel,
+    },
   });
 
   if (error) {
     const msg = error.message.toLowerCase();
-    const jaExiste = msg.includes("already") || msg.includes("registered");
-    return {
-      erro: jaExiste
-        ? "Já existe uma conta com esse e-mail."
-        : `Não foi possível cadastrar: ${error.message}`,
-    };
+    if (msg.includes("already") || msg.includes("registered")) {
+      return { erro: "Já existe uma conta com esse e-mail." };
+    }
+    if (msg.includes("profiles_username_uniq") || msg.includes("username")) {
+      return { erro: "Esse nome de usuário já está em uso." };
+    }
+    return { erro: `Não foi possível cadastrar: ${error.message}` };
   }
 
   if (data.user) {

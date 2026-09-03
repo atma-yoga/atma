@@ -81,6 +81,21 @@ export function FormularioPessoa({
         <Campo rotulo="Telefone" name="telefone" autoComplete="off" placeholder="(22) 99999-0000" />
 
         <div className="flex flex-col gap-1.5">
+          <Campo
+            rotulo="Nome de usuário (opcional)"
+            name="usuario"
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            pattern="[a-zA-Z0-9._-]{3,30}"
+            placeholder="crisatma"
+          />
+          <p className="text-xs text-[var(--color-muted)]">
+            Atalho para entrar sem digitar o e-mail. Sem espaços nem acentos.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
           <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
             Senha temporária
           </span>

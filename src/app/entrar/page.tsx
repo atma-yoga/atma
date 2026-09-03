@@ -29,13 +29,15 @@ export default function EntrarPage({
             <input type="hidden" name="proximo" value={proximo ?? "/"} />
 
             <Campo
-              rotulo="E-mail"
-              name="email"
-              type="email"
-              autoComplete="email"
+              rotulo="Usuário ou e-mail"
+              name="identificador"
+              type="text"
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
               required
               autoFocus
-              placeholder="voce@exemplo.com"
+              placeholder="crisatma"
             />
             <Campo
               rotulo="Senha"
@@ -47,10 +49,7 @@ export default function EntrarPage({
             />
 
             {estado?.erro ? (
-              <p
-                role="alert"
-                className="text-sm text-[var(--color-danger)]"
-              >
+              <p role="alert" className="text-sm text-[var(--color-danger)]">
                 {estado.erro}
               </p>
             ) : null}
