@@ -6,6 +6,7 @@ import { FormularioLocal } from "@/components/paineis/formulario-local";
 import { FormularioTurma } from "@/components/paineis/formulario-turma";
 import {
   CartaoDaTurma,
+  DIAS_CURTOS,
   GradeSemanal,
 } from "@/components/paineis/grade-semanal";
 import { ListaDeCobrancas } from "@/components/paineis/cobrancas";
@@ -59,6 +60,7 @@ const TELAS = {
   pessoas: { papel: "admin", rotulo: "Cadastro", nome: "Ana Prado" },
   grade: { papel: "admin", rotulo: "Grade semanal", nome: "Ana Prado" },
   chamada: { papel: "teacher", rotulo: "Chamada", nome: "Marina Vieira" },
+  "turmas-prof": { papel: "teacher", rotulo: "Turmas (prof)", nome: "Marina Vieira" },
   financeiro: { papel: "admin", rotulo: "Financeiro", nome: "Ana Prado" },
   locais: { papel: "admin", rotulo: "Locais", nome: "Ana Prado" },
   relatorios: { papel: "admin", rotulo: "Relatórios", nome: "Ana Prado" },
@@ -120,8 +122,10 @@ export default async function PreviewPage({
           <TelaDoFinanceiro />
         ) : tela === "locais" ? (
           <TelaDeLocais />
-        ) : (
+        ) : tela === "relatorios" ? (
           <TelaDeRelatorios />
+        ) : (
+          <TelaDeTurmasDoProfessor />
         )}
       </Shell>
     </>
@@ -312,6 +316,41 @@ function TelaDoFinanceiro() {
       </div>
 
       <ListaDeCobrancas cobrancas={COBRANCAS} hoje={HOJE_ISO} demo />
+    </>
+  );
+}
+
+function TelaDeTurmasDoProfessor() {
+  const minhas = TURMAS.slice(0, 3);
+
+  return (
+    <>
+      <h1 className="mb-2 text-2xl font-light">Minhas turmas</h1>
+      <p className="mb-8 text-sm text-[var(--color-muted)]">
+        Abra uma turma para fazer a chamada e ver a frequência.
+      </p>
+
+      <TituloSecao>Turmas</TituloSecao>
+      <div className="flex flex-col gap-2">
+        {minhas.map((t) => (
+          <Cartao
+            key={t.id}
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4"
+            style={{ borderLeft: `3px solid ${corDoLocal(t.cor)}` }}
+          >
+            <span className="min-w-40 flex-1">
+              <span className="block text-sm">{t.nome}</span>
+              <span className="block text-xs text-[var(--color-muted)]">
+                {t.dias.map((d) => DIAS_CURTOS[d]).join(", ")} · {t.hora} ·{" "}
+                {t.sala}
+              </span>
+            </span>
+            <Etiqueta>
+              {t.matriculados}/{t.capacidade}
+            </Etiqueta>
+          </Cartao>
+        ))}
+      </div>
     </>
   );
 }
