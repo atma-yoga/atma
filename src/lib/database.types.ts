@@ -1132,10 +1132,14 @@ export type Database = {
           ends_at: string | null;
           status: Database["public"]["Enums"]["session_status"] | null;
           level: Database["public"]["Enums"]["class_level"] | null;
+          class_id: string | null;
+          turma: string | null;
           room: string | null;
           is_outdoor: boolean | null;
-          teacher_name: string | null;
+          cor: string | null;
           teacher_id: string | null;
+          teacher_name: string | null;
+          teacher_chamado: string | null;
           capacity: number | null;
           booked_count: number | null;
           spots_left: number | null;

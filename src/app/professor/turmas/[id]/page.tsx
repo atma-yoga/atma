@@ -276,15 +276,6 @@ export default async function ChamadaPage({
         Chamada de {porExtenso(dia)}
       </TituloSecao>
 
-      <AulasDaTurma
-        turmaId={id}
-        aulas={aulasMarcadas}
-        horaPadrao={horaDaGrade}
-        suspender={suspenderAula}
-        reativar={reativarAula}
-        criarExtra={criarAulaExtra}
-      />
-
       {!temAulaNesseDia ? (
         <Vazio>Esta turma não tem aula neste dia da semana.</Vazio>
       ) : !aula || !lista.length ? (
@@ -306,6 +297,16 @@ export default async function ChamadaPage({
           limpar={limparPresenca}
         />
       )}
+
+      <AulasDaTurma
+        turmaId={id}
+        aulas={aulasMarcadas}
+        horaPadrao={horaDaGrade}
+        suspender={suspenderAula}
+        reativar={reativarAula}
+        criarExtra={criarAulaExtra}
+      />
+
     </Shell>
   );
 }
