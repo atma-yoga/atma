@@ -141,9 +141,11 @@ export function FluxoDeCaixa({ meses }: { meses: MesDeCaixa[] }) {
               return (
                 <div
                   key={m.mes}
-                  className="flex flex-1 flex-col items-center gap-1.5"
+                  className="flex h-full flex-1 flex-col items-center gap-1.5"
                 >
-                  <span className="flex h-full w-full items-end">
+                  {/* flex-1 dá altura ao trilho; sem isso a barra fica com
+                      altura zero e o gráfico aparece vazio. */}
+                  <span className="flex w-full flex-1 items-end">
                     <span
                       className="flex w-full flex-col justify-end overflow-hidden rounded-t-[4px]"
                       style={{ height: `${Math.max(4, altura)}%` }}
