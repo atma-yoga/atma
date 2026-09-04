@@ -85,3 +85,19 @@ export async function gerarMensalidades(form: FormData): Promise<void> {
   revalidatePath("/admin/financeiro");
   revalidatePath("/admin");
 }
+
+/** Registra que a administração avisou o aluno sobre esta cobrança. */
+export async function marcarAvisado(form: FormData): Promise<void> {
+  if (!(await ehAdmin())) return;
+
+  const id = String(form.get("id") ?? "");
+  if (!id) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("payments")
+    .update({ reminded_at: new Date().toISOString() })
+    .eq("id", id);
+
+  revalidatePath("/admin/financeiro");
+}

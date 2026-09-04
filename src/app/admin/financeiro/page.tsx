@@ -7,10 +7,15 @@ import {
   type Cobranca,
 } from "@/components/paineis/cobrancas";
 import { Shell } from "@/components/shell";
-import { Botao, Numero, TituloSecao } from "@/components/ui";
+import { Botao, Numero } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { estornar, gerarMensalidades, receber } from "./actions";
+import {
+  estornar,
+  gerarMensalidades,
+  marcarAvisado,
+  receber,
+} from "./actions";
 
 export const metadata = { title: "Financeiro" };
 
@@ -55,14 +60,18 @@ export default async function FinanceiroPage({
 
   const cobrancas: Cobranca[] = (linhas ?? []).map((l) => ({
     id: l.id ?? "",
+    alunoId: l.student_id ?? "",
     aluno: l.aluno ?? "sem nome",
+    telefone: l.phone,
     turma: l.turma,
     valor: Number(l.amount ?? 0),
     proporcao: l.proportion === null ? null : Number(l.proportion),
+    mesReferencia: l.reference_month ?? `${mes}-01`,
     vencimento: l.due_date ?? hoje,
     status: l.status ?? "pending",
     pagoEm: l.paid_at,
     forma: l.method,
+    avisadoEm: l.reminded_at,
   }));
 
   const total = cobrancas.reduce((s, c) => s + c.valor, 0);
@@ -155,13 +164,12 @@ export default async function FinanceiroPage({
         />
       </div>
 
-      <TituloSecao>Cobranças de {nomeDoMes(mes)}</TituloSecao>
-
       <ListaDeCobrancas
         cobrancas={cobrancas}
         hoje={hoje}
         receber={receber}
         estornar={estornar}
+        avisar={marcarAvisado}
       />
     </Shell>
   );

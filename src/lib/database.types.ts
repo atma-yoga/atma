@@ -472,6 +472,7 @@ export type Database = {
           class_id: string | null;
           reference_month: string | null;
           proportion: number | null;
+          reminded_at: string | null;
         };
         Insert: {
           id?: string;
@@ -490,6 +491,7 @@ export type Database = {
           class_id?: string | null;
           reference_month?: string | null;
           proportion?: number | null;
+          reminded_at?: string | null;
         };
         Update: {
           id?: string;
@@ -508,6 +510,7 @@ export type Database = {
           class_id?: string | null;
           reference_month?: string | null;
           proportion?: number | null;
+          reminded_at?: string | null;
         };
         Relationships: [
           {
@@ -1039,6 +1042,8 @@ export type Database = {
           id: string | null;
           student_id: string | null;
           aluno: string | null;
+          full_name: string | null;
+          phone: string | null;
           cpf: string | null;
           class_id: string | null;
           turma: string | null;
@@ -1048,6 +1053,7 @@ export type Database = {
           status: Database["public"]["Enums"]["payment_status"] | null;
           due_date: string | null;
           paid_at: string | null;
+          reminded_at: string | null;
           method: Database["public"]["Enums"]["payment_method"] | null;
           notes: string | null;
         };
