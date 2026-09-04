@@ -8,7 +8,10 @@ import {
   CartaoDaTurma,
   GradeSemanal,
 } from "@/components/paineis/grade-semanal";
-import { ListaDeCobrancas } from "@/components/paineis/cobrancas";
+import {
+  ListaDeCobrancas,
+  estaVencida,
+} from "@/components/paineis/cobrancas";
 import { ListaDeChamada } from "@/components/paineis/lista-de-chamada";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
@@ -233,6 +236,11 @@ function TelaDoFinanceiro() {
     (s, c) => s + c.valor,
     0,
   );
+  // Calculado como na tela real, senão a maquete mente sobre o próprio número.
+  const emAtraso = COBRANCAS.filter((c) => estaVencida(c, HOJE_ISO)).reduce(
+    (s, c) => s + c.valor,
+    0,
+  );
   return (
     <>
       <div className="mb-8">
@@ -245,8 +253,8 @@ function TelaDoFinanceiro() {
       <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Numero rotulo="Previsto" valor={brl(total)} detalhe={`${COBRANCAS.length} cobranças`} />
         <Numero rotulo="Recebido" valor={brl(recebido)} />
-        <Numero rotulo="A vencer" valor={brl(total - recebido)} />
-        <Numero rotulo="Em atraso" valor={brl(0)} />
+        <Numero rotulo="A vencer" valor={brl(total - recebido - emAtraso)} />
+        <Numero rotulo="Em atraso" valor={brl(emAtraso)} />
       </div>
 
       <ListaDeCobrancas cobrancas={COBRANCAS} hoje={HOJE_ISO} demo />
