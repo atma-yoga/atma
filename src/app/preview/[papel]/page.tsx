@@ -31,6 +31,7 @@ import {
   HOJE_SP,
   MESES_DO_ANO,
   PROXIMAS_DO_ALUNO,
+  MENSALIDADES_DO_ALUNO,
   PROXIMA_AULA,
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
@@ -103,6 +104,7 @@ export default async function PreviewPage({
             desde="2026-01-08"
             proximasAulas={PROXIMAS_DO_ALUNO}
             turmas={["Noite 19:00"]}
+            mensalidades={MENSALIDADES_DO_ALUNO}
           />
         ) : tela === "professor" ? (
           <PainelProfessor

@@ -437,3 +437,10 @@ export const GENEROS_RELATORIO = [
   { rotulo: "Travesti", valor: 1 },
   { rotulo: "Não-binário", valor: 1 },
 ];
+
+/** Mensalidades do aluno, para a própria tela dele. */
+export const MENSALIDADES_DO_ALUNO = [
+  { id: "m1", turma: "Noite 19:00", mes: noMes(1), valor: 220, vencimento: noMes(5), paga: false, vencida: false },
+  { id: "m2", turma: "Noite 19:00", mes: mesPassado(1), valor: 220, vencimento: mesPassado(5), paga: false, vencida: true },
+  { id: "m3", turma: "Noite 19:00", mes: mesPassado(1), valor: 220, vencimento: mesPassado(5), paga: true, vencida: false },
+];

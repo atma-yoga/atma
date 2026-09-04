@@ -20,8 +20,8 @@ const NAV: Record<Papel, { href: string; texto: string }[]> = {
   ],
   student: [
     { href: "/aluno", texto: "Início" },
-    { href: "/aluno/agenda", texto: "Agenda" },
-    { href: "/aluno/plano", texto: "Meu plano" },
+    { href: "/aluno/agenda", texto: "Minhas aulas" },
+    { href: "/aluno/cadastro", texto: "Meu cadastro" },
   ],
 };
 

@@ -8,6 +8,7 @@ import type {
 import {
   PainelAluno,
   type AulaListada,
+  type MinhaMensalidade,
 } from "@/components/paineis/painel-aluno";
 import { Shell } from "@/components/shell";
 import { getSessao } from "@/lib/auth";
@@ -33,7 +34,7 @@ export default async function AlunoPage() {
   const mesAtual = hoje.slice(0, 7);
   const inicioDoDia = `${hoje}T00:00:00-03:00`;
 
-  const [{ data: aulas }, { data: mensal }, { data: matriculas }] =
+  const [{ data: aulas }, { data: mensal }, { data: matriculas }, { data: cobrancas }] =
     await Promise.all([
       supabase
         .from("v_aulas_do_aluno")
@@ -52,6 +53,14 @@ export default async function AlunoPage() {
         .eq("student_id", sessao.userId)
         .eq("is_active", true)
         .order("enrolled_at"),
+
+      // O RLS já limita payments ao próprio aluno.
+      supabase
+        .from("v_mensalidades")
+        .select("*")
+        .eq("student_id", sessao.userId)
+        .order("reference_month", { ascending: false })
+        .limit(6),
     ]);
 
   const todas = aulas ?? [];
@@ -122,6 +131,16 @@ export default async function AlunoPage() {
       suspensa: a.status_aula === "canceled",
     }));
 
+  const mensalidades: MinhaMensalidade[] = (cobrancas ?? []).map((c) => ({
+    id: c.id ?? "",
+    turma: c.turma,
+    mes: c.reference_month ?? hoje,
+    valor: Number(c.amount ?? 0),
+    vencimento: c.due_date ?? hoje,
+    paga: c.status === "paid",
+    vencida: c.status !== "paid" && (c.due_date ?? hoje) < hoje,
+  }));
+
   const desde = matriculas?.[0]?.enrolled_at
     ? emSaoPaulo(new Date(matriculas[0].enrolled_at))
     : null;
@@ -142,6 +161,7 @@ export default async function AlunoPage() {
         turmas={(matriculas ?? [])
           .map((m) => m.classes?.name)
           .filter((n): n is string => Boolean(n))}
+        mensalidades={mensalidades}
       />
     </Shell>
   );
