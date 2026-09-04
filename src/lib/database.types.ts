@@ -951,6 +951,17 @@ export type Database = {
         Relationships: [];
       };
 
+      v_ficha_do_aluno: {
+        Row: {
+          student_id: string | null;
+          nome: string | null;
+          nome_completo: string | null;
+          health_conditions: string[] | null;
+          health_notes: string | null;
+        };
+        Relationships: [];
+      };
+
       v_frequencia: {
         Row: {
           student_id: string | null;
@@ -1064,6 +1075,10 @@ export type Database = {
         Args: { token_convite: string };
         Returns: Database["public"]["Enums"]["app_role"];
       };
+      criar_aula_extra: {
+        Args: { turma: string; dia: string; hora: string; duracao?: number; observacao?: string };
+        Returns: string;
+      };
       expire_subscriptions: {
         Args: Record<string, never>;
         Returns: number;
@@ -1095,6 +1110,14 @@ export type Database = {
       is_teacher: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      reativar_aula: {
+        Args: { aula: string };
+        Returns: string;
+      };
+      suspender_aula: {
+        Args: { aula: string; motivo?: string };
+        Returns: string;
       };
       teaches_student: {
         Args: { target_student: string };

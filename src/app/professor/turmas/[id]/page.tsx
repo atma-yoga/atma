@@ -106,7 +106,7 @@ export default async function ChamadaPage({
   const { data: presencas } = aula
     ? await supabase
         .from("bookings")
-        .select("id, status, student_id, students(profiles(full_name, social_name))")
+        .select("id, status, student_id")
         .eq("session_id", aula.id)
     : { data: null };
 
@@ -139,6 +139,16 @@ export default async function ChamadaPage({
     };
   });
 
+  // Nome e ficha médica vêm da view reduzida: o professor não lê CPF,
+  // endereço, e-mail nem telefone de ninguém.
+  const { data: fichas } = await supabase
+    .from("v_ficha_do_aluno")
+    .select("*");
+
+  const fichaPorAluno = new Map(
+    (fichas ?? []).map((f) => [f.student_id, f]),
+  );
+
   const { data: frequencia } = await supabase
     .from("v_frequencia")
     .select("*")
@@ -151,16 +161,16 @@ export default async function ChamadaPage({
   const lista: AlunoNaChamada[] = (presencas ?? [])
     .map((b) => {
       const f = freqPorAluno.get(b.student_id);
+      const ficha = fichaPorAluno.get(b.student_id);
       return {
         id: b.id,
-        nome:
-          b.students?.profiles?.social_name ||
-          b.students?.profiles?.full_name ||
-          "sem nome",
+        nome: ficha?.nome ?? "sem nome",
         status: b.status,
         frequencia: f?.percentual ?? null,
         presencas: Number(f?.presencas ?? 0),
         totalRegistrado: Number(f?.aulas_com_registro ?? 0),
+        condicoes: ficha?.health_conditions ?? [],
+        observacoes: ficha?.health_notes ?? null,
       };
     })
     .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));

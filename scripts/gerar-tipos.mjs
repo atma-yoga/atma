@@ -185,6 +185,9 @@ const enums = Object.fromEntries(
 // Funções que a aplicação chama e que não são gatilhos nem internas.
 const CHAMAVEIS = new Set([
   "abrir_chamada",
+  "criar_aula_extra",
+  "reativar_aula",
+  "suspender_aula",
   "consumir_convite",
   "expire_subscriptions",
   "fracao_do_mes",

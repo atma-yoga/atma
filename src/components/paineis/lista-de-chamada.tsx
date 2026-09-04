@@ -1,4 +1,5 @@
-import { Cartao } from "@/components/ui";
+import { Cartao, Etiqueta } from "@/components/ui";
+import { nomeDaCondicao } from "@/lib/ficha";
 
 export type AlunoNaChamada = {
   id: string;
@@ -8,6 +9,9 @@ export type AlunoNaChamada = {
   frequencia: number | null;
   presencas: number;
   totalRegistrado: number;
+  /** Condições marcadas na ficha — o professor precisa saber antes da aula. */
+  condicoes: string[];
+  observacoes: string | null;
 };
 
 const CORES = {
@@ -56,6 +60,28 @@ export function ListaDeChamada({
                 ? `${a.frequencia}% de presença · ${a.presencas} de ${a.totalRegistrado}`
                 : "sem histórico ainda"}
             </span>
+
+            {a.condicoes.length || a.observacoes ? (
+              <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                {a.condicoes.map((c) => (
+                  <Etiqueta
+                    key={c}
+                    fundo="var(--color-mel)"
+                    letra="var(--color-on-mel)"
+                  >
+                    {nomeDaCondicao(c)}
+                  </Etiqueta>
+                ))}
+                {a.observacoes ? (
+                  <span
+                    className="text-xs text-[var(--color-muted)]"
+                    title={a.observacoes}
+                  >
+                    {a.observacoes}
+                  </span>
+                ) : null}
+              </span>
+            ) : null}
           </span>
 
           <span className="flex gap-2">
