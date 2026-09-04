@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { AbrirChamada } from "@/components/paineis/abrir-chamada";
 import {
   AulasDaTurma,
   type AulaMarcada,
@@ -279,16 +280,7 @@ export default async function ChamadaPage({
       {!temAulaNesseDia ? (
         <Vazio>Esta turma não tem aula neste dia da semana.</Vazio>
       ) : !aula || !lista.length ? (
-        <Cartao className="p-6 text-center">
-          <p className="mb-4 text-sm text-[var(--color-muted)]">
-            A chamada deste dia ainda não foi aberta.
-          </p>
-          <form action={abrirChamada}>
-            <input type="hidden" name="turma" value={id} />
-            <input type="hidden" name="dia" value={dia} />
-            <Botao type="submit">Abrir chamada</Botao>
-          </form>
-        </Cartao>
+        <AbrirChamada turmaId={id} dia={dia} acao={abrirChamada} />
       ) : (
         <ListaDeChamada
           alunos={lista}

@@ -6,24 +6,40 @@ import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 /**
+ * As ações desta tela devolvem uma mensagem em vez de engolir o erro.
+ *
+ * Antes elas ignoravam a resposta do banco, e quando o gatilho de lotação
+ * recusava a chamada o botão simplesmente não fazia nada — sem aviso, sem
+ * pista, sem nada para o professor entender.
+ */
+export type EstadoChamada = { erro: string } | { sucesso: string } | undefined;
+
+const falha = (e: { message: string } | null, quando: string): EstadoChamada =>
+  e ? { erro: `${quando}: ${e.message}` } : undefined;
+
+/**
  * Abre a chamada de uma turma num dia.
  *
  * A aula e a lista de presença nascem aqui, na primeira vez que o professor
  * abre — ele não depende de a administração ter gerado as aulas antes.
  * A permissão é conferida dentro da função do banco.
  */
-export async function abrirChamada(form: FormData): Promise<void> {
+export async function abrirChamada(
+  _anterior: EstadoChamada,
+  form: FormData,
+): Promise<EstadoChamada> {
   const sessao = await getSessao();
-  if (!sessao) return;
+  if (!sessao) return { erro: "Sessão expirada. Entre de novo." };
 
   const turma = String(form.get("turma") ?? "");
   const dia = String(form.get("dia") ?? "");
-  if (!turma || !dia) return;
+  if (!turma || !dia) return { erro: "Turma ou dia não informados." };
 
   const supabase = await createClient();
-  await supabase.rpc("abrir_chamada", { turma, dia });
+  const { error } = await supabase.rpc("abrir_chamada", { turma, dia });
 
   revalidatePath(`/professor/turmas/${turma}`);
+  return falha(error, "Não foi possível abrir a chamada");
 }
 
 /** Marca presença ou falta de um aluno. */
