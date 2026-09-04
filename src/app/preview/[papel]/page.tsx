@@ -10,6 +10,11 @@ import {
 } from "@/components/paineis/grade-semanal";
 import { ListaDeCobrancas } from "@/components/paineis/cobrancas";
 import { estaVencida } from "@/lib/cobranca";
+import {
+  Composicao,
+  FluxoDeCaixa,
+  PresencaPorAluno,
+} from "@/components/paineis/graficos-relatorio";
 import { ListaDeChamada } from "@/components/paineis/lista-de-chamada";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";
@@ -31,7 +36,12 @@ import {
   CHAMADA,
   COBRANCAS,
   HOJE_ISO,
+  BAIRROS,
+  CAIXA,
+  FAIXAS_ETARIAS,
+  GENEROS_RELATORIO,
   LOCAIS,
+  PRESENCA_ALUNOS,
   ENCONTROS,
   NUMEROS_DO_ADMIN,
   PESSOAS,
@@ -51,6 +61,7 @@ const TELAS = {
   chamada: { papel: "teacher", rotulo: "Chamada", nome: "Marina Vieira" },
   financeiro: { papel: "admin", rotulo: "Financeiro", nome: "Ana Prado" },
   locais: { papel: "admin", rotulo: "Locais", nome: "Ana Prado" },
+  relatorios: { papel: "admin", rotulo: "Relatórios", nome: "Ana Prado" },
 } as const satisfies Record<
   string,
   { papel: Papel; rotulo: string; nome: string }
@@ -107,8 +118,10 @@ export default async function PreviewPage({
           <TelaDaChamada />
         ) : tela === "financeiro" ? (
           <TelaDoFinanceiro />
-        ) : (
+        ) : tela === "locais" ? (
           <TelaDeLocais />
+        ) : (
+          <TelaDeRelatorios />
         )}
       </Shell>
     </>
@@ -175,6 +188,49 @@ function TelaDaGrade() {
           />
         </div>
       </div>
+    </>
+  );
+}
+
+function TelaDeRelatorios() {
+  const ano = new Date().getFullYear();
+
+  return (
+    <>
+      <h1 className="mb-2 text-2xl font-light">Relatórios</h1>
+      <p className="mb-8 text-sm text-[var(--color-muted)]">
+        Como o estúdio anda em {ano}.
+      </p>
+
+      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Numero rotulo={`Recebido em ${ano}`} valor={brl(18420)} />
+        <Numero rotulo="Em aberto" valor={brl(1265)} />
+        <Numero rotulo="Presença média" valor="82%" detalhe="15 alunos com chamada" />
+        <Numero rotulo="Alunos ativos" valor={15} />
+      </div>
+
+      <section className="mb-12">
+        <TituloSecao>Dinheiro</TituloSecao>
+        <FluxoDeCaixa meses={CAIXA} />
+      </section>
+
+      <section className="mb-12">
+        <TituloSecao>Presença</TituloSecao>
+        <PresencaPorAluno alunos={PRESENCA_ALUNOS} />
+      </section>
+
+      <section>
+        <TituloSecao>Quem frequenta o estúdio</TituloSecao>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Composicao titulo="Bairro" fatias={BAIRROS} />
+          <Composicao titulo="Faixa etária" fatias={FAIXAS_ETARIAS} />
+          <Composicao titulo="Gênero" fatias={GENEROS_RELATORIO} />
+        </div>
+        <p className="mt-3 text-xs text-[var(--color-muted)]">
+          Estes três são contagens do grupo, sem nome de ninguém. Gênero é
+          sempre opcional no cadastro.
+        </p>
+      </section>
     </>
   );
 }

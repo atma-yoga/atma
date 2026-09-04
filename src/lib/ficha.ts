@@ -48,6 +48,38 @@ export const nomeDaCondicao = (v: string) => ROTULO_SAUDE.get(v) ?? v;
 export const nomeDaTecnica = (v: string) => ROTULO_TECNICA.get(v) ?? v;
 
 /* ===========================================================================
+   Gênero
+   =========================================================================== */
+
+/**
+ * Identidade de gênero. Sempre opcional, e com saída para quem não quer
+ * responder — perguntar sem oferecer "prefiro não dizer" é obrigar.
+ *
+ * Cis e trans aparecem separados porque o estúdio quer saber quem alcança, e
+ * juntar as duas coisas apagaria exatamente a informação procurada. Travesti
+ * é identidade própria no Brasil, não sinônimo de mulher trans.
+ */
+export const GENEROS: Opcao[] = [
+  { valor: "mulher_cis", rotulo: "Mulher cis" },
+  { valor: "homem_cis", rotulo: "Homem cis" },
+  { valor: "mulher_trans", rotulo: "Mulher trans" },
+  { valor: "homem_trans", rotulo: "Homem trans" },
+  { valor: "travesti", rotulo: "Travesti" },
+  { valor: "nao_binario", rotulo: "Não-binário" },
+  { valor: "agenero", rotulo: "Agênero" },
+  { valor: "outro", rotulo: "Outro" },
+  { valor: "prefiro_nao_dizer", rotulo: "Prefiro não dizer" },
+];
+
+const ROTULO_GENERO = new Map([
+  ...GENEROS.map((g) => [g.valor, g.rotulo] as const),
+  ["nao_informado", "Não informado"] as const,
+]);
+
+export const nomeDoGenero = (v: string | null) =>
+  ROTULO_GENERO.get(v ?? "nao_informado") ?? "Não informado";
+
+/* ===========================================================================
    Cores dos locais
    =========================================================================== */
 

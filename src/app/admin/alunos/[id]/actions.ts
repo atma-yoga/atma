@@ -60,6 +60,8 @@ export async function salvarFicha(
     .toLowerCase();
   const telefone = String(form.get("telefone") ?? "").trim();
   const cpf = soDigitos(String(form.get("cpf") ?? ""));
+  const genero = String(form.get("genero") ?? "").trim();
+  const nascimento = String(form.get("nascimento") ?? "").trim();
   const observacoes = String(form.get("observacoes_saude") ?? "").trim();
 
   if (!id) return { erro: "Aluno não identificado." };
@@ -89,6 +91,8 @@ export async function salvarFicha(
       email: email || null,
       phone: telefone || null,
       document_id: cpf || null,
+      gender: genero || null,
+      birth_date: nascimento || null,
       address: montarEndereco(form),
       health_conditions: marcados(form, "saude"),
       health_notes: observacoes || null,

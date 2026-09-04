@@ -390,3 +390,48 @@ function addDias(iso: string, n: number) {
   d.setDate(d.getDate() + n);
   return new Intl.DateTimeFormat("en-CA").format(d);
 }
+
+/* --- relatórios --- */
+
+export const CAIXA = Array.from({ length: 9 }, (_, i) => {
+  const d = new Date();
+  d.setMonth(i);
+  const mes = `${d.getFullYear()}-${String(i + 1).padStart(2, "0")}-01`;
+  const previsto = [1980, 2200, 2420, 2640, 2860, 2640, 2860, 3080, 3300][i];
+  const recebido = i === 8 ? 2035 : Math.round(previsto * (0.88 + (i % 3) * 0.04));
+  return { mes, previsto, recebido, emAberto: previsto - recebido };
+});
+
+export const PRESENCA_ALUNOS = [
+  { aluno: "Carla Ribeiro", presencas: 14, faltas: 10, percentual: 58 },
+  { aluno: "Nuno Cardoso", presencas: 18, faltas: 8, percentual: 69 },
+  { aluno: "Bruno Almeida", presencas: 27, faltas: 9, percentual: 75 },
+  { aluno: "Gabriela Souza", presencas: 30, faltas: 6, percentual: 83 },
+  { aluno: "Helena Costa", presencas: 33, faltas: 3, percentual: 92 },
+  { aluno: "Diego Farias", presencas: 24, faltas: 0, percentual: 100 },
+];
+
+export const BAIRROS = [
+  { rotulo: "Centro", valor: 5 },
+  { rotulo: "Geribá", valor: 5 },
+  { rotulo: "Manguinhos", valor: 2 },
+  { rotulo: "Rasa", valor: 2 },
+  { rotulo: "Ferradura", valor: 1 },
+];
+
+export const FAIXAS_ETARIAS = [
+  { rotulo: "18 a 24", valor: 1 },
+  { rotulo: "25 a 34", valor: 4 },
+  { rotulo: "35 a 44", valor: 5 },
+  { rotulo: "45 a 54", valor: 3 },
+  { rotulo: "55 a 64", valor: 2 },
+];
+
+export const GENEROS_RELATORIO = [
+  { rotulo: "Mulher cis", valor: 7 },
+  { rotulo: "Homem cis", valor: 4 },
+  { rotulo: "Mulher trans", valor: 1 },
+  { rotulo: "Homem trans", valor: 1 },
+  { rotulo: "Travesti", valor: 1 },
+  { rotulo: "Não-binário", valor: 1 },
+];

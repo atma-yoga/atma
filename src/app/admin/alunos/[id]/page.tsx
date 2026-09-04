@@ -79,6 +79,8 @@ export default async function FichaPage({
     email: aluno.email ?? "",
     telefone: aluno.phone ?? "",
     cpf: aluno.document_id ?? "",
+    genero: aluno.gender ?? "",
+    nascimento: aluno.birth_date ?? "",
     endereco: (aluno.address as Record<string, string>) ?? {},
     condicoes: aluno.health_conditions ?? [],
     observacoes: aluno.health_notes ?? "",

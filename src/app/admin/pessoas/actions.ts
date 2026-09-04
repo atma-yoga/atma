@@ -71,6 +71,8 @@ export async function cadastrarPessoa(
     .toLowerCase();
   const telefone = String(form.get("telefone") ?? "").trim();
   const cpf = soDigitos(String(form.get("cpf") ?? ""));
+  const genero = String(form.get("genero") ?? "").trim();
+  const nascimento = String(form.get("nascimento") ?? "").trim();
   const senha = String(form.get("senha") ?? "");
   const papel = String(form.get("papel") ?? "") as Papel;
 
@@ -127,6 +129,8 @@ export async function cadastrarPessoa(
       .from("profiles")
       .update({
         must_change_password: true,
+        gender: genero || null,
+        birth_date: nascimento || null,
         address: montarEndereco(form),
         health_conditions: marcados(form, "saude"),
         health_notes: observacoes || null,

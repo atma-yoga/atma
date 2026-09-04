@@ -623,6 +623,7 @@ export type Database = {
           health_notes: string | null;
           social_name: string | null;
           health_conditions: string[];
+          gender: string | null;
         };
         Insert: {
           id: string;
@@ -641,6 +642,7 @@ export type Database = {
           health_notes?: string | null;
           social_name?: string | null;
           health_conditions?: string[];
+          gender?: string | null;
         };
         Update: {
           id?: string;
@@ -659,6 +661,7 @@ export type Database = {
           health_notes?: string | null;
           social_name?: string | null;
           health_conditions?: string[];
+          gender?: string | null;
         };
         Relationships: [];
       };
@@ -965,6 +968,8 @@ export type Database = {
           email: string | null;
           phone: string | null;
           document_id: string | null;
+          gender: string | null;
+          birth_date: string | null;
           address: Json | null;
           health_conditions: string[] | null;
           health_notes: string | null;
@@ -1056,6 +1061,65 @@ export type Database = {
           reminded_at: string | null;
           method: Database["public"]["Enums"]["payment_method"] | null;
           notes: string | null;
+        };
+        Relationships: [];
+      };
+
+      v_presenca_mensal: {
+        Row: {
+          student_id: string | null;
+          mes: string | null;
+          presencas: number | null;
+          faltas: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_relatorio_bairros: {
+        Row: {
+          bairro: string | null;
+          cidade: string | null;
+          alunos: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_relatorio_caixa: {
+        Row: {
+          mes: string | null;
+          cobrancas: number | null;
+          previsto: number | null;
+          recebido: number | null;
+          em_aberto: number | null;
+          pagas: number | null;
+          vencidas: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_relatorio_genero: {
+        Row: {
+          genero: string | null;
+          alunos: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_relatorio_idade: {
+        Row: {
+          faixa: string | null;
+          alunos: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_relatorio_presenca: {
+        Row: {
+          student_id: string | null;
+          aluno: string | null;
+          presencas: number | null;
+          faltas: number | null;
+          percentual: number | null;
         };
         Relationships: [];
       };

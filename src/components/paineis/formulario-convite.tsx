@@ -7,6 +7,7 @@ import { AreaDeTexto, Botao, Campo, Cartao, Divisao } from "@/components/ui";
 import type { EstadoConvite } from "@/app/convite/[token]/actions";
 import {
   CONDICOES_DE_SAUDE,
+  GENEROS,
   TECNICAS,
   buscarCep,
   cpfValido,
@@ -130,6 +131,35 @@ export function FormularioConvite({
             </p>
           )}
         </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
+              Gênero
+            </span>
+            <select
+              name="genero"
+              defaultValue=""
+              className="h-10 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-foreground)]"
+            >
+              <option value="">prefiro não responder agora</option>
+              {GENEROS.map((g) => (
+                <option key={g.valor} value={g.valor}>
+                  {g.rotulo}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="text-xs text-[var(--color-muted)]">Opcional.</p>
+        </div>
+
+        <Campo
+          rotulo="Data de nascimento"
+          name="nascimento"
+          type="date"
+          defaultValue=""
+          autoComplete="off"
+        />
 
         <Divisao>Endereço</Divisao>
 
