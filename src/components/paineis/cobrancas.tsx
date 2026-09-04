@@ -63,13 +63,14 @@ function Linha({
   const vencida = estaVencida(c, hoje);
   const paga = c.status === "paid";
 
-  const zap = telefoneParaWhatsapp(c.telefone);
+  // O aviso só existe depois do vencimento: o estúdio não cobra quem ainda
+  // está no prazo.
+  const zap = vencida ? telefoneParaWhatsapp(c.telefone) : null;
   const texto = mensagemDeCobranca({
     nome: c.aluno,
     mesReferencia: c.mesReferencia,
     valor: c.valor,
     vencimento: c.vencimento,
-    vencida,
   });
 
   return (
@@ -143,14 +144,14 @@ function Linha({
                 {c.avisadoEm ? "avisado" : "avisar"}
               </a>
             </form>
-          ) : (
+          ) : vencida ? (
             <span
               className="text-xs text-[var(--color-muted)]"
               title="cadastre o WhatsApp na ficha do aluno"
             >
               sem WhatsApp
             </span>
-          )}
+          ) : null}
 
           <form
             action={demo ? undefined : receber}

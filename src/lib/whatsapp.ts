@@ -40,35 +40,35 @@ const mesPorExtenso = (iso: string) =>
   new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", { month: "long" });
 
 /**
- * O texto do aviso.
+ * O texto do aviso de mensalidade atrasada.
+ *
+ * Só existe esta versão: o estúdio decidiu não avisar antes do vencimento —
+ * quem paga em dia não precisa ser lembrado, e a mensagem que chega cedo
+ * demais vira barulho.
  *
  * Escrito para ser lido por alguém que gosta do estúdio, não por um
- * inadimplente: sem "regularize", sem "pendência", sem ameaça. Vencido e a
- * vencer mudam só o tempo do verbo.
+ * inadimplente: sem "regularize", sem "pendência", sem ameaça. E abre espaço
+ * para o caso comum de já ter pago e a baixa não ter sido dada.
  */
 export function mensagemDeCobranca({
   nome,
   mesReferencia,
   valor,
   vencimento,
-  vencida,
 }: {
   nome: string;
   mesReferencia: string;
   valor: number;
   vencimento: string;
-  vencida: boolean;
 }): string {
   const primeiro = nome.trim().split(/\s+/)[0];
-  const mes = mesPorExtenso(mesReferencia);
 
-  return vencida
-    ? `Oi, ${primeiro}! Tudo bem? Passando pra lembrar da mensalidade de ${mes} ` +
-        `(${dinheiro(valor)}), que venceu dia ${dataCurta(vencimento)}. ` +
-        `Se já tiver pago, é só desconsiderar. Qualquer coisa me chama por aqui 🙏`
-    : `Oi, ${primeiro}! Tudo bem? Passando pra avisar que a mensalidade de ${mes} ` +
-        `(${dinheiro(valor)}) vence dia ${dataCurta(vencimento)}. ` +
-        `Qualquer coisa me chama por aqui 🙏`;
+  return (
+    `Oi, ${primeiro}! Tudo bem? Passando pra lembrar da mensalidade de ` +
+    `${mesPorExtenso(mesReferencia)} (${dinheiro(valor)}), que venceu dia ` +
+    `${dataCurta(vencimento)}. Se já tiver pago, é só desconsiderar. ` +
+    `Qualquer coisa me chama por aqui 🙏`
+  );
 }
 
 /** O link que abre a conversa com o texto pronto. */

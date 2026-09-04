@@ -303,9 +303,18 @@ const hojeIso = new Date().toISOString().slice(0, 10);
 const noMes = (dia: number) =>
   `${hojeIso.slice(0, 7)}-${String(dia).padStart(2, "0")}`;
 
+/** Um dia do mês passado — usado para ter cobranças de fato vencidas. */
+const mesPassado = (dia: number) => {
+  const d = new Date(`${hojeIso}T12:00:00`);
+  d.setMonth(d.getMonth() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+};
+
 export const COBRANCAS = [
-  { id: "p3", alunoId: "a3", aluno: "Carla Ribeiro", telefone: "(22) 99631-8890", turma: "Noite 19:00", valor: 220, proporcao: 1, mesReferencia: noMes(1), vencimento: noMes(5), status: "pending" as const, pagoEm: null, forma: null, avisadoEm: null },
-  { id: "p4", alunoId: "a4", aluno: "Diego Farias", telefone: "(22) 99502-3317", turma: "Manhã 08:30", valor: 165, proporcao: 0.75, mesReferencia: noMes(1), vencimento: noMes(5), status: "pending" as const, pagoEm: null, forma: null, avisadoEm: `${hojeIso}T10:00:00Z` },
+  // Vencidas: com botão de aviso.
+  { id: "p3", alunoId: "a3", aluno: "Carla Ribeiro", telefone: "(22) 99631-8890", turma: "Noite 19:00", valor: 220, proporcao: 1, mesReferencia: mesPassado(1), vencimento: mesPassado(5), status: "pending" as const, pagoEm: null, forma: null, avisadoEm: null },
+  { id: "p4", alunoId: "a4", aluno: "Diego Farias", telefone: "(22) 99502-3317", turma: "Manhã 08:30", valor: 165, proporcao: 0.75, mesReferencia: mesPassado(1), vencimento: mesPassado(5), status: "pending" as const, pagoEm: null, forma: null, avisadoEm: `${hojeIso}T10:00:00Z` },
+  { id: "p6", alunoId: "a6", aluno: "Fernando Guedes", telefone: null, turma: "Manhã 07:00", valor: 220, proporcao: 1, mesReferencia: mesPassado(1), vencimento: mesPassado(5), status: "pending" as const, pagoEm: null, forma: null, avisadoEm: null },
   { id: "p5", alunoId: "a5", aluno: "Elisa Monteiro", telefone: null, turma: "Noite 18:00", valor: 55, proporcao: 0.25, mesReferencia: noMes(1), vencimento: noMes(28), status: "pending" as const, pagoEm: null, forma: null, avisadoEm: null },
   { id: "p1", alunoId: "a1", aluno: "Helena Costa", telefone: "(22) 99812-4471", turma: "Manhã 07:00", valor: 220, proporcao: 1, mesReferencia: noMes(1), vencimento: noMes(5), status: "paid" as const, pagoEm: `${noMes(3)}T14:00:00Z`, forma: "pix" as const, avisadoEm: null },
   { id: "p2", alunoId: "a2", aluno: "Bruno Almeida", telefone: "(22) 99745-2210", turma: "Manhã 07:00", valor: 220, proporcao: 1, mesReferencia: noMes(1), vencimento: noMes(5), status: "paid" as const, pagoEm: `${noMes(5)}T09:00:00Z`, forma: "cash" as const, avisadoEm: null },
