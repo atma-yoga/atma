@@ -15,6 +15,7 @@ import {
   alternarAtivo,
   cadastrarPessoa,
   gerarConvite,
+  resetarSenha,
   revogarConvite,
 } from "./actions";
 
@@ -118,12 +119,14 @@ export default async function PessoasPage() {
             pessoas={listaProfessores}
             vazio="Nenhum professor cadastrado ainda."
             acaoDeLinha={botaoAtivar("teacher")}
+            resetar={resetarSenha}
           />
           <ListaDePessoas
             titulo="Alunos"
             pessoas={listaAlunos}
             vazio="Nenhum aluno cadastrado ainda."
             acaoDeLinha={botaoAtivar("student")}
+            resetar={resetarSenha}
           />
         </div>
 

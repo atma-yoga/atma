@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ResetarSenha } from "@/components/paineis/resetar-senha";
 import { Cartao, Etiqueta, TituloSecao, Vazio } from "@/components/ui";
 
 export type PessoaNaLista = {
@@ -23,12 +24,15 @@ export function ListaDePessoas({
   pessoas,
   vazio,
   acaoDeLinha,
+  resetar,
 }: {
   titulo: string;
   pessoas: PessoaNaLista[];
   vazio: string;
   /** Botão de ativar/desativar; ausente na maquete. */
   acaoDeLinha?: (p: PessoaNaLista) => React.ReactNode;
+  /** Devolve a senha à padrão do estúdio. */
+  resetar?: (form: FormData) => void | Promise<void>;
 }) {
   return (
     <section className="mb-10">
@@ -95,6 +99,10 @@ export function ListaDePessoas({
                   Inativo
                 </Etiqueta>
               )}
+
+              {resetar ? (
+                <ResetarSenha id={p.id} nome={p.nome} acao={resetar} />
+              ) : null}
 
               {acaoDeLinha?.(p)}
             </Cartao>

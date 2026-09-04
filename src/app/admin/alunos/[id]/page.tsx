@@ -6,12 +6,14 @@ import {
   type FichaEditavel,
 } from "@/components/paineis/ficha-do-aluno";
 import { DIAS_CURTOS } from "@/components/paineis/grade-semanal";
+import { ResetarSenha } from "@/components/paineis/resetar-senha";
 import { Shell } from "@/components/shell";
 import { Cartao, Etiqueta, Numero, TituloSecao, Vazio, brl } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { corDoLocal } from "@/lib/ficha";
 import { createClient } from "@/lib/supabase/server";
 import { definirValor, salvarFicha } from "./actions";
+import { resetarSenha } from "@/app/admin/pessoas/actions";
 
 export const metadata = { title: "Ficha do aluno" };
 
@@ -109,11 +111,19 @@ export default async function FichaPage({
           </p>
         </div>
 
-        {aluno.must_change_password ? (
-          <Etiqueta fundo="var(--color-mel)" letra="var(--color-on-mel)">
-            ainda usa a senha padrão
-          </Etiqueta>
-        ) : null}
+        <span className="flex flex-wrap items-center gap-4">
+          {aluno.must_change_password ? (
+            <Etiqueta fundo="var(--color-mel)" letra="var(--color-on-mel)">
+              ainda usa a senha padrão
+            </Etiqueta>
+          ) : null}
+
+          <ResetarSenha
+            id={id}
+            nome={aluno.social_name || aluno.full_name || "aluno"}
+            acao={resetarSenha}
+          />
+        </span>
       </div>
 
       <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

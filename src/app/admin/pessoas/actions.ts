@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { getSessao } from "@/lib/auth";
-import { cpfValido, soDigitos } from "@/lib/ficha";
+import { SENHA_PADRAO, cpfValido, soDigitos } from "@/lib/ficha";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Papel } from "@/lib/tipos";
 
@@ -231,4 +231,41 @@ export async function revogarConvite(form: FormData): Promise<void> {
     .eq("id", id);
 
   revalidatePath("/admin/pessoas");
+}
+
+/**
+ * Devolve a senha da pessoa à padrão do estúdio.
+ *
+ * Para quando alguém esquece a que cadastrou. Volta a marcar
+ * `must_change_password`, então a etiqueta "senha padrão" reaparece na lista
+ * e o aviso volta no cadastro dela — assim ninguém fica indefinidamente com
+ * a senha que o estúdio inteiro conhece.
+ *
+ * Não avisamos a pessoa por aqui: quem reseta é quem está falando com ela.
+ */
+export async function resetarSenha(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao?.papeis.includes("admin")) return;
+
+  const id = String(form.get("id") ?? "");
+  if (!id) return;
+
+  // A administração não reseta a própria senha por aqui: se ela se trancar
+  // fora, ninguém mais tem como devolver o acesso dela.
+  if (id === sessao.userId) return;
+
+  const admin = createAdminClient();
+
+  const { error } = await admin.auth.admin.updateUserById(id, {
+    password: SENHA_PADRAO,
+  });
+  if (error) return;
+
+  await admin
+    .from("profiles")
+    .update({ must_change_password: true })
+    .eq("id", id);
+
+  revalidatePath("/admin/pessoas");
+  revalidatePath(`/admin/alunos/${id}`);
 }

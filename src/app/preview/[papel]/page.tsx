@@ -149,6 +149,7 @@ function TelaDePessoas() {
             titulo="Alunos"
             pessoas={PESSOAS.alunos.map((a) => ({ ...a, detalhe: a.plano }))}
             vazio="Nenhum aluno cadastrado ainda."
+            resetar={() => {}}
           />
         </div>
         <div className="xl:sticky xl:top-6">
