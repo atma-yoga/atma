@@ -100,9 +100,7 @@ export function ListaDePessoas({
                 </Etiqueta>
               )}
 
-              {resetar ? (
-                <ResetarSenha id={p.id} nome={p.nome} acao={resetar} />
-              ) : null}
+              <ResetarSenha id={p.id} nome={p.nome} acao={resetar} />
 
               {acaoDeLinha?.(p)}
             </Cartao>
