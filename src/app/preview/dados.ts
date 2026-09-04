@@ -224,11 +224,11 @@ export const PESSOAS = {
 
 /** A grade real do estúdio, em turmas — como a administração a vê. */
 const TURMAS_BASE = [
-  { id: "c1", turma: "Manhã 07:00", dias: [1, 3, 5], hora: "07:00", sala: "Estúdio", arLivre: false, professor: "Marina Vieira", alunos: 9 },
-  { id: "c2", turma: "Manhã 08:30", dias: [2, 4], hora: "08:30", sala: "Estúdio", arLivre: false, professor: "Marina Vieira", alunos: 12 },
-  { id: "c3", turma: "Manhã 08:30 · ar livre", dias: [3, 5], hora: "08:30", sala: "Iate Clube", arLivre: true, professor: "Rafael Nunes", alunos: 7 },
-  { id: "c4", turma: "Noite 18:00", dias: [1, 3], hora: "18:00", sala: "Estúdio", arLivre: false, professor: "Rafael Nunes", alunos: 11 },
-  { id: "c5", turma: "Noite 19:00", dias: [2, 4], hora: "19:00", sala: "Estúdio", arLivre: false, professor: null, alunos: 4 },
+  { id: "c1", turma: "Manhã 07:00", dias: [1, 3, 5], hora: "07:00", sala: "Estúdio", arLivre: false, cor: "verde", professor: "Marina Vieira", alunos: 9 },
+  { id: "c2", turma: "Manhã 08:30", dias: [2, 4], hora: "08:30", sala: "Estúdio", arLivre: false, cor: "verde", professor: "Marina Vieira", alunos: 12 },
+  { id: "c3", turma: "Manhã 08:30 · ar livre", dias: [3, 5], hora: "08:30", sala: "Iate Clube", arLivre: true, cor: "azul", professor: "Rafael Nunes", alunos: 7 },
+  { id: "c4", turma: "Noite 18:00", dias: [1, 3], hora: "18:00", sala: "Estúdio", arLivre: false, cor: "mel", professor: "Rafael Nunes", alunos: 11 },
+  { id: "c5", turma: "Noite 19:00", dias: [2, 4], hora: "19:00", sala: "Estúdio", arLivre: false, cor: "verde-profundo", professor: null, alunos: 4 },
 ];
 
 /** Um encontro por dia de cada turma — o formato que a grade consome. */
@@ -244,6 +244,7 @@ export const ENCONTROS = TURMAS_BASE.flatMap((t) =>
     matriculados: t.alunos,
     sala: t.sala,
     aoArLivre: t.arLivre,
+    cor: t.cor,
     professor: t.professor,
     ativa: true,
   })),
@@ -256,6 +257,7 @@ export const TURMAS = TURMAS_BASE.map((t) => ({
   hora: t.hora,
   sala: t.sala,
   aoArLivre: t.arLivre,
+  cor: t.cor,
   professor: t.professor,
   matriculados: t.alunos,
   capacidade: 12,
@@ -296,3 +298,9 @@ export const COBRANCAS = [
 ];
 
 export const HOJE_ISO = hojeIso;
+
+/** Locais de exemplo, com as cores da paleta. */
+export const LOCAIS = [
+  { nome: "Estúdio", endereco: "Rua Manoel Alves da Costa, 120 · Centro · Armação dos Búzios/RJ", arLivre: false, lugares: 15, cor: "verde" },
+  { nome: "Iate Clube", endereco: "Praia dos Ossos · Armação dos Búzios/RJ", arLivre: true, lugares: 25, cor: "azul" },
+];

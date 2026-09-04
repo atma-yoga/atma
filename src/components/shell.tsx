@@ -10,6 +10,7 @@ const NAV: Record<Papel, { href: string; texto: string }[]> = {
     { href: "/admin", texto: "Visão geral" },
     { href: "/admin/grade", texto: "Grade semanal" },
     { href: "/admin/pessoas", texto: "Pessoas" },
+    { href: "/admin/locais", texto: "Locais" },
     { href: "/admin/financeiro", texto: "Financeiro" },
   ],
   teacher: [

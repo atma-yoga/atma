@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { FormularioPessoa } from "@/components/paineis/formulario-pessoa";
+import { FormularioLocal } from "@/components/paineis/formulario-local";
 import { FormularioTurma } from "@/components/paineis/formulario-turma";
 import {
   CartaoDaTurma,
@@ -14,7 +15,8 @@ import { PainelAdmin } from "@/components/paineis/painel-admin";
 import { PainelAluno } from "@/components/paineis/painel-aluno";
 import { PainelProfessor } from "@/components/paineis/painel-professor";
 import { Shell } from "@/components/shell";
-import { Etiqueta, Numero, TituloSecao, brl } from "@/components/ui";
+import { Cartao, Etiqueta, Numero, TituloSecao, brl } from "@/components/ui";
+import { corDoLocal } from "@/lib/ficha";
 import type { Papel } from "@/lib/tipos";
 import {
   AGENDA_DO_ESTUDIO,
@@ -24,6 +26,7 @@ import {
   CHAMADA,
   COBRANCAS,
   HOJE_ISO,
+  LOCAIS,
   ENCONTROS,
   NUMEROS_DO_ADMIN,
   PESSOAS,
@@ -44,6 +47,7 @@ const TELAS = {
   grade: { papel: "admin", rotulo: "Grade semanal", nome: "Ana Prado" },
   chamada: { papel: "teacher", rotulo: "Chamada", nome: "Marina Vieira" },
   financeiro: { papel: "admin", rotulo: "Financeiro", nome: "Ana Prado" },
+  locais: { papel: "admin", rotulo: "Locais", nome: "Ana Prado" },
 } as const satisfies Record<
   string,
   { papel: Papel; rotulo: string; nome: string }
@@ -91,8 +95,10 @@ export default async function PreviewPage({
           <TelaDaGrade />
         ) : tela === "chamada" ? (
           <TelaDaChamada />
-        ) : (
+        ) : tela === "financeiro" ? (
           <TelaDoFinanceiro />
+        ) : (
+          <TelaDeLocais />
         )}
       </Shell>
     </>
@@ -157,6 +163,55 @@ function TelaDaGrade() {
             professores={PROFESSORES_OPCOES}
             demo
           />
+        </div>
+      </div>
+    </>
+  );
+}
+
+function TelaDeLocais() {
+  return (
+    <>
+      <h1 className="mb-2 text-2xl font-light">Locais</h1>
+      <p className="mb-8 text-sm text-[var(--color-muted)]">
+        Onde as aulas acontecem. A cor de cada local marca as aulas na agenda.
+      </p>
+
+      <div className="grid gap-10 xl:grid-cols-[1fr_26rem] xl:items-start">
+        <section>
+          <TituloSecao>Cadastrados</TituloSecao>
+          <div className="flex flex-col gap-2">
+            {LOCAIS.map((l) => (
+              <Cartao
+                key={l.nome}
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4"
+                style={{ borderLeft: `3px solid ${corDoLocal(l.cor)}` }}
+              >
+                <span className="min-w-40 flex-1">
+                  <span className="block text-sm">{l.nome}</span>
+                  <span className="block text-xs text-[var(--color-muted)]">
+                    {l.endereco}
+                  </span>
+                </span>
+                <Etiqueta
+                  fundo={l.arLivre ? "var(--color-azul)" : "var(--color-palha)"}
+                  letra={
+                    l.arLivre ? "var(--color-on-azul)" : "var(--color-on-palha)"
+                  }
+                >
+                  {l.arLivre ? "ar livre" : "interno"}
+                </Etiqueta>
+                <span className="text-xs text-[var(--color-muted)]">
+                  {l.lugares} lugares
+                </span>
+              </Cartao>
+            ))}
+          </div>
+        </section>
+
+        <div className="xl:sticky xl:top-6">
+          <TituloSecao>Novo local</TituloSecao>
+          <FormularioLocal demo />
         </div>
       </div>
     </>

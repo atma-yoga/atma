@@ -48,6 +48,40 @@ export const nomeDaCondicao = (v: string) => ROTULO_SAUDE.get(v) ?? v;
 export const nomeDaTecnica = (v: string) => ROTULO_TECNICA.get(v) ?? v;
 
 /* ===========================================================================
+   Cores dos locais
+   =========================================================================== */
+
+/**
+ * Cores que um local pode receber na agenda.
+ *
+ * Guardamos o nome, não o hexadecimal: assim ninguém cadastra um roxo que
+ * destoe da marca, e ajustar um tom da paleta atualiza todos os locais.
+ * Palha e mel entram porque aqui são fundo de filete, não cor de letra — a
+ * regra da marca continua valendo para texto.
+ */
+export const CORES_DE_LOCAL: Opcao[] = [
+  { valor: "verde", rotulo: "Verde" },
+  { valor: "azul", rotulo: "Azul" },
+  { valor: "mel", rotulo: "Mel" },
+  { valor: "palha", rotulo: "Palha" },
+  { valor: "marrom", rotulo: "Marrom" },
+  { valor: "verde-profundo", rotulo: "Verde profundo" },
+];
+
+const VARIAVEL: Record<string, string> = {
+  verde: "var(--color-verde)",
+  azul: "var(--color-azul)",
+  mel: "var(--color-mel)",
+  palha: "var(--color-palha)",
+  marrom: "var(--color-marrom)",
+  "verde-profundo": "var(--color-verde-profundo)",
+};
+
+/** Nome da cor → variável CSS. Local sem cor cai no verde. */
+export const corDoLocal = (nome: string | null | undefined) =>
+  VARIAVEL[nome ?? ""] ?? "var(--color-verde)";
+
+/* ===========================================================================
    CPF
    =========================================================================== */
 

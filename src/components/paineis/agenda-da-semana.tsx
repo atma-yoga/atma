@@ -1,5 +1,6 @@
 import { Cartao } from "@/components/ui";
 import type { EncontroNaGrade } from "@/components/paineis/grade-semanal";
+import { corDoLocal } from "@/lib/ficha";
 
 const NOMES = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 const MESES = [
@@ -129,11 +130,7 @@ export function AgendaDaSemana({
                       key={e.meetingId}
                       className={`px-3 py-2.5 ${e.ativa ? "" : "opacity-50"}`}
                       style={{
-                        borderLeft: `3px solid ${
-                          e.aoArLivre
-                            ? "var(--color-azul)"
-                            : "var(--color-verde)"
-                        }`,
+                        borderLeft: `3px solid ${corDoLocal(e.cor)}`,
                       }}
                     >
                       <p className="text-base font-light tabular-nums">

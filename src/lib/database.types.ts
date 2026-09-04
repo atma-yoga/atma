@@ -666,6 +666,8 @@ export type Database = {
           is_active: boolean;
           created_at: string;
           is_outdoor: boolean;
+          address: Json | null;
+          color: string | null;
         };
         Insert: {
           id?: string;
@@ -675,6 +677,8 @@ export type Database = {
           is_active?: boolean;
           created_at?: string;
           is_outdoor?: boolean;
+          address?: Json | null;
+          color?: string | null;
         };
         Update: {
           id?: string;
@@ -684,6 +688,8 @@ export type Database = {
           is_active?: boolean;
           created_at?: string;
           is_outdoor?: boolean;
+          address?: Json | null;
+          color?: string | null;
         };
         Relationships: [];
       };
@@ -949,6 +955,7 @@ export type Database = {
           is_active: boolean | null;
           sala: string | null;
           is_outdoor: boolean | null;
+          cor: string | null;
           teacher_id: string | null;
           professor: string | null;
           professor_chamado: string | null;

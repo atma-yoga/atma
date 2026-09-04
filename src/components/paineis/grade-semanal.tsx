@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Cartao, Etiqueta } from "@/components/ui";
+import { corDoLocal } from "@/lib/ficha";
 
 export const DIAS_CURTOS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 export const DIAS = [
@@ -24,6 +25,7 @@ export type EncontroNaGrade = {
   matriculados: number;
   sala: string | null;
   aoArLivre: boolean;
+  cor: string | null;
   professor: string | null;
   ativa: boolean;
 };
@@ -64,9 +66,7 @@ export function GradeSemanal({
                       e.ativa ? "" : "opacity-50"
                     } ${clicavel ? "hover:shadow-[var(--shadow-raised)]" : ""}`}
                     style={{
-                      borderLeft: `3px solid ${
-                        e.aoArLivre ? "var(--color-azul)" : "var(--color-verde)"
-                      }`,
+                      borderLeft: `3px solid ${corDoLocal(e.cor)}`,
                     }}
                   >
                     <p className="text-sm tabular-nums">{e.hora}</p>
@@ -112,6 +112,7 @@ export function CartaoDaTurma({
   hora,
   sala,
   aoArLivre,
+  cor,
   professor,
   matriculados,
   capacidade,
@@ -124,6 +125,7 @@ export function CartaoDaTurma({
   hora: string;
   sala: string | null;
   aoArLivre: boolean;
+  cor: string | null;
   professor: string | null;
   matriculados: number;
   capacidade: number;
@@ -137,11 +139,7 @@ export function CartaoDaTurma({
       className={`flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 ${
         ativa ? "" : "opacity-55"
       }`}
-      style={{
-        borderLeft: `3px solid ${
-          aoArLivre ? "var(--color-azul)" : "var(--color-verde)"
-        }`,
-      }}
+      style={{ borderLeft: `3px solid ${corDoLocal(cor)}` }}
     >
       <span className="min-w-40 flex-1">
         <span className="block text-sm">{nome}</span>

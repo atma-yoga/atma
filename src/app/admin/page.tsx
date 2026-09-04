@@ -68,6 +68,7 @@ export default async function AdminPage() {
     matriculados: Number(g.matriculados ?? 0),
     sala: g.sala,
     aoArLivre: g.is_outdoor ?? false,
+    cor: g.cor,
     professor: g.professor_chamado,
     ativa: g.is_active ?? true,
   }));

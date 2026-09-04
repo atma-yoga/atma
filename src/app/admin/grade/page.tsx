@@ -44,6 +44,7 @@ export default async function GradePage() {
     matriculados: Number(g.matriculados ?? 0),
     sala: g.sala,
     aoArLivre: g.is_outdoor ?? false,
+    cor: g.cor,
     professor: g.professor_chamado,
     ativa: g.is_active ?? true,
   }));
@@ -142,6 +143,7 @@ export default async function GradePage() {
                   hora={t.hora}
                   sala={t.sala}
                   aoArLivre={t.aoArLivre}
+                  cor={t.cor}
                   professor={t.professor}
                   matriculados={t.matriculados}
                   capacidade={t.capacidade}
