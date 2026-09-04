@@ -80,6 +80,7 @@ export default async function PessoasPage() {
     ativo: a.is_active,
     desde: a.start_date,
     senhaPadrao: a.profiles?.must_change_password ?? false,
+    href: `/admin/alunos/${a.profile_id}`,
   }));
 
   const botaoAtivar = (papel: "teacher" | "student") =>

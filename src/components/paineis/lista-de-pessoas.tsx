@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Cartao, Etiqueta, TituloSecao, Vazio } from "@/components/ui";
 
 export type PessoaNaLista = {
@@ -9,6 +11,8 @@ export type PessoaNaLista = {
   desde: string | null; // YYYY-MM-DD
   detalhe?: string | null; // plano, para alunos
   senhaPadrao?: boolean; // ainda não trocou a senha inicial
+  /** Ficha completa; ausente para quem não tem tela de detalhe. */
+  href?: string;
 };
 
 const dataCurta = (iso: string | null) =>
@@ -46,7 +50,16 @@ export function ListaDePessoas({
               className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4"
             >
               <span className="min-w-45 flex-1">
-                <span className="block text-sm">{p.nome}</span>
+                {p.href ? (
+                  <Link
+                    href={p.href}
+                    className="block text-sm underline-offset-4 hover:underline"
+                  >
+                    {p.nome}
+                  </Link>
+                ) : (
+                  <span className="block text-sm">{p.nome}</span>
+                )}
                 <span className="block text-xs text-[var(--color-muted)]">
                   {p.email ?? "sem e-mail"}
                   {p.telefone ? ` · ${p.telefone}` : ""}

@@ -148,6 +148,7 @@ export type Database = {
           enrolled_at: string;
           is_active: boolean;
           notes: string | null;
+          custom_price: number | null;
         };
         Insert: {
           id?: string;
@@ -156,6 +157,7 @@ export type Database = {
           enrolled_at?: string;
           is_active?: boolean;
           notes?: string | null;
+          custom_price?: number | null;
         };
         Update: {
           id?: string;
@@ -164,6 +166,7 @@ export type Database = {
           enrolled_at?: string;
           is_active?: boolean;
           notes?: string | null;
+          custom_price?: number | null;
         };
         Relationships: [
           {
@@ -947,6 +950,32 @@ export type Database = {
           cor: string | null;
           is_outdoor: boolean | null;
           professor: string | null;
+        };
+        Relationships: [];
+      };
+
+      v_ficha_completa: {
+        Row: {
+          student_id: string | null;
+          full_name: string | null;
+          social_name: string | null;
+          email: string | null;
+          phone: string | null;
+          document_id: string | null;
+          address: Json | null;
+          health_conditions: string[] | null;
+          health_notes: string | null;
+          must_change_password: boolean | null;
+          perfil_ativo: boolean | null;
+          start_date: string | null;
+          experience_level: Database["public"]["Enums"]["class_level"] | null;
+          emergency_contact: Json | null;
+          goals: string | null;
+          how_found_us: string | null;
+          aluno_ativo: boolean | null;
+          turmas: number | null;
+          ja_pagou: number | null;
+          em_aberto: number | null;
         };
         Relationships: [];
       };
