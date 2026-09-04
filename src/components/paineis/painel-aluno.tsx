@@ -1,118 +1,106 @@
+import { AvisoDeAula, type ProximaAula } from "@/components/paineis/aviso-de-aula";
 import {
-  Cartao,
-  Etiqueta,
-  Numero,
-  TituloSecao,
-  Vazio,
-  dataHora,
-} from "@/components/ui";
-import { COR_STATUS_AGENDAMENTO, STATUS_AGENDAMENTO } from "@/lib/tipos";
+  GraficoDoAno,
+  GraficoDoMes,
+  GraficoGeral,
+  type AulaDoMes,
+  type MesDoAno,
+} from "@/components/paineis/graficos-frequencia";
+import { Cartao, TituloSecao, Vazio, dataHora } from "@/components/ui";
 import { primeiroNome } from "@/lib/auth";
-import {
-  nomeDaAula,
-  vagasLivres,
-  type AgendamentoDoAluno,
-  type AulaNaAgenda,
-  type ResumoDoAluno,
-} from "./tipos";
+import { corDoLocal } from "@/lib/ficha";
+
+export type AulaListada = {
+  id: string;
+  inicio: string;
+  turma: string;
+  professor: string | null;
+  sala: string | null;
+  cor: string | null;
+  suspensa: boolean;
+};
 
 export function PainelAluno({
   nome,
-  resumo,
-  proximas,
-  disponiveis,
+  hoje,
+  proxima,
+  aulasDoMes,
+  mesesDoAno,
+  ano,
+  presencasTotais,
+  faltasTotais,
+  desde,
+  proximasAulas,
+  turmas,
 }: {
   nome: string;
-  resumo: ResumoDoAluno;
-  proximas: AgendamentoDoAluno[];
-  disponiveis: AulaNaAgenda[];
+  hoje: string;
+  proxima: ProximaAula | null;
+  aulasDoMes: AulaDoMes[];
+  mesesDoAno: MesDoAno[];
+  ano: number;
+  presencasTotais: number;
+  faltasTotais: number;
+  desde: string | null;
+  proximasAulas: AulaListada[];
+  turmas: string[];
 }) {
   return (
     <>
-      <h1 className="mb-8 text-2xl font-light">
+      <h1 className="mb-2 text-2xl font-light">
         Olá, {primeiroNome(nome) || "seja bem-vindo"}.
       </h1>
+      <p className="mb-8 text-sm text-[var(--color-muted)]">
+        {turmas.length
+          ? `Você está em ${turmas.join(", ")}.`
+          : "Você ainda não está em nenhuma turma."}
+      </p>
 
-      <div className="mb-10 grid gap-4 sm:grid-cols-3">
-        <Numero
-          rotulo="Aulas restantes"
-          valor={resumo.creditosRestantes ?? "Ilimitado"}
-          detalhe={resumo.plano ?? "Sem plano ativo"}
-        />
-        <Numero rotulo="Aulas feitas" valor={resumo.aulasFeitas} />
-        <Numero
-          rotulo="Plano vence em"
-          valor={
-            resumo.planoVenceEm
-              ? new Date(`${resumo.planoVenceEm}T12:00:00`).toLocaleDateString(
-                  "pt-BR",
-                )
-              : "—"
-          }
-        />
-      </div>
+      <AvisoDeAula aula={proxima} hoje={hoje} />
 
-      <section className="mb-10">
-        <TituloSecao>Suas próximas aulas</TituloSecao>
-        {proximas.length ? (
-          <div className="flex flex-col gap-2">
-            {proximas.map((a) => {
-              const cor = COR_STATUS_AGENDAMENTO[a.status];
-              return (
-                <Cartao
-                  key={a.id}
-                  className="flex items-center justify-between gap-4 px-5 py-4"
-                >
-                  <span>
-                    <span className="block text-sm">{nomeDaAula(a.titulo)}</span>
-                    <span className="block text-xs text-[var(--color-muted)]">
-                      {dataHora(a.inicio)}
-                      {a.professor ? ` · ${a.professor}` : ""}
-                    </span>
-                  </span>
-                  <Etiqueta fundo={cor.fundo} letra={cor.letra}>
-                    {STATUS_AGENDAMENTO[a.status]}
-                    {a.posicaoNaEspera ? ` · ${a.posicaoNaEspera}º` : ""}
-                  </Etiqueta>
-                </Cartao>
-              );
-            })}
-          </div>
-        ) : (
-          <Vazio>Nenhuma aula agendada. Escolha uma abaixo.</Vazio>
-        )}
+      <section className="mb-12">
+        <TituloSecao>Sua frequência</TituloSecao>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <GraficoDoMes aulas={aulasDoMes} />
+          <GraficoDoAno meses={mesesDoAno} ano={ano} />
+          <GraficoGeral
+            presencas={presencasTotais}
+            faltas={faltasTotais}
+            desde={desde}
+          />
+        </div>
       </section>
 
       <section>
-        <TituloSecao>Vagas abertas</TituloSecao>
-        {disponiveis.length ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {disponiveis.map((a) => {
-              const livres = vagasLivres(a);
-              return (
-                <Cartao key={a.id} className="p-5">
-                  <span
-                    className="mb-3 block h-1 w-10 rounded-full"
-                    style={{ backgroundColor: "var(--color-mel)" }}
-                  />
-                  <p className="text-sm">{nomeDaAula(a.titulo)}</p>
-                  <p className="mt-1 text-xs text-[var(--color-muted)]">
+        <TituloSecao>Próximas aulas</TituloSecao>
+        {proximasAulas.length ? (
+          <div className="flex flex-col gap-2">
+            {proximasAulas.map((a) => (
+              <Cartao
+                key={a.id}
+                className={`flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3 ${
+                  a.suspensa ? "opacity-55" : ""
+                }`}
+                style={{ borderLeft: `3px solid ${corDoLocal(a.cor)}` }}
+              >
+                <span className="min-w-40 flex-1">
+                  <span className="block text-sm">
+                    {a.turma}
+                    {a.suspensa ? " · suspensa" : ""}
+                  </span>
+                  <span className="block text-xs text-[var(--color-muted)]">
                     {dataHora(a.inicio)}
+                    {a.sala ? ` · ${a.sala}` : ""}
                     {a.professor ? ` · ${a.professor}` : ""}
-                  </p>
-                  <p className="mt-3 text-xs text-[var(--color-muted)]">
-                    {livres > 0
-                      ? `${livres} vaga${livres === 1 ? "" : "s"}`
-                      : `Lotada · ${a.naEspera} na espera`}
-                  </p>
-                </Cartao>
-              );
-            })}
+                  </span>
+                </span>
+              </Cartao>
+            ))}
           </div>
         ) : (
           <Vazio>
-            Nenhuma aula na agenda ainda. A administração precisa gerar as
-            sessões da grade.
+            Nenhuma aula à vista. A administração ainda não abriu as próximas
+            aulas da sua turma.
           </Vazio>
         )}
       </section>

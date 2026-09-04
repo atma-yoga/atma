@@ -104,16 +104,25 @@ export default async function TurmaPage({
           </p>
         </div>
 
-        <form action={alternarTurma}>
+        <span className="flex items-center gap-4">
+          <Link
+            href={`/professor/turmas/${turma.id}`}
+            className="text-xs text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-foreground)]"
+          >
+            chamada e aulas
+          </Link>
+
+          <form action={alternarTurma}>
           <input type="hidden" name="id" value={turma.id} />
           <input type="hidden" name="ativar" value={turma.is_active ? "0" : "1"} />
           <button
             type="submit"
             className="text-xs text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-foreground)]"
           >
-            {turma.is_active ? "tirar da grade" : "voltar para a grade"}
-          </button>
-        </form>
+              {turma.is_active ? "tirar da grade" : "voltar para a grade"}
+            </button>
+          </form>
+        </span>
       </div>
 
       <div className="grid gap-10 xl:grid-cols-[1fr_24rem] xl:items-start">

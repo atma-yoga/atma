@@ -304,3 +304,66 @@ export const LOCAIS = [
   { nome: "Estúdio", endereco: "Rua Manoel Alves da Costa, 120 · Centro · Armação dos Búzios/RJ", arLivre: false, lugares: 15, cor: "verde" },
   { nome: "Iate Clube", endereco: "Praia dos Ossos · Armação dos Búzios/RJ", arLivre: true, lugares: 25, cor: "azul" },
 ];
+
+/* --- painel do aluno --- */
+
+const hojeSP = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+}).format(new Date());
+
+export const HOJE_SP = hojeSP;
+
+export const PROXIMA_AULA = {
+  id: "s1",
+  inicio: `${hojeSP}T19:00:00-03:00`,
+  turma: "Noite 19:00",
+  professor: "Marina Vieira",
+  sala: "Estúdio",
+  cor: "verde",
+  aoArLivre: false,
+  suspensa: false,
+  motivo: null,
+};
+
+/** Aulas do mês corrente: passadas com presença, futuras em aberto. */
+export const AULAS_DO_MES = (() => {
+  const [ano, mes] = hojeSP.split("-").map(Number);
+  const diaHoje = Number(hojeSP.slice(8, 10));
+  const ultimoDia = new Date(ano, mes, 0).getDate();
+  const saida: { data: string; estado: "presente" | "falta" | "futura" | "suspensa" }[] = [];
+
+  for (let d = 1; d <= ultimoDia; d++) {
+    const dow = new Date(ano, mes - 1, d).getDay();
+    if (![2, 4].includes(dow)) continue; // turma de terça e quinta
+
+    const data = `${ano}-${String(mes).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const estado =
+      d > diaHoje ? "futura" : d % 7 === 0 ? "falta" : d % 11 === 0 ? "suspensa" : "presente";
+    saida.push({ data, estado: estado as "presente" | "falta" | "futura" | "suspensa" });
+  }
+  return saida;
+})();
+
+export const MESES_DO_ANO = [
+  { mes: 0, presencas: 7, faltas: 1 },
+  { mes: 1, presencas: 8, faltas: 0 },
+  { mes: 2, presencas: 6, faltas: 2 },
+  { mes: 3, presencas: 8, faltas: 1 },
+  { mes: 4, presencas: 9, faltas: 0 },
+  { mes: 5, presencas: 5, faltas: 3 },
+  { mes: 6, presencas: 7, faltas: 1 },
+  { mes: 7, presencas: 8, faltas: 1 },
+  { mes: 8, presencas: 4, faltas: 1 },
+];
+
+export const PROXIMAS_DO_ALUNO = [
+  { id: "a1", inicio: `${hojeSP}T19:00:00-03:00`, turma: "Noite 19:00", professor: "Marina Vieira", sala: "Estúdio", cor: "verde", suspensa: false },
+  { id: "a2", inicio: `${hojeSP}T19:00:00-03:00`.replace(hojeSP, addDias(hojeSP, 2)), turma: "Noite 19:00", professor: "Marina Vieira", sala: "Estúdio", cor: "verde", suspensa: false },
+  { id: "a3", inicio: `${hojeSP}T19:00:00-03:00`.replace(hojeSP, addDias(hojeSP, 7)), turma: "Noite 19:00", professor: "Rafael Nunes", sala: "Estúdio", cor: "verde", suspensa: true },
+];
+
+function addDias(iso: string, n: number) {
+  const d = new Date(`${iso}T12:00:00`);
+  d.setDate(d.getDate() + n);
+  return new Intl.DateTimeFormat("en-CA").format(d);
+}

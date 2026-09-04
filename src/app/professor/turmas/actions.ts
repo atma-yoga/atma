@@ -68,3 +68,64 @@ export async function limparPresenca(form: FormData): Promise<void> {
 
   revalidatePath(`/professor/turmas/${turma}`);
 }
+
+/**
+ * Suspende uma aula. A permissão é conferida dentro da função do banco:
+ * professor daquela turma ou administração.
+ */
+export async function suspenderAula(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao) return;
+
+  const aula = String(form.get("aula") ?? "");
+  const turma = String(form.get("turma") ?? "");
+  const motivo = String(form.get("motivo") ?? "").trim();
+  if (!aula) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("suspender_aula", { aula, motivo: motivo || undefined });
+
+  revalidatePath(`/professor/turmas/${turma}`);
+  revalidatePath(`/admin/grade/${turma}`);
+}
+
+export async function reativarAula(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao) return;
+
+  const aula = String(form.get("aula") ?? "");
+  const turma = String(form.get("turma") ?? "");
+  if (!aula) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("reativar_aula", { aula });
+
+  revalidatePath(`/professor/turmas/${turma}`);
+  revalidatePath(`/admin/grade/${turma}`);
+}
+
+/** Cria uma aula fora dos dias da grade — reposição, workshop, extra. */
+export async function criarAulaExtra(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao) return;
+
+  const turma = String(form.get("turma") ?? "");
+  const dia = String(form.get("dia") ?? "");
+  const hora = String(form.get("hora") ?? "");
+  const duracao = Number(form.get("duracao") || 60);
+  const observacao = String(form.get("observacao") ?? "").trim();
+
+  if (!turma || !dia || !hora) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("criar_aula_extra", {
+    turma,
+    dia,
+    hora: `${hora}:00`,
+    duracao,
+    observacao: observacao || undefined,
+  });
+
+  revalidatePath(`/professor/turmas/${turma}`);
+  revalidatePath(`/admin/grade/${turma}`);
+}

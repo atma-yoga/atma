@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import {
+  AulasDaTurma,
+  type AulaMarcada,
+} from "@/components/paineis/aulas-da-turma";
 import { DIAS_CURTOS } from "@/components/paineis/grade-semanal";
 import {
   ListaDeChamada,
@@ -10,7 +14,14 @@ import { Shell } from "@/components/shell";
 import { Botao, Cartao, Etiqueta, TituloSecao, Vazio } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { abrirChamada, limparPresenca, marcarPresenca } from "../actions";
+import {
+  abrirChamada,
+  criarAulaExtra,
+  limparPresenca,
+  marcarPresenca,
+  reativarAula,
+  suspenderAula,
+} from "../actions";
 
 export const metadata = { title: "Chamada" };
 
@@ -98,6 +109,35 @@ export default async function ChamadaPage({
         .select("id, status, student_id, students(profiles(full_name, social_name))")
         .eq("session_id", aula.id)
     : { data: null };
+
+  // Aulas já abertas desta turma, de hoje em diante.
+  const { data: proximas } = await supabase
+    .from("class_sessions")
+    .select("id, starts_at, status, cancel_reason")
+    .eq("class_id", id)
+    .gte("starts_at", `${hoje}T00:00:00-03:00`)
+    .order("starts_at")
+    .limit(10);
+
+  const horaDaGrade = String(
+    turma.class_meetings?.[0]?.start_time ?? "07:00",
+  ).slice(0, 5);
+
+  const aulasMarcadas: AulaMarcada[] = (proximas ?? []).map((s) => {
+    const dow = new Date(
+      new Intl.DateTimeFormat("en-CA", { timeZone: FUSO }).format(
+        new Date(s.starts_at),
+      ) + "T12:00:00",
+    ).getDay();
+
+    return {
+      id: s.id,
+      inicio: s.starts_at,
+      suspensa: s.status === "canceled",
+      motivo: s.cancel_reason,
+      foraDaGrade: !diasDaTurma.includes(dow),
+    };
+  });
 
   const { data: frequencia } = await supabase
     .from("v_frequencia")
@@ -200,6 +240,15 @@ export default async function ChamadaPage({
       >
         Chamada de {porExtenso(dia)}
       </TituloSecao>
+
+      <AulasDaTurma
+        turmaId={id}
+        aulas={aulasMarcadas}
+        horaPadrao={horaDaGrade}
+        suspender={suspenderAula}
+        reativar={reativarAula}
+        criarExtra={criarAulaExtra}
+      />
 
       {!temAulaNesseDia ? (
         <Vazio>Esta turma não tem aula neste dia da semana.</Vazio>

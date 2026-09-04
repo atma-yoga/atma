@@ -20,7 +20,11 @@ import { corDoLocal } from "@/lib/ficha";
 import type { Papel } from "@/lib/tipos";
 import {
   AGENDA_DO_ESTUDIO,
-  AGENDAMENTOS_DO_ALUNO,
+  AULAS_DO_MES,
+  HOJE_SP,
+  MESES_DO_ANO,
+  PROXIMAS_DO_ALUNO,
+  PROXIMA_AULA,
   AULAS_DA_SEMANA,
   AULAS_DE_HOJE,
   CHAMADA,
@@ -33,8 +37,6 @@ import {
   PROFESSORES_OPCOES,
   SALAS,
   TURMAS,
-  RESUMO_DO_ALUNO,
-  VAGAS_ABERTAS,
 } from "../dados";
 
 export const dynamic = "force-dynamic";
@@ -77,9 +79,16 @@ export default async function PreviewPage({
         {tela === "aluno" ? (
           <PainelAluno
             nome={nome}
-            resumo={RESUMO_DO_ALUNO}
-            proximas={AGENDAMENTOS_DO_ALUNO}
-            disponiveis={VAGAS_ABERTAS}
+            hoje={HOJE_SP}
+            proxima={PROXIMA_AULA}
+            aulasDoMes={AULAS_DO_MES}
+            mesesDoAno={MESES_DO_ANO}
+            ano={Number(HOJE_SP.slice(0, 4))}
+            presencasTotais={62}
+            faltasTotais={10}
+            desde="2026-01-08"
+            proximasAulas={PROXIMAS_DO_ALUNO}
+            turmas={["Noite 19:00"]}
           />
         ) : tela === "professor" ? (
           <PainelProfessor
