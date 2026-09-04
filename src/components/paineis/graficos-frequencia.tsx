@@ -201,8 +201,10 @@ export function GraficoDoAno({
             : 0;
 
           return (
-            <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-              <span className="flex h-full w-full flex-col justify-end">
+            // h-full aqui e flex-1 no trilho: sem os dois, a barra herda a
+            // altura do próprio conteúdo e colapsa num traço.
+            <div key={i} className="flex h-full flex-1 flex-col items-center gap-1.5">
+              <span className="flex w-full flex-1 flex-col justify-end">
                 {total ? (
                   <span
                     className="flex w-full flex-col justify-end overflow-hidden rounded-t-[4px]"
