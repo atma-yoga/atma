@@ -162,15 +162,28 @@ export default async function ChamadaPage({
     .map((b) => {
       const f = freqPorAluno.get(b.student_id);
       const ficha = fichaPorAluno.get(b.student_id);
+      const presencas = Number(f?.presencas ?? 0);
+      const faltas = Number(f?.faltas ?? 0);
+
       return {
         id: b.id,
         nome: ficha?.nome ?? "sem nome",
         status: b.status,
         frequencia: f?.percentual ?? null,
-        presencas: Number(f?.presencas ?? 0),
+        presencas,
         totalRegistrado: Number(f?.aulas_com_registro ?? 0),
         condicoes: ficha?.health_conditions ?? [],
         observacoes: ficha?.health_notes ?? null,
+        // Sem contato, endereço ou financeiro: o professor não os recebe.
+        ficha: {
+          id: b.student_id,
+          nome: ficha?.nome ?? "sem nome",
+          nomeCompleto: ficha?.nome_completo ?? "",
+          condicoes: ficha?.health_conditions ?? [],
+          observacoes: ficha?.health_notes ?? null,
+          presencas,
+          faltas,
+        },
       };
     })
     .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));

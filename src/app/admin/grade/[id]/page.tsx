@@ -2,11 +2,13 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { BuscarAluno, type AlunoBuscavel } from "@/components/paineis/buscar-aluno";
+import { FichaRapida } from "@/components/paineis/ficha-rapida";
 import { FormularioTurma } from "@/components/paineis/formulario-turma";
 import { DIAS_CURTOS } from "@/components/paineis/grade-semanal";
 import { Shell } from "@/components/shell";
-import { Botao, Cartao, Etiqueta, TituloSecao, Vazio } from "@/components/ui";
+import { Botao, Cartao, Etiqueta, TituloSecao, Vazio, brl } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
+import { formatarCpf } from "@/lib/ficha";
 import { createClient } from "@/lib/supabase/server";
 import { alternarTurma, desmatricular, matricular, salvarTurma } from "../actions";
 
@@ -48,7 +50,7 @@ export default async function TurmaPage({
 
     supabase
       .from("class_enrollments")
-      .select("id, enrolled_at, student_id, students(profiles(full_name, social_name, phone))")
+      .select("id, enrolled_at, student_id, custom_price")
       .eq("class_id", id)
       .eq("is_active", true),
 
@@ -64,6 +66,19 @@ export default async function TurmaPage({
       .select("profile_id, profiles(full_name, social_name, email, document_id)")
       .eq("is_active", true),
   ]);
+
+  // Ficha e frequência dos matriculados, para o nome abrir sem sair da tela.
+  const idsNaTurma = (matriculas ?? []).map((m) => m.student_id);
+
+  const [{ data: fichas }, { data: frequencias }] = idsNaTurma.length
+    ? await Promise.all([
+        supabase.from("v_ficha_completa").select("*").in("student_id", idsNaTurma),
+        supabase.from("v_frequencia").select("*").eq("class_id", id),
+      ])
+    : [{ data: [] }, { data: [] }];
+
+  const fichaPor = new Map((fichas ?? []).map((f) => [f.student_id, f]));
+  const freqPor = new Map((frequencias ?? []).map((f) => [f.student_id, f]));
 
   const dias = (encontros ?? []).map((e) => e.weekday);
   const hora = String(encontros?.[0]?.start_time ?? "07:00").slice(0, 5);
@@ -148,13 +163,45 @@ export default async function TurmaPage({
                   className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3"
                 >
                   <span className="min-w-40 flex-1">
-                    <span className="block text-sm">
-                      {m.students?.profiles?.social_name ||
-                        m.students?.profiles?.full_name}
-                    </span>
-                    {m.students?.profiles?.phone ? (
+                    {(() => {
+                      const f = fichaPor.get(m.student_id);
+                      const fr = freqPor.get(m.student_id);
+                      const e = (f?.address ?? null) as Record<string, string> | null;
+
+                      return (
+                        <FichaRapida
+                          completa
+                          className="block text-sm"
+                          aluno={{
+                            id: m.student_id,
+                            nome: f?.social_name || f?.full_name || "sem nome",
+                            nomeCompleto: f?.full_name ?? "",
+                            condicoes: f?.health_conditions ?? [],
+                            observacoes: f?.health_notes ?? null,
+                            presencas: Number(fr?.presencas ?? 0),
+                            faltas: Number(fr?.faltas ?? 0),
+                            email: f?.email,
+                            telefone: f?.phone,
+                            cpf: f?.document_id ? formatarCpf(f.document_id) : null,
+                            endereco: e
+                              ? [e.logradouro, e.numero, e.bairro, e.cidade]
+                                  .filter(Boolean)
+                                  .join(", ")
+                              : null,
+                            mensalidade:
+                              m.custom_price !== null
+                                ? `${brl(Number(m.custom_price))} (combinado)`
+                                : `${brl(Number(turma.monthly_price))} (preço da turma)`,
+                            emAberto: Number(f?.em_aberto ?? 0)
+                              ? brl(Number(f?.em_aberto))
+                              : null,
+                          }}
+                        />
+                      );
+                    })()}
+                    {fichaPor.get(m.student_id)?.phone ? (
                       <span className="block text-xs text-[var(--color-muted)]">
-                        {m.students.profiles.phone}
+                        {fichaPor.get(m.student_id)?.phone}
                       </span>
                     ) : null}
                   </span>

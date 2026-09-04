@@ -1,3 +1,7 @@
+import {
+  FichaRapida,
+  type ResumoDoAluno,
+} from "@/components/paineis/ficha-rapida";
 import { Cartao, Etiqueta } from "@/components/ui";
 import { nomeDaCondicao } from "@/lib/ficha";
 
@@ -12,6 +16,8 @@ export type AlunoNaChamada = {
   /** Condições marcadas na ficha — o professor precisa saber antes da aula. */
   condicoes: string[];
   observacoes: string | null;
+  /** Ficha reduzida, para abrir sem sair da chamada. */
+  ficha: ResumoDoAluno;
 };
 
 const CORES = {
@@ -54,7 +60,7 @@ export function ListaDeChamada({
           }}
         >
           <span className="min-w-36 flex-1">
-            <span className="block text-sm">{a.nome}</span>
+            <FichaRapida aluno={a.ficha} className="block text-sm" />
             <span className="block text-xs text-[var(--color-muted)]">
               {a.frequencia !== null
                 ? `${a.frequencia}% de presença · ${a.presencas} de ${a.totalRegistrado}`

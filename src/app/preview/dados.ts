@@ -277,13 +277,26 @@ export const PROFESSORES_OPCOES = [
 ];
 
 /** Uma chamada em andamento, para conferir a tela do professor. */
-export const CHAMADA = [
+const CHAMADA_BASE = [
   { id: "b1", nome: "Helena Costa", status: "attended" as const, frequencia: 92, presencas: 11, totalRegistrado: 12, condicoes: ["coluna"], observacoes: "Hérnia lombar — evitar flexão profunda." },
   { id: "b2", nome: "Bruno Almeida", status: "attended" as const, frequencia: 75, presencas: 9, totalRegistrado: 12, condicoes: [], observacoes: null },
   { id: "b3", nome: "Carla Ribeiro", status: "no_show" as const, frequencia: 58, presencas: 7, totalRegistrado: 12, condicoes: ["hipertensao"], observacoes: "Evitar inversões longas." },
   { id: "b4", nome: "Diego Farias", status: "booked" as const, frequencia: 100, presencas: 12, totalRegistrado: 12, condicoes: ["joelho"], observacoes: null },
   { id: "b5", nome: "Elisa Monteiro", status: "booked" as const, frequencia: null, presencas: 0, totalRegistrado: 0, condicoes: ["gravidez"], observacoes: "Gestante, 22 semanas." },
 ];
+
+export const CHAMADA = CHAMADA_BASE.map((a) => ({
+  ...a,
+  ficha: {
+    id: a.id,
+    nome: a.nome,
+    nomeCompleto: `${a.nome} de Oliveira`,
+    condicoes: a.condicoes,
+    observacoes: a.observacoes,
+    presencas: a.presencas,
+    faltas: a.totalRegistrado - a.presencas,
+  },
+}));
 
 /** Cobranças de exemplo para a tela de financeiro. */
 const hojeIso = new Date().toISOString().slice(0, 10);
