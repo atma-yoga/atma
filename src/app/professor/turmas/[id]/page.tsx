@@ -95,13 +95,18 @@ export default async function ChamadaPage({
   const inicioDoDia = `${dia}T00:00:00-03:00`;
   const fimDoDia = `${dia}T23:59:59-03:00`;
 
-  const { data: aula } = await supabase
+  // Lista, não maybeSingle: um dia pode ter mais de uma aula da mesma turma
+  // (uma reposição extra, por exemplo), e maybeSingle devolve erro nesse caso
+  // — a chamada sumia da tela sem dizer por quê.
+  const { data: aulasDoDia } = await supabase
     .from("class_sessions")
     .select("id, starts_at")
     .eq("class_id", id)
     .gte("starts_at", inicioDoDia)
     .lte("starts_at", fimDoDia)
-    .maybeSingle();
+    .order("starts_at");
+
+  const aula = aulasDoDia?.[0] ?? null;
 
   const { data: presencas } = aula
     ? await supabase

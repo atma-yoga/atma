@@ -23,7 +23,10 @@ const paraAula = (s: Views<"v_session_availability">): AulaNaAgenda => ({
 export default async function ProfessorPage() {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar");
-  if (!sessao.papeis.includes("teacher")) redirect("/");
+  // A administração também entra: para dar suporte a um professor com
+  // dúvida, ela precisa ver a mesma tela que ele vê.
+  const ehProfessor = sessao.papeis.includes("teacher");
+  if (!ehProfessor && !sessao.papeis.includes("admin")) redirect("/");
 
   const supabase = await createClient();
 

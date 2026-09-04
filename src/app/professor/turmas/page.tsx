@@ -13,19 +13,26 @@ export const metadata = { title: "Minhas turmas" };
 export default async function TurmasDoProfessorPage() {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar");
-  if (!sessao.papeis.includes("teacher")) redirect("/");
+  const ehProfessor = sessao.papeis.includes("teacher");
+  const ehAdmin = sessao.papeis.includes("admin");
+  if (!ehProfessor && !ehAdmin) redirect("/");
 
   const supabase = await createClient();
 
   const { data: turmas } = await supabase
     .from("classes")
     .select(
-      "id, name, capacity, is_active, rooms(name, is_outdoor, color), class_meetings(weekday, start_time), class_enrollments(id, is_active)",
+      "id, name, capacity, is_active, teacher_id, rooms(name, is_outdoor, color), class_meetings(weekday, start_time), class_enrollments(id, is_active)",
     )
-    .eq("teacher_id", sessao.userId)
     .order("name");
 
-  const lista = (turmas ?? []).map((t) => ({
+  // O professor vê as próprias turmas; a administração vê todas, porque o
+  // motivo dela estar aqui é justamente olhar a turma de outra pessoa.
+  const minhas = (turmas ?? []).filter(
+    (t) => ehAdmin || t.teacher_id === sessao.userId,
+  );
+
+  const lista = minhas.map((t) => ({
     id: t.id,
     nome: t.name,
     capacidade: t.capacity,
