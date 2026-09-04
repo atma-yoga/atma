@@ -70,15 +70,50 @@ export default async function TurmaPage({
   // Ficha e frequência dos matriculados, para o nome abrir sem sair da tela.
   const idsNaTurma = (matriculas ?? []).map((m) => m.student_id);
 
-  const [{ data: fichas }, { data: frequencias }] = idsNaTurma.length
-    ? await Promise.all([
-        supabase.from("v_ficha_completa").select("*").in("student_id", idsNaTurma),
-        supabase.from("v_frequencia").select("*").eq("class_id", id),
-      ])
-    : [{ data: [] }, { data: [] }];
+  const mesCorrente = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+  })
+    .format(new Date())
+    .slice(0, 7);
+
+  const [{ data: fichas }, { data: frequencias }, { data: mensal }, { data: vencidas }] =
+    idsNaTurma.length
+      ? await Promise.all([
+          supabase.from("v_ficha_completa").select("*").in("student_id", idsNaTurma),
+          supabase.from("v_frequencia").select("*").eq("class_id", id),
+          supabase
+            .from("v_presenca_mensal")
+            .select("*")
+            .eq("mes", `${mesCorrente}-01`),
+          supabase
+            .from("v_mensalidades")
+            .select("student_id, due_date, status")
+            .in("student_id", idsNaTurma)
+            .neq("status", "paid")
+            .order("due_date"),
+        ])
+      : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
 
   const fichaPor = new Map((fichas ?? []).map((f) => [f.student_id, f]));
   const freqPor = new Map((frequencias ?? []).map((f) => [f.student_id, f]));
+  const mesPor = new Map((mensal ?? []).map((m) => [m.student_id, m]));
+
+  // A cobrança em aberto mais antiga de cada aluno, se já venceu.
+  const hojeIso = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+  }).format(new Date());
+
+  const vencidaPor = new Map<string, string>();
+  for (const v of vencidas ?? []) {
+    if (!v.student_id || !v.due_date) continue;
+    if (v.due_date >= hojeIso) continue;
+    if (!vencidaPor.has(v.student_id)) {
+      vencidaPor.set(
+        v.student_id,
+        new Date(`${v.due_date}T12:00:00`).toLocaleDateString("pt-BR"),
+      );
+    }
+  }
 
   const dias = (encontros ?? []).map((e) => e.weekday);
   const hora = String(encontros?.[0]?.start_time ?? "07:00").slice(0, 5);
@@ -180,6 +215,13 @@ export default async function TurmaPage({
                             observacoes: f?.health_notes ?? null,
                             presencas: Number(fr?.presencas ?? 0),
                             faltas: Number(fr?.faltas ?? 0),
+                            presencasNoMes: Number(
+                              mesPor.get(m.student_id)?.presencas ?? 0,
+                            ),
+                            faltasNoMes: Number(
+                              mesPor.get(m.student_id)?.faltas ?? 0,
+                            ),
+                            vencidoDesde: vencidaPor.get(m.student_id) ?? null,
                             email: f?.email,
                             telefone: f?.phone,
                             cpf: f?.document_id ? formatarCpf(f.document_id) : null,

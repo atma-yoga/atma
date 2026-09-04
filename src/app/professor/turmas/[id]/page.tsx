@@ -149,10 +149,15 @@ export default async function ChamadaPage({
     (fichas ?? []).map((f) => [f.student_id, f]),
   );
 
-  const { data: frequencia } = await supabase
-    .from("v_frequencia")
-    .select("*")
-    .eq("class_id", id);
+  const [{ data: frequencia }, { data: mensal }] = await Promise.all([
+    supabase.from("v_frequencia").select("*").eq("class_id", id),
+    supabase
+      .from("v_presenca_mensal")
+      .select("*")
+      .eq("mes", `${hoje.slice(0, 7)}-01`),
+  ]);
+
+  const mesPorAluno = new Map((mensal ?? []).map((m) => [m.student_id, m]));
 
   const freqPorAluno = new Map(
     (frequencia ?? []).map((f) => [f.student_id, f]),
@@ -176,6 +181,8 @@ export default async function ChamadaPage({
         observacoes: ficha?.health_notes ?? null,
         // Sem contato, endereço ou financeiro: o professor não os recebe.
         ficha: {
+          presencasNoMes: Number(mesPorAluno.get(b.student_id)?.presencas ?? 0),
+          faltasNoMes: Number(mesPorAluno.get(b.student_id)?.faltas ?? 0),
           id: b.student_id,
           nome: ficha?.nome ?? "sem nome",
           nomeCompleto: ficha?.nome_completo ?? "",

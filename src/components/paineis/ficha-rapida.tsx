@@ -23,6 +23,9 @@ export type ResumoDoAluno = {
   /* frequência — professor e administração veem */
   presencas: number;
   faltas: number;
+  /* o mês corrente, separado do acumulado */
+  presencasNoMes: number;
+  faltasNoMes: number;
 
   /* só a administração manda estes */
   email?: string | null;
@@ -32,6 +35,7 @@ export type ResumoDoAluno = {
   turmas?: string[];
   mensalidade?: string | null;
   emAberto?: string | null;
+  vencidoDesde?: string | null;
 };
 
 function Linha({ rotulo, valor }: { rotulo: string; valor: string }) {
@@ -70,6 +74,9 @@ export function FichaRapida({
   const percentual = registrado
     ? Math.round((aluno.presencas / registrado) * 100)
     : null;
+
+  const noMes = aluno.presencasNoMes + aluno.faltasNoMes;
+  const mesAtual = new Date().toLocaleDateString("pt-BR", { month: "long" });
 
   useEffect(() => {
     const d = dialogo.current;
@@ -152,8 +159,39 @@ export function FichaRapida({
               Frequência
             </h3>
 
+            {/* O mês primeiro: é o que responde "como ele está agora". */}
+            <div className="mb-4 border-b border-[var(--color-border)] pb-4">
+              <p className="mb-1 text-xs text-[var(--color-muted)]">
+                Em {mesAtual}
+              </p>
+              {noMes ? (
+                <p className="flex items-baseline gap-2">
+                  <span className="text-lg tabular-nums">
+                    {aluno.presencasNoMes}
+                  </span>
+                  <span className="text-sm text-[var(--color-muted)]">
+                    {aluno.presencasNoMes === 1 ? "presença" : "presenças"}
+                    {aluno.faltasNoMes
+                      ? ` · ${aluno.faltasNoMes} ${
+                          aluno.faltasNoMes === 1 ? "falta" : "faltas"
+                        }`
+                      : ""}
+                    {" de "}
+                    {noMes} {noMes === 1 ? "aula" : "aulas"}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-sm text-[var(--color-muted)]">
+                  Nenhuma chamada neste mês ainda.
+                </p>
+              )}
+            </div>
+
             {registrado ? (
               <>
+                <p className="mb-1 text-xs text-[var(--color-muted)]">
+                  Desde que entrou
+                </p>
                 <p className="flex items-baseline gap-2">
                   <span className="text-2xl font-light tabular-nums">
                     {percentual}%
@@ -196,6 +234,7 @@ export function FichaRapida({
           </section>
 
           {completa ? (
+            <>
             <section className="mb-5">
               <h3 className="mb-1 text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
                 Cadastro
@@ -215,10 +254,28 @@ export function FichaRapida({
               {aluno.mensalidade ? (
                 <Linha rotulo="Mensalidade" valor={aluno.mensalidade} />
               ) : null}
-              {aluno.emAberto ? (
-                <Linha rotulo="Em aberto" valor={aluno.emAberto} />
-              ) : null}
             </section>
+
+            {aluno.emAberto ? (
+              <section
+                className="mb-5 rounded-[var(--radius-md)] px-4 py-3"
+                style={{
+                  backgroundColor: "var(--color-surface-sunken)",
+                  borderLeft: "3px solid var(--color-mel)",
+                }}
+              >
+                <p className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
+                  Mensalidade em aberto
+                </p>
+                <p className="mt-1 text-lg tabular-nums">{aluno.emAberto}</p>
+                {aluno.vencidoDesde ? (
+                  <p className="mt-0.5 text-xs text-[var(--color-muted)]">
+                    vencida desde {aluno.vencidoDesde}
+                  </p>
+                ) : null}
+              </section>
+            ) : null}
+            </>
           ) : (
             <p className="mb-5 text-xs text-[var(--color-muted)]">
               Contato, endereço e financeiro ficam com a administração.

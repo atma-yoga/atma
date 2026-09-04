@@ -295,6 +295,8 @@ export const CHAMADA = CHAMADA_BASE.map((a) => ({
     observacoes: a.observacoes,
     presencas: a.presencas,
     faltas: a.totalRegistrado - a.presencas,
+    presencasNoMes: Math.min(a.presencas, 6),
+    faltasNoMes: a.totalRegistrado - a.presencas > 0 ? 1 : 0,
   },
 }));
 
