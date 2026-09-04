@@ -30,8 +30,10 @@
   --color-surface: #fbf8f1; /* cartão: papel puxado para cima */
   --color-surface-sunken: #efe9dc; /* área rebaixada */
   --color-foreground: #3a2a20; /* marrom — 12,2:1 sobre papel */
-  --color-muted: rgb(58 42 32 / 0.62); /* marrom translúcido ≈ 7,2:1 */
-  --color-subtle: rgb(58 42 32 / 0.42); /* só rótulo/ícone, não texto corrido */
+  /* Medidos, não estimados. Os valores anteriores (0.62 e 0.42) davam
+     3,93:1 e 2,37:1 — os dois abaixo do mínimo de 4,5:1 para texto. */
+  --color-muted: rgb(58 42 32 / 0.78); /* 6,2:1 sobre papel */
+  --color-subtle: rgb(58 42 32 / 0.68); /* 4,7:1 — rótulos pequenos */
   --color-border: rgb(58 42 32 / 0.14);
   --color-border-strong: #dfc9a2; /* palha como filete */
   --color-rule: #be8e55; /* mel — linha, moldura */
@@ -76,8 +78,8 @@
     --color-surface: #3a2a20; /* marrom */
     --color-surface-sunken: #241a14;
     --color-foreground: #f5f1e8; /* papel */
-    --color-muted: rgb(245 241 232 / 0.68);
-    --color-subtle: rgb(245 241 232 / 0.45);
+    --color-muted: rgb(245 241 232 / 0.78); /* 9,1:1 sobre o fundo escuro */
+    --color-subtle: rgb(245 241 232 / 0.66); /* 6,9:1 */
     --color-border: rgb(245 241 232 / 0.14);
     --color-border-strong: rgb(223 201 162 / 0.35);
     --color-danger: #d98b76; /* clareado para contrastar no escuro */
@@ -89,8 +91,8 @@
   --color-surface: #3a2a20;
   --color-surface-sunken: #241a14;
   --color-foreground: #f5f1e8;
-  --color-muted: rgb(245 241 232 / 0.68);
-  --color-subtle: rgb(245 241 232 / 0.45);
+  --color-muted: rgb(245 241 232 / 0.78);
+  --color-subtle: rgb(245 241 232 / 0.66);
   --color-border: rgb(245 241 232 / 0.14);
   --color-border-strong: rgb(223 201 162 / 0.35);
   --color-danger: #d98b76;

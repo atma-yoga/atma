@@ -77,7 +77,7 @@ export function AulasDaTurma({
             <input type="hidden" name="turma" value={turmaId} />
 
             <label className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+              <span className="text-xs uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                 Dia
               </span>
               <input
@@ -89,7 +89,7 @@ export function AulasDaTurma({
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+              <span className="text-xs uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                 Hora
               </span>
               <input
@@ -102,7 +102,7 @@ export function AulasDaTurma({
             </label>
 
             <label className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+              <span className="text-xs uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                 Min
               </span>
               <input
@@ -117,7 +117,7 @@ export function AulasDaTurma({
             </label>
 
             <label className="flex flex-1 flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+              <span className="text-xs uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                 Motivo (opcional)
               </span>
               <input

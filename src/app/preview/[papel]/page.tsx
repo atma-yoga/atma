@@ -300,7 +300,7 @@ function FaixaDePreview({ atual }: { atual: Tela }) {
   return (
     <div className="bg-[var(--color-marrom)] px-6 py-2.5 text-[var(--color-on-marrom)]">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
-        <span className="text-[11px] uppercase tracking-[0.16em] opacity-75">
+        <span className="text-xs uppercase tracking-[0.11em] opacity-75">
           Maquete · dados fictícios
         </span>
         <nav className="flex gap-2">

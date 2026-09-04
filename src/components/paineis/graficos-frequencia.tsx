@@ -81,7 +81,7 @@ export function GraficoDoMes({
   return (
     <Cartao className="p-5">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+        <h3 className="text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
           {titulo}
         </h3>
         <span className="text-xs text-[var(--color-muted)]">
@@ -180,7 +180,7 @@ export function GraficoDoAno({
   return (
     <Cartao className="p-5">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+        <h3 className="text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
           {ano}
         </h3>
         <span className="text-xs text-[var(--color-muted)]">
@@ -236,10 +236,10 @@ export function GraficoDoAno({
                 )}
               </span>
 
-              <span className="text-[9px] uppercase text-[var(--color-subtle)]">
+              <span className="text-xs uppercase text-[var(--color-subtle)]">
                 {MES_CURTO[i]}
               </span>
-              <span className="text-[10px] tabular-nums text-[var(--color-muted)]">
+              <span className="text-[11px] tabular-nums text-[var(--color-muted)]">
                 {total || ""}
               </span>
             </div>
@@ -276,7 +276,7 @@ export function GraficoGeral({
   return (
     <Cartao className="p-5">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+        <h3 className="text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
           Desde que entrou
         </h3>
         {desde ? (

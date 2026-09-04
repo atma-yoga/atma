@@ -56,7 +56,7 @@ export function Shell({
           <div className="flex items-center gap-4">
             <span className="hidden text-right sm:block">
               <span className="block text-sm leading-tight">{nome}</span>
-              <span className="block text-[10px] uppercase tracking-[0.16em] text-[var(--color-subtle)]">
+              <span className="block text-xs uppercase tracking-[0.11em] text-[var(--color-subtle)]">
                 {PAPEL[papel]}
               </span>
             </span>

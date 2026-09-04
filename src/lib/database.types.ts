@@ -1,10 +1,6 @@
 /**
  * GERADO AUTOMATICAMENTE — não edite à mão.
  *
- * EXCEÇÃO PROVISÓRIA: as entradas marcadas com "0013 pendente" foram escritas
- * à mão porque a migration 0013 ainda não foi aplicada ao banco. Depois de
- * aplicá-la, rode `npm run tipos` e elas voltam a ser geradas como o resto.
- *
  * Reflete o schema real do banco. Depois de aplicar uma migration, rode:
  *
  *   SUPABASE_ACCESS_TOKEN=sbp_... node scripts/gerar-tipos.mjs eptroarvhwhstizyjjfh
@@ -935,18 +931,6 @@ export type Database = {
 
     };
     Views: {
-      /* 0013 pendente */
-      v_frequencia_mensal: {
-        Row: {
-          student_id: string | null;
-          mes: string | null;
-          presencas: number | null;
-          faltas: number | null;
-        };
-        Relationships: [];
-      };
-
-      /* 0013 pendente */
       v_aulas_do_aluno: {
         Row: {
           booking_id: string | null;
@@ -975,6 +959,16 @@ export type Database = {
           presencas: number | null;
           faltas: number | null;
           percentual: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_frequencia_mensal: {
+        Row: {
+          student_id: string | null;
+          mes: string | null;
+          presencas: number | null;
+          faltas: number | null;
         };
         Relationships: [];
       };
@@ -1062,21 +1056,6 @@ export type Database = {
 
     };
     Functions: {
-      /* 0013 pendente */
-      criar_aula_extra: {
-        Args: {
-          turma: string;
-          dia: string;
-          hora: string;
-          duracao?: number;
-          observacao?: string;
-        };
-        Returns: string;
-      };
-      /* 0013 pendente */
-      suspender_aula: { Args: { aula: string; motivo?: string }; Returns: string };
-      /* 0013 pendente */
-      reativar_aula: { Args: { aula: string }; Returns: string };
       abrir_chamada: {
         Args: { turma: string; dia: string };
         Returns: string;

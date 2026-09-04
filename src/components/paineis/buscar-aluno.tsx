@@ -49,7 +49,7 @@ export function BuscarAluno({
   return (
     <Cartao className="p-5">
       <label className="flex flex-col gap-1.5">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+        <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
           Procurar aluno
         </span>
         <input

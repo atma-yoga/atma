@@ -29,7 +29,7 @@ export function TituloSecao({
 }) {
   return (
     <div className="mb-4 flex items-baseline justify-between gap-4">
-      <h2 className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
+      <h2 className="text-xs uppercase tracking-[0.12em] text-[var(--color-muted)]">
         {children}
       </h2>
       {acao}
@@ -77,7 +77,7 @@ export function Campo({
 }) {
   return (
     <label className={`flex flex-col gap-1.5 ${classeExterna}`}>
-      <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+      <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
         {rotulo}
       </span>
       <input
@@ -102,7 +102,7 @@ export function AreaDeTexto({
 }) {
   return (
     <label className={`flex flex-col gap-1.5 ${classeExterna}`}>
-      <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+      <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
         {rotulo}
       </span>
       <textarea
@@ -120,7 +120,7 @@ export function AreaDeTexto({
 export function Divisao({ children }: { children: ReactNode }) {
   return (
     <div className="mt-2 flex items-center gap-3 sm:col-span-2">
-      <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+      <span className="text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
         {children}
       </span>
       <span className="h-px flex-1 bg-[var(--color-border)]" />
@@ -167,7 +167,7 @@ export function Numero({
 }) {
   return (
     <Cartao className="p-5">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+      <p className="text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
         {rotulo}
       </p>
       <p className="mt-2 text-3xl font-light tabular-nums">{valor}</p>

@@ -108,7 +108,7 @@ export function FormularioPessoa({
         <input type="hidden" name="papel" value={papel} />
 
         <fieldset className={`flex flex-col gap-2 ${LINHA}`}>
-          <legend className="mb-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+          <legend className="mb-2 text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
             Cadastrar como
           </legend>
           <div className="flex gap-2">

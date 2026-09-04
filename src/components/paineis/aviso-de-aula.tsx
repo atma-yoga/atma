@@ -67,7 +67,7 @@ export function AvisoDeAula({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+          <p className="text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
             {ehHoje ? "Hoje" : "Próxima aula"}
           </p>
 

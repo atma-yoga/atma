@@ -76,7 +76,7 @@ export function AgendaDaSemana({
   return (
     <section>
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-muted)]">
+        <h2 className="text-xs uppercase tracking-[0.12em] text-[var(--color-muted)]">
           {titulo}
         </h2>
         <span className="text-xs text-[var(--color-muted)]">
@@ -101,7 +101,7 @@ export function AgendaDaSemana({
                 }`}
               >
                 <span
-                  className={`text-[11px] uppercase tracking-[0.14em] ${
+                  className={`text-xs uppercase tracking-[0.1em] ${
                     ehHoje
                       ? "text-[var(--color-foreground)]"
                       : "text-[var(--color-muted)]"
@@ -163,13 +163,13 @@ export function AgendaDaSemana({
                             }}
                           />
                         </span>
-                        <span className="text-[10px] tabular-nums text-[var(--color-muted)]">
+                        <span className="text-[11px] tabular-nums text-[var(--color-muted)]">
                           {e.matriculados}/{e.capacidade}
                         </span>
                       </div>
 
                       {e.aoArLivre ? (
-                        <p className="mt-1.5 text-[10px] uppercase tracking-[0.1em] text-[var(--color-subtle)]">
+                        <p className="mt-1.5 text-xs uppercase tracking-[0.1em] text-[var(--color-subtle)]">
                           ar livre
                         </p>
                       ) : null}

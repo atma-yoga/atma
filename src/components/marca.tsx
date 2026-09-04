@@ -127,7 +127,7 @@ export function MarcaHorizontal({
       <Simbolo tamanho={32} tom={tom} />
       <span className="flex flex-col leading-none">
         <span className="marca text-[15px]">ATMA</span>
-        <span className="mt-[3px] text-[9px] tracking-[0.22em] uppercase text-[var(--color-subtle)]">
+        <span className="mt-[3px] text-[11px] tracking-[0.22em] uppercase text-[var(--color-subtle)]">
           yoga estúdio
         </span>
       </span>

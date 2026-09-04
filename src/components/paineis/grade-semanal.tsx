@@ -54,7 +54,7 @@ export function GradeSemanal({
 
         return (
           <div key={dia}>
-            <h3 className="mb-2 text-[10px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+            <h3 className="mb-2 text-xs uppercase tracking-[0.11em] text-[var(--color-muted)]">
               {DIAS[dia]}
             </h3>
 

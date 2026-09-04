@@ -104,7 +104,7 @@ export function FormularioLocal({
         />
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+          <legend className="mb-2 text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
             Tipo
           </legend>
           <div className="flex gap-2">
@@ -132,7 +132,7 @@ export function FormularioLocal({
         </fieldset>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+          <legend className="mb-2 text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
             Cor na agenda
           </legend>
           <div className="flex flex-wrap gap-2">

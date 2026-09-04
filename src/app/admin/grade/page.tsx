@@ -76,7 +76,7 @@ export default async function GradePage() {
 
         <form action={gerarAulas} className="flex items-end gap-2">
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <span className="text-xs uppercase tracking-[0.12em] text-[var(--color-subtle)]">
               Gerar aulas por
             </span>
             <select

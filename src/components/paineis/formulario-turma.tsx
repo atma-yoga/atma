@@ -83,7 +83,7 @@ export function FormularioTurma({
         />
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+          <legend className="mb-2 text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
             Dias da semana
           </legend>
           <div className="flex flex-wrap gap-1.5">
@@ -115,7 +115,7 @@ export function FormularioTurma({
 
         <div className="grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+            <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
               Horário
             </span>
             <input
@@ -139,7 +139,7 @@ export function FormularioTurma({
         </div>
 
         <label className="flex flex-col gap-1.5">
-          <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+          <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
             Professor
           </span>
           <select
@@ -158,7 +158,7 @@ export function FormularioTurma({
 
         <div className="grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted)]">
+            <span className="text-xs uppercase tracking-[0.1em] text-[var(--color-muted)]">
               Local
             </span>
             <select
