@@ -3,41 +3,15 @@
 import Link from "next/link";
 
 import { Cartao, Etiqueta, TituloSecao, Vazio, brl } from "@/components/ui";
-import {
-  FORMA_PAGAMENTO,
-  type FormaPagamento,
-  type StatusPagamento,
-} from "@/lib/tipos";
+import { estaVencida, type Cobranca } from "@/lib/cobranca";
+import { FORMA_PAGAMENTO, type FormaPagamento } from "@/lib/tipos";
 import {
   linkDaConversa,
   mensagemDeCobranca,
   telefoneParaWhatsapp,
 } from "@/lib/whatsapp";
 
-export type Cobranca = {
-  id: string;
-  alunoId: string;
-  aluno: string;
-  telefone: string | null;
-  turma: string | null;
-  valor: number;
-  proporcao: number | null;
-  mesReferencia: string; // YYYY-MM-DD
-  vencimento: string; // YYYY-MM-DD
-  status: StatusPagamento;
-  pagoEm: string | null;
-  forma: FormaPagamento | null;
-  avisadoEm: string | null;
-};
-
-/**
- * "Vencido" é calculado na hora, não lido do banco.
- *
- * O status gravado só mudaria se alguém rodasse uma rotina diária; sem isso a
- * cobrança de ontem apareceria como "a vencer" para sempre.
- */
-export const estaVencida = (c: Cobranca, hoje: string) =>
-  c.status !== "paid" && c.vencimento < hoje;
+export { estaVencida, type Cobranca };
 
 const data = (iso: string) =>
   new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", {

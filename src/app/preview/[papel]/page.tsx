@@ -8,10 +8,8 @@ import {
   CartaoDaTurma,
   GradeSemanal,
 } from "@/components/paineis/grade-semanal";
-import {
-  ListaDeCobrancas,
-  estaVencida,
-} from "@/components/paineis/cobrancas";
+import { ListaDeCobrancas } from "@/components/paineis/cobrancas";
+import { estaVencida } from "@/lib/cobranca";
 import { ListaDeChamada } from "@/components/paineis/lista-de-chamada";
 import { ListaDePessoas } from "@/components/paineis/lista-de-pessoas";
 import { PainelAdmin } from "@/components/paineis/painel-admin";

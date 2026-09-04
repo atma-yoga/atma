@@ -1,11 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import {
-  ListaDeCobrancas,
-  estaVencida,
-  type Cobranca,
-} from "@/components/paineis/cobrancas";
+import { ListaDeCobrancas } from "@/components/paineis/cobrancas";
+import { estaVencida, type Cobranca } from "@/lib/cobranca";
 import { Shell } from "@/components/shell";
 import { Botao, Numero } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
