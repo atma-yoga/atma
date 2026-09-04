@@ -22,7 +22,7 @@ export default async function AdminPage() {
 
   const [
     { count: alunosAtivos },
-    { count: matriculasAtivas },
+    { data: emTurma },
     { data: vencidos },
     { data: recebido },
     { data: grade },
@@ -32,10 +32,12 @@ export default async function AdminPage() {
       .select("profile_id", { count: "exact", head: true })
       .eq("is_active", true),
 
+    // Alunos distintos com matrícula ativa em alguma turma. A diferença para
+    // "alunos ativos" mostra quem está cadastrado e fora de turma.
     supabase
-      .from("subscriptions")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "active"),
+      .from("class_enrollments")
+      .select("student_id")
+      .eq("is_active", true),
 
     supabase.from("payments").select("amount").eq("status", "overdue"),
 
@@ -77,7 +79,7 @@ export default async function AdminPage() {
     <Shell papel="admin" nome={sessao.perfil?.full_name ?? ""}>
       <PainelAdmin
         alunosAtivos={alunosAtivos ?? 0}
-        matriculasAtivas={matriculasAtivas ?? 0}
+        emTurma={new Set((emTurma ?? []).map((e) => e.student_id)).size}
         recebidoNoMes={soma(recebido)}
         totalEmAtraso={soma(vencidos)}
         cobrancasEmAtraso={vencidos?.length ?? 0}

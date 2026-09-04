@@ -6,14 +6,14 @@ import { Numero, Vazio, brl } from "@/components/ui";
 
 export function PainelAdmin({
   alunosAtivos,
-  matriculasAtivas,
+  emTurma,
   recebidoNoMes,
   totalEmAtraso,
   cobrancasEmAtraso,
   semana,
 }: {
   alunosAtivos: number;
-  matriculasAtivas: number;
+  emTurma: number;
   recebidoNoMes: number;
   totalEmAtraso: number;
   cobrancasEmAtraso: number;
@@ -30,7 +30,15 @@ export function PainelAdmin({
 
       <div className="mb-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Numero rotulo="Alunos ativos" valor={alunosAtivos} />
-        <Numero rotulo="Matrículas ativas" valor={matriculasAtivas} />
+        <Numero
+          rotulo="Em turma"
+          valor={emTurma}
+          detalhe={
+            alunosAtivos - emTurma > 0
+              ? `${alunosAtivos - emTurma} sem turma`
+              : undefined
+          }
+        />
         <Numero
           rotulo="Recebido no mês"
           valor={brl(recebidoNoMes)}

@@ -164,7 +164,7 @@ export const VAGAS_ABERTAS: AulaNaAgenda[] = AGENDA_DO_ESTUDIO.slice(0, 6);
 
 export const NUMEROS_DO_ADMIN = {
   alunosAtivos: 87,
-  matriculasAtivas: 74,
+  emTurma: 74,
   recebidoNoMes: 21480,
   totalEmAtraso: 1320,
   cobrancasEmAtraso: 4,
