@@ -12,7 +12,7 @@ import {
   type AlunoNaChamada,
 } from "@/components/paineis/lista-de-chamada";
 import { Shell } from "@/components/shell";
-import { Botao, Cartao, Etiqueta, TituloSecao, Vazio } from "@/components/ui";
+import { Etiqueta, TituloSecao, Vazio } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import {
