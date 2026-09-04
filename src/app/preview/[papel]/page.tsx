@@ -233,11 +233,6 @@ function TelaDoFinanceiro() {
     (s, c) => s + c.valor,
     0,
   );
-  const mes = new Date().toLocaleDateString("pt-BR", {
-    month: "long",
-    year: "numeric",
-  });
-
   return (
     <>
       <div className="mb-8">
@@ -254,7 +249,6 @@ function TelaDoFinanceiro() {
         <Numero rotulo="Em atraso" valor={brl(0)} />
       </div>
 
-      <TituloSecao>Cobranças de {mes}</TituloSecao>
       <ListaDeCobrancas cobrancas={COBRANCAS} hoje={HOJE_ISO} demo />
     </>
   );
