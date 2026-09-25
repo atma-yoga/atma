@@ -189,7 +189,6 @@ const CHAMAVEIS = new Set([
   "reativar_aula",
   "suspender_aula",
   "consumir_convite",
-  "expire_subscriptions",
   "fracao_do_mes",
   "generate_sessions",
   "gerar_mensalidades",

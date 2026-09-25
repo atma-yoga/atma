@@ -17,57 +17,11 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      announcements: {
-        Row: {
-          id: string;
-          author_id: string;
-          title: string;
-          body: string;
-          audience: Database["public"]["Enums"]["app_role"][];
-          is_pinned: boolean;
-          published_at: string;
-          expires_at: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          author_id: string;
-          title: string;
-          body: string;
-          audience?: Database["public"]["Enums"]["app_role"][];
-          is_pinned?: boolean;
-          published_at?: string;
-          expires_at?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          author_id?: string;
-          title?: string;
-          body?: string;
-          audience?: Database["public"]["Enums"]["app_role"][];
-          is_pinned?: boolean;
-          published_at?: string;
-          expires_at?: string | null;
-          created_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "announcements_author_id_fkey";
-            columns: ["author_id"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-
       bookings: {
         Row: {
           id: string;
           session_id: string;
           student_id: string;
-          subscription_id: string | null;
           status: Database["public"]["Enums"]["booking_status"];
           waitlist_pos: number | null;
           booked_at: string;
@@ -82,7 +36,6 @@ export type Database = {
           id?: string;
           session_id: string;
           student_id: string;
-          subscription_id?: string | null;
           status?: Database["public"]["Enums"]["booking_status"];
           waitlist_pos?: number | null;
           booked_at?: string;
@@ -97,7 +50,6 @@ export type Database = {
           id?: string;
           session_id?: string;
           student_id?: string;
-          subscription_id?: string | null;
           status?: Database["public"]["Enums"]["booking_status"];
           waitlist_pos?: number | null;
           booked_at?: string;
@@ -129,13 +81,6 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "students";
             referencedColumns: ["profile_id"];
-          },
-          {
-            foreignKeyName: "bookings_subscription_id_fkey";
-            columns: ["subscription_id"];
-            isOneToOne: false;
-            referencedRelation: "subscriptions";
-            referencedColumns: ["id"];
           },
         ];
       };
@@ -363,49 +308,6 @@ export type Database = {
         ];
       };
 
-      credit_ledger: {
-        Row: {
-          id: string;
-          subscription_id: string;
-          booking_id: string | null;
-          delta: number;
-          reason: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          subscription_id: string;
-          booking_id?: string | null;
-          delta: number;
-          reason: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          subscription_id?: string;
-          booking_id?: string | null;
-          delta?: number;
-          reason?: string;
-          created_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "credit_ledger_booking_fk";
-            columns: ["booking_id"];
-            isOneToOne: false;
-            referencedRelation: "bookings";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "credit_ledger_subscription_id_fkey";
-            columns: ["subscription_id"];
-            isOneToOne: false;
-            referencedRelation: "subscriptions";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-
       invites: {
         Row: {
           id: string;
@@ -458,7 +360,6 @@ export type Database = {
         Row: {
           id: string;
           student_id: string;
-          subscription_id: string | null;
           amount: number;
           status: Database["public"]["Enums"]["payment_status"];
           method: Database["public"]["Enums"]["payment_method"] | null;
@@ -477,7 +378,6 @@ export type Database = {
         Insert: {
           id?: string;
           student_id: string;
-          subscription_id?: string | null;
           amount: number;
           status?: Database["public"]["Enums"]["payment_status"];
           method?: Database["public"]["Enums"]["payment_method"] | null;
@@ -496,7 +396,6 @@ export type Database = {
         Update: {
           id?: string;
           student_id?: string;
-          subscription_id?: string | null;
           amount?: number;
           status?: Database["public"]["Enums"]["payment_status"];
           method?: Database["public"]["Enums"]["payment_method"] | null;
@@ -527,13 +426,6 @@ export type Database = {
             referencedRelation: "students";
             referencedColumns: ["profile_id"];
           },
-          {
-            foreignKeyName: "payments_subscription_id_fkey";
-            columns: ["subscription_id"];
-            isOneToOne: false;
-            referencedRelation: "subscriptions";
-            referencedColumns: ["id"];
-          },
         ];
       };
 
@@ -555,52 +447,6 @@ export type Database = {
           username?: string | null;
           created_at?: string;
           note?: string | null;
-        };
-        Relationships: [];
-      };
-
-      plans: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          price: number;
-          period: Database["public"]["Enums"]["plan_period"];
-          duration_days: number | null;
-          class_credits: number | null;
-          credits_per_week: number | null;
-          is_active: boolean;
-          sort_order: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          price: number;
-          period: Database["public"]["Enums"]["plan_period"];
-          duration_days?: number | null;
-          class_credits?: number | null;
-          credits_per_week?: number | null;
-          is_active?: boolean;
-          sort_order?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          price?: number;
-          period?: Database["public"]["Enums"]["plan_period"];
-          duration_days?: number | null;
-          class_credits?: number | null;
-          credits_per_week?: number | null;
-          is_active?: boolean;
-          sort_order?: number;
-          created_at?: string;
-          updated_at?: string;
         };
         Relationships: [];
       };
@@ -744,124 +590,6 @@ export type Database = {
             isOneToOne: true;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
-          },
-        ];
-      };
-
-      subscriptions: {
-        Row: {
-          id: string;
-          student_id: string;
-          plan_id: string;
-          status: Database["public"]["Enums"]["subscription_status"];
-          starts_on: string;
-          ends_on: string | null;
-          price_charged: number;
-          credits_total: number | null;
-          credits_used: number;
-          auto_renew: boolean;
-          canceled_at: string | null;
-          notes: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          student_id: string;
-          plan_id: string;
-          status?: Database["public"]["Enums"]["subscription_status"];
-          starts_on?: string;
-          ends_on?: string | null;
-          price_charged: number;
-          credits_total?: number | null;
-          credits_used?: number;
-          auto_renew?: boolean;
-          canceled_at?: string | null;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          student_id?: string;
-          plan_id?: string;
-          status?: Database["public"]["Enums"]["subscription_status"];
-          starts_on?: string;
-          ends_on?: string | null;
-          price_charged?: number;
-          credits_total?: number | null;
-          credits_used?: number;
-          auto_renew?: boolean;
-          canceled_at?: string | null;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_plan_id_fkey";
-            columns: ["plan_id"];
-            isOneToOne: false;
-            referencedRelation: "plans";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "subscriptions_student_id_fkey";
-            columns: ["student_id"];
-            isOneToOne: false;
-            referencedRelation: "students";
-            referencedColumns: ["profile_id"];
-          },
-        ];
-      };
-
-      teacher_payouts: {
-        Row: {
-          id: string;
-          teacher_id: string;
-          period_start: string;
-          period_end: string;
-          sessions_count: number;
-          amount: number;
-          status: Database["public"]["Enums"]["payment_status"];
-          paid_at: string | null;
-          notes: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          teacher_id: string;
-          period_start: string;
-          period_end: string;
-          sessions_count?: number;
-          amount: number;
-          status?: Database["public"]["Enums"]["payment_status"];
-          paid_at?: string | null;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          teacher_id?: string;
-          period_start?: string;
-          period_end?: string;
-          sessions_count?: number;
-          amount?: number;
-          status?: Database["public"]["Enums"]["payment_status"];
-          paid_at?: string | null;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "teacher_payouts_teacher_id_fkey";
-            columns: ["teacher_id"];
-            isOneToOne: false;
-            referencedRelation: "teachers";
-            referencedColumns: ["profile_id"];
           },
         ];
       };
@@ -1148,26 +876,6 @@ export type Database = {
         Relationships: [];
       };
 
-      v_student_overview: {
-        Row: {
-          profile_id: string | null;
-          full_name: string | null;
-          email: string | null;
-          phone: string | null;
-          is_active: boolean | null;
-          subscription_id: string | null;
-          plan_name: string | null;
-          subscription_status: Database["public"]["Enums"]["subscription_status"] | null;
-          ends_on: string | null;
-          credits_total: number | null;
-          credits_used: number | null;
-          credits_left: number | null;
-          total_attended: number | null;
-          overdue_payments: number | null;
-        };
-        Relationships: [];
-      };
-
     };
     Functions: {
       abrir_chamada: {
@@ -1181,10 +889,6 @@ export type Database = {
       criar_aula_extra: {
         Args: { turma: string; dia: string; hora: string; duracao?: number; observacao?: string };
         Returns: string;
-      };
-      expire_subscriptions: {
-        Args: Record<string, never>;
-        Returns: number;
       };
       fracao_do_mes: {
         Args: { entrada: string };
