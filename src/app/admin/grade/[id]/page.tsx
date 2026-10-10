@@ -155,11 +155,14 @@ export default async function TurmaPage({
         </div>
 
         <span className="flex items-center gap-4">
+          {/* Era um link miúdo escrito "chamada e aulas", e ninguém o achava:
+              a adm entrava aqui pela grade e saía sem encontrar onde marcar
+              presença. É a ação mais frequente desta página; agora parece uma. */}
           <Link
             href={`/professor/turmas/${turma.id}`}
-            className="text-xs text-[var(--color-muted)] underline underline-offset-4 hover:text-[var(--color-foreground)]"
+            className="inline-flex h-9 items-center rounded-[var(--radius-md)] bg-[var(--color-marrom)] px-4 text-xs font-medium text-[var(--color-on-marrom)] transition hover:opacity-90"
           >
-            chamada e aulas
+            Fazer chamada
           </Link>
 
           <form action={alternarTurma}>

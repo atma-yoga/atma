@@ -7,6 +7,7 @@ import { PAPEL, type Papel } from "@/lib/tipos";
 
 const NAV: Record<Papel, { href: string; texto: string }[]> = {
   admin: [
+    { href: "/chamada", texto: "Chamada" },
     { href: "/admin", texto: "Visão geral" },
     { href: "/admin/grade", texto: "Grade semanal" },
     { href: "/admin/pessoas", texto: "Pessoas" },
@@ -15,7 +16,7 @@ const NAV: Record<Papel, { href: string; texto: string }[]> = {
     { href: "/admin/relatorios", texto: "Relatórios" },
   ],
   teacher: [
-    { href: "/professor", texto: "Hoje" },
+    { href: "/chamada", texto: "Chamada" },
     { href: "/professor/turmas", texto: "Minhas turmas" },
   ],
   student: [

@@ -91,6 +91,6 @@ export const COR_STATUS_AGENDAMENTO: Record<
 /** Home de cada papel. Um usuário com vários papéis cai no mais alto. */
 export function rotaInicial(papeis: Papel[]): string {
   if (papeis.includes("admin")) return "/admin";
-  if (papeis.includes("teacher")) return "/professor";
+  if (papeis.includes("teacher")) return "/chamada";
   return "/aluno";
 }
