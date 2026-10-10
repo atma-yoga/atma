@@ -64,6 +64,11 @@ export default async function GradePage() {
 
   const semProfessor = turmas.filter((t) => t.ativa && !t.professor).length;
 
+  // A grade desenha só o que está na grade. Turma desativada continua logo
+  // abaixo, na lista, onde dá para reativar — mas no quadro da semana ela
+  // só atrapalharia quem procura a aula de hoje.
+  const naGrade = encontros.filter((e) => e.ativa);
+
   return (
     <Shell papel="admin" nome={sessao.perfil?.full_name ?? ""}>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -113,8 +118,8 @@ export default async function GradePage() {
 
       <section className="mb-12">
         <TituloSecao>A semana</TituloSecao>
-        {encontros.length ? (
-          <GradeSemanal encontros={encontros} />
+        {naGrade.length ? (
+          <GradeSemanal encontros={naGrade} />
         ) : (
           <Vazio>Nenhuma turma ainda. Crie a primeira ao lado.</Vazio>
         )}
