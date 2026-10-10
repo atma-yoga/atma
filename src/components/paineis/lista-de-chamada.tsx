@@ -89,16 +89,21 @@ export function ListaDeChamada({
         >
           <span className="min-w-36 flex-1">
             <FichaRapida aluno={a.ficha} className="block text-sm" />
-            <span className="block text-xs text-[var(--color-muted)]">
-              {a.frequencia !== null
-                ? `${a.frequencia}% de presença · ${a.presencas} de ${a.totalRegistrado}`
-                : "sem histórico ainda"}
-            </span>
+            {/* O visitante não tem — nem deve ter — histórico nesta turma. O
+                "sem histórico ainda" que apareceria ali soaria como aluno
+                novo, quando é alguém com anos de estúdio em outra turma. */}
+            {a.reposicao?.tipo === "visita" ? null : (
+              <span className="block text-xs text-[var(--color-muted)]">
+                {a.frequencia !== null
+                  ? `${a.frequencia}% de presença · ${a.presencas} de ${a.totalRegistrado}`
+                  : "sem histórico ainda"}
+              </span>
+            )}
 
             {a.reposicao ? (
               <span
                 className="mt-1 block text-xs"
-                style={{ color: "var(--color-azul)" }}
+                style={{ color: "var(--color-azul-texto)" }}
               >
                 {a.reposicao.tipo === "visita"
                   ? `reposição · é da turma ${a.reposicao.turma ?? "—"}, repondo ${dataCurta(a.reposicao.quando)}`

@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useMemo, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 
 import { Botao, Cartao } from "@/components/ui";
 import type {
@@ -59,6 +65,18 @@ export function Reposicao({
     registrar,
     undefined,
   );
+
+  // Registrou: volta ao começo. Deixar o formulário aberto com o nome de quem
+  // acabou de entrar convida a registrar a mesma pessoa duas vezes, e a lista
+  // já mostra o resultado logo acima.
+  useEffect(() => {
+    if (estado && "sucesso" in estado) {
+      setEscolhido(null);
+      setOpcoes(null);
+      setBusca("");
+      setAberto(false);
+    }
+  }, [estado]);
 
   const achados = useMemo(() => {
     const termo = busca.trim().toLowerCase();

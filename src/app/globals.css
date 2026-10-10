@@ -20,6 +20,9 @@
   --color-verde: #516d3b; /* 10% — 2ª cor escura */
   --color-mel: #be8e55; /* 10% — detalhe quente, filete */
   --color-azul: #4e6e86; /*  5% — acento raro */
+  /* O azul como LETRA. Sobre papel ele dá 5,4:1 e serve; sobre o marrom do
+     modo escuro daria 2,5:1, e é lá que ele precisa clarear. */
+  --color-azul-texto: #4e6e86; /*  5,4:1 sobre branco */
 
   /* Derivado: mais escuro que verde, logo mais contrastado. Único tom fora
      das seis, usado só para diferenciar modalidades na agenda. */
@@ -83,6 +86,7 @@
     --color-border: rgb(245 241 232 / 0.14);
     --color-border-strong: rgb(223 201 162 / 0.35);
     --color-danger: #d98b76; /* clareado para contrastar no escuro */
+    --color-azul-texto: #8fb3cc; /* 6,2:1 sobre o marrom */
   }
 }
 
@@ -96,6 +100,7 @@
   --color-border: rgb(245 241 232 / 0.14);
   --color-border-strong: rgb(223 201 162 / 0.35);
   --color-danger: #d98b76;
+  --color-azul-texto: #8fb3cc;
 }
 
 /* =============================================================================

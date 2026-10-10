@@ -244,7 +244,12 @@ export default async function ChamadaPage({
     .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 
   const presentes = lista.filter((a) => a.status === "attended").length;
-  const faltas = lista.filter((a) => a.status === "no_show").length;
+  // Quem repôs não é falta: a linha dela já diz isso, e o resumo no topo
+  // precisa dizer o mesmo, senão a adm lê "1 falta" e vai cobrar explicação.
+  const repostas = lista.filter((a) => a.reposicao?.tipo === "reposta").length;
+  const faltas = lista.filter(
+    (a) => a.status === "no_show" && a.reposicao?.tipo !== "reposta",
+  ).length;
   const semMarcar = lista.filter((a) => a.status === "booked").length;
 
   return (
@@ -304,6 +309,14 @@ export default async function ChamadaPage({
               >
                 {presentes} presentes
               </Etiqueta>
+              {repostas ? (
+                <Etiqueta
+                  fundo="var(--color-azul)"
+                  letra="var(--color-on-azul)"
+                >
+                  {repostas} {repostas === 1 ? "repôs" : "repuseram"}
+                </Etiqueta>
+              ) : null}
               {faltas ? (
                 <Etiqueta fundo="var(--color-mel)" letra="var(--color-on-mel)">
                   {faltas} faltas
