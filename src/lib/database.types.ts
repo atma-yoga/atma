@@ -940,6 +940,10 @@ export type Database = {
         Args: { visita: string };
         Returns: undefined;
       };
+      excluir_turma: {
+        Args: { turma: string };
+        Returns: undefined;
+      };
       fracao_do_mes: {
         Args: { entrada: string };
         Returns: number;

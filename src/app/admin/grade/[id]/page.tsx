@@ -5,12 +5,19 @@ import { BuscarAluno, type AlunoBuscavel } from "@/components/paineis/buscar-alu
 import { FichaRapida } from "@/components/paineis/ficha-rapida";
 import { FormularioTurma } from "@/components/paineis/formulario-turma";
 import { DIAS_CURTOS } from "@/components/paineis/grade-semanal";
+import { ApagarTurma } from "@/components/paineis/apagar-turma";
 import { Shell } from "@/components/shell";
 import { Botao, Cartao, Etiqueta, TituloSecao, Vazio, brl } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { formatarCpf } from "@/lib/ficha";
 import { createClient } from "@/lib/supabase/server";
-import { alternarTurma, desmatricular, matricular, salvarTurma } from "../actions";
+import {
+  alternarTurma,
+  desmatricular,
+  excluirTurma,
+  matricular,
+  salvarTurma,
+} from "../actions";
 
 export const metadata = { title: "Turma" };
 
@@ -175,6 +182,12 @@ export default async function TurmaPage({
               {turma.is_active ? "tirar da grade" : "voltar para a grade"}
             </button>
           </form>
+
+          <ApagarTurma
+            turmaId={turma.id}
+            nome={turma.name}
+            acao={excluirTurma}
+          />
         </span>
       </div>
 

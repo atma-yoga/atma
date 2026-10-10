@@ -191,6 +191,7 @@ const CHAMAVEIS = new Set([
   "registrar_reposicao",
   "desfazer_reposicao",
   "criar_aula_extra",
+  "excluir_turma",
   "reativar_aula",
   "suspender_aula",
   "consumir_convite",

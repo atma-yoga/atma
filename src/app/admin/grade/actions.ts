@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -197,4 +198,32 @@ export async function gerarAulas(form: FormData): Promise<void> {
 
   revalidatePath("/admin/grade");
   revalidatePath("/admin");
+}
+
+export type EstadoDaTurma = { erro: string } | undefined;
+
+/**
+ * Apaga uma turma.
+ *
+ * A recusa quando há história vem do banco, e a mensagem dele é escrita para
+ * ser lida pela adm — por isso ela sobe inteira para a tela, em vez de virar
+ * um "não foi possível" genérico que não ensina nada.
+ */
+export async function excluirTurma(
+  _anterior: EstadoDaTurma,
+  form: FormData,
+): Promise<EstadoDaTurma> {
+  const sessao = await getSessao();
+  if (!sessao) return { erro: "Sessão expirada. Entre de novo." };
+
+  const turma = String(form.get("turma") ?? "");
+  if (!turma) return { erro: "Turma não informada." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("excluir_turma", { turma });
+
+  if (error) return { erro: error.message };
+
+  revalidatePath("/admin/grade");
+  redirect("/admin/grade");
 }
