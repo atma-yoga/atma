@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { MarcaHorizontal } from "@/components/marca";
+import { BotaoDeTema } from "@/components/tema";
 import { sair } from "@/app/entrar/actions";
 import { PAPEL, type Papel } from "@/lib/tipos";
 
@@ -62,6 +63,8 @@ export function Shell({
                 {PAPEL[papel]}
               </span>
             </span>
+            <BotaoDeTema />
+
             <form action={sair}>
               <button
                 type="submit"

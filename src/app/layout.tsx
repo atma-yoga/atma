@@ -27,6 +27,22 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/*
+          Aplica o tema escolhido antes da página pintar. Em componente React
+          isso só rodaria depois do primeiro quadro, e quem escolheu o claro
+          veria um lampejo marrom a cada troca de página.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('tema');" +
+              "if(t==='claro'){document.documentElement.dataset.theme='light'}" +
+              "else if(t==='escuro'){document.documentElement.dataset.theme='dark'}}" +
+              "catch(e){}",
+          }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
       </body>
