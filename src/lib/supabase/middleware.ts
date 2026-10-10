@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   "/auth",
   "/preview",
   "/convite",
+  "/api/acordar",
 ];
 
 export async function updateSession(request: NextRequest) {
