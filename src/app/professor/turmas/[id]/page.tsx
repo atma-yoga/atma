@@ -16,11 +16,18 @@ import { Etiqueta, TituloSecao, Vazio } from "@/components/ui";
 import { getSessao } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import {
+  Reposicao,
+  type CandidatoAReposicao,
+} from "@/components/paineis/reposicao";
+import {
   abrirChamada,
   criarAulaExtra,
+  desfazerReposicao,
   limparPresenca,
   marcarPresenca,
+  opcoesDeReposicao,
   reativarAula,
+  registrarReposicao,
   suspenderAula,
 } from "../actions";
 
@@ -116,6 +123,40 @@ export default async function ChamadaPage({
         .eq("session_id", aula.id)
     : { data: null };
 
+  // As duas pontas de uma reposição ficam em turmas diferentes, e a RLS
+  // esconde do professor a aula da outra turma. Estas duas funções atravessam
+  // essa parede com o mínimo: nome de turma, data e nome de aluno.
+  const [{ data: contexto }, { data: candidatos }] = aula
+    ? await Promise.all([
+        supabase.rpc("contexto_de_reposicao", { aula: aula.id }),
+        supabase.rpc("alunos_para_reposicao", { aula: aula.id, busca: "" }),
+      ])
+    : [{ data: null }, { data: null }];
+
+  const reposicaoPorLinha = new Map(
+    (contexto ?? [])
+      // Sem a data não há o que contar ao professor, e a linha seria só uma
+      // cor diferente sem explicação. Melhor não pintar.
+      .filter((c) => c.booking_id && c.outra_data)
+      .map((c) => [
+        c.booking_id as string,
+        {
+          tipo:
+            c.tipo === "visita" ? ("visita" as const) : ("reposta" as const),
+          turma: c.outra_turma,
+          quando: c.outra_data as string,
+        },
+      ]),
+  );
+
+  const podemRepor: CandidatoAReposicao[] = (candidatos ?? [])
+    .filter((c) => c.student_id)
+    .map((c) => ({
+      id: c.student_id as string,
+      nome: c.nome ?? "sem nome",
+      turmas: c.turmas ?? "",
+    }));
+
   // Aulas já abertas desta turma, de hoje em diante.
   const { data: proximas } = await supabase
     .from("class_sessions")
@@ -185,6 +226,7 @@ export default async function ChamadaPage({
         totalRegistrado: Number(f?.aulas_com_registro ?? 0),
         condicoes: ficha?.health_conditions ?? [],
         observacoes: ficha?.health_notes ?? null,
+        reposicao: reposicaoPorLinha.get(b.id) ?? null,
         // Sem contato, endereço ou financeiro: o professor não os recebe.
         ficha: {
           presencasNoMes: Number(mesPorAluno.get(b.student_id)?.presencas ?? 0),
@@ -282,12 +324,25 @@ export default async function ChamadaPage({
       ) : !aula || !lista.length ? (
         <AbrirChamada turmaId={id} dia={dia} acao={abrirChamada} />
       ) : (
-        <ListaDeChamada
-          alunos={lista}
-          turmaId={id}
-          marcar={marcarPresenca}
-          limpar={limparPresenca}
-        />
+        <>
+          <ListaDeChamada
+            alunos={lista}
+            turmaId={id}
+            marcar={marcarPresenca}
+            limpar={limparPresenca}
+            desfazerReposicao={desfazerReposicao}
+          />
+
+          {aula ? (
+            <Reposicao
+              aulaId={aula.id}
+              turmaId={id}
+              candidatos={podemRepor}
+              buscarOpcoes={opcoesDeReposicao}
+              registrar={registrarReposicao}
+            />
+          ) : null}
+        </>
       )}
 
       <AulasDaTurma

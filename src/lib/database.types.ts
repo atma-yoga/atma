@@ -31,6 +31,7 @@ export type Database = {
           checked_in_by: string | null;
           created_at: string;
           updated_at: string;
+          reposicao_de: string | null;
         };
         Insert: {
           id?: string;
@@ -45,6 +46,7 @@ export type Database = {
           checked_in_by?: string | null;
           created_at?: string;
           updated_at?: string;
+          reposicao_de?: string | null;
         };
         Update: {
           id?: string;
@@ -59,6 +61,7 @@ export type Database = {
           checked_in_by?: string | null;
           created_at?: string;
           updated_at?: string;
+          reposicao_de?: string | null;
         };
         Relationships: [
           {
@@ -66,6 +69,13 @@ export type Database = {
             columns: ["checked_in_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_reposicao_de_fkey";
+            columns: ["reposicao_de"];
+            isOneToOne: true;
+            referencedRelation: "bookings";
             referencedColumns: ["id"];
           },
           {
@@ -684,6 +694,11 @@ export type Database = {
           cor: string | null;
           is_outdoor: boolean | null;
           professor: string | null;
+          situacao: string | null;
+          reposta_na_turma: string | null;
+          reposta_em: string | null;
+          repoe_a_turma: string | null;
+          repoe_a_aula_de: string | null;
         };
         Relationships: [];
       };
@@ -735,6 +750,7 @@ export type Database = {
           presencas: number | null;
           faltas: number | null;
           percentual: number | null;
+          reposicoes: number | null;
         };
         Relationships: [];
       };
@@ -745,6 +761,7 @@ export type Database = {
           mes: string | null;
           presencas: number | null;
           faltas: number | null;
+          reposicoes: number | null;
         };
         Relationships: [];
       };
@@ -799,6 +816,22 @@ export type Database = {
           mes: string | null;
           presencas: number | null;
           faltas: number | null;
+          reposicoes: number | null;
+        };
+        Relationships: [];
+      };
+
+      v_presencas: {
+        Row: {
+          booking_id: string | null;
+          student_id: string | null;
+          session_id: string | null;
+          status: Database["public"]["Enums"]["booking_status"] | null;
+          reposicao_de: string | null;
+          class_id: string | null;
+          starts_at: string | null;
+          reposta_por: string | null;
+          situacao: string | null;
         };
         Relationships: [];
       };
@@ -848,6 +881,7 @@ export type Database = {
           presencas: number | null;
           faltas: number | null;
           percentual: number | null;
+          reposicoes: number | null;
         };
         Relationships: [];
       };
@@ -882,13 +916,29 @@ export type Database = {
         Args: { turma: string; dia: string };
         Returns: string;
       };
+      alunos_para_reposicao: {
+        Args: { aula: string; busca: string };
+        Returns: { student_id: string | null; nome: string | null; turmas: string | null }[];
+      };
+      aulas_para_repor: {
+        Args: { aluno: string };
+        Returns: { origem: string | null; turma: string | null; turma_nome: string | null; quando: string | null; dia: string | null; tipo: string | null }[];
+      };
       consumir_convite: {
         Args: { token_convite: string };
         Returns: Database["public"]["Enums"]["app_role"];
       };
+      contexto_de_reposicao: {
+        Args: { aula: string };
+        Returns: { booking_id: string | null; tipo: string | null; outra_turma: string | null; outra_data: string | null }[];
+      };
       criar_aula_extra: {
         Args: { turma: string; dia: string; hora: string; duracao?: number; observacao?: string };
         Returns: string;
+      };
+      desfazer_reposicao: {
+        Args: { visita: string };
+        Returns: undefined;
       };
       fracao_do_mes: {
         Args: { entrada: string };
@@ -920,11 +970,15 @@ export type Database = {
       };
       reativar_aula: {
         Args: { aula: string };
+        Returns: undefined;
+      };
+      registrar_reposicao: {
+        Args: { aula: string; aluno: string; origem?: string; turma_origem?: string; dia_origem?: string };
         Returns: string;
       };
       suspender_aula: {
         Args: { aula: string; motivo?: string };
-        Returns: string;
+        Returns: undefined;
       };
       teaches_student: {
         Args: { target_student: string };

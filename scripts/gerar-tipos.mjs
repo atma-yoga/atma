@@ -185,6 +185,11 @@ const enums = Object.fromEntries(
 // Funções que a aplicação chama e que não são gatilhos nem internas.
 const CHAMAVEIS = new Set([
   "abrir_chamada",
+  "alunos_para_reposicao",
+  "contexto_de_reposicao",
+  "aulas_para_repor",
+  "registrar_reposicao",
+  "desfazer_reposicao",
   "criar_aula_extra",
   "reativar_aula",
   "suspender_aula",
@@ -262,6 +267,68 @@ for (const [nome, { cols }] of views) {
   out += `        };\n        Relationships: [];\n      };\n\n`;
 }
 
+/** Um tipo escalar do Postgres em TypeScript. */
+function escalarTs(sql) {
+  if (/boolean/i.test(sql)) return "boolean";
+  if (/\b(int|integer|bigint|smallint|numeric|real|double)\b/i.test(sql)) {
+    return "number";
+  }
+  if (/app_role/.test(sql)) return 'Database["public"]["Enums"]["app_role"]';
+  return "string";
+}
+
+/**
+ * O retorno de uma função, como `pg_get_function_result` o descreve.
+ *
+ * Trata `TABLE(...)`, que é como as funções de lista declaram o retorno. Antes
+ * isto caía no `else` e virava `string`: o TypeScript então recusava `.map()`
+ * em cima do resultado, e a mensagem — "Property 'map' does not exist on type
+ * 'string'" — não dizia nada sobre a causa estar no gerador.
+ *
+ * As colunas saem anuláveis porque o Postgres não declara o contrário em
+ * retorno de função: `origem` vem nula quando a aula ainda não existe, e quem
+ * lê precisa ser obrigado a decidir o que fazer nesse caso.
+ */
+function tipoDeRetorno(sql) {
+  const r = String(sql || "").trim();
+
+  if (/^void$/i.test(r)) return "undefined";
+
+  const tabela = r.match(/^TABLE\s*\((.*)\)$/is);
+  if (tabela) {
+    const colunas = separarPorVirgula(tabela[1]).map((c) => {
+      const partes = c.trim().split(/\s+/);
+      return `${partes[0]}: ${escalarTs(partes.slice(1).join(" "))} | null`;
+    });
+    return `{ ${colunas.join("; ")} }[]`;
+  }
+
+  const setof = r.match(/^SETOF\s+(.*)$/is);
+  if (setof) return `${escalarTs(setof[1])}[]`;
+
+  return escalarTs(r);
+}
+
+/** Divide por vírgula sem partir o que está dentro de parênteses. */
+function separarPorVirgula(texto) {
+  const partes = [];
+  let atual = "";
+  let fundo = 0;
+
+  for (const ch of texto) {
+    if (ch === "(") fundo++;
+    if (ch === ")") fundo--;
+    if (ch === "," && fundo === 0) {
+      partes.push(atual);
+      atual = "";
+    } else {
+      atual += ch;
+    }
+  }
+  if (atual.trim()) partes.push(atual);
+  return partes;
+}
+
 out += `    };\n    Functions: {\n`;
 
 for (const f of fnRows) {
@@ -280,13 +347,7 @@ for (const f of fnRows) {
       return `${nomeArg}${temDefault ? "?" : ""}: ${ts}`;
     });
 
-  const ret = /boolean/i.test(f.retorno)
-    ? "boolean"
-    : /int|numeric/i.test(f.retorno)
-      ? "number"
-      : /app_role/.test(f.retorno)
-        ? 'Database["public"]["Enums"]["app_role"]'
-        : "string";
+  const ret = tipoDeRetorno(f.retorno);
 
   out += `      ${f.nome}: {\n        Args: ${
     args.length ? `{ ${args.join("; ")} }` : "Record<string, never>"

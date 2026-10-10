@@ -145,3 +145,94 @@ export async function criarAulaExtra(form: FormData): Promise<void> {
   revalidatePath(`/professor/turmas/${turma}`);
   revalidatePath(`/admin/grade/${turma}`);
 }
+
+// -----------------------------------------------------------------------------
+// Reposição
+// -----------------------------------------------------------------------------
+
+export type OpcaoDeReposicao = {
+  /** Linha da falta, quando ela já existe. Nulo na aula que ainda vem. */
+  origem: string | null;
+  turma: string;
+  turmaNome: string;
+  dia: string;
+  quando: string;
+  tipo: "falta" | "futura";
+};
+
+/**
+ * O que esse aluno tem para repor: faltas recentes e aulas que ainda vêm.
+ *
+ * Vai ao servidor só quando o professor escolhe a pessoa — a lista depende de
+ * quem é, e carregá-la para todo mundo de antemão seria uma consulta por aluno
+ * do estúdio para usar uma.
+ */
+export async function opcoesDeReposicao(
+  aluno: string,
+): Promise<OpcaoDeReposicao[]> {
+  const sessao = await getSessao();
+  if (!sessao) return [];
+
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("aulas_para_repor", { aluno });
+
+  return (data ?? [])
+    // Turma, dia e horário são o que o professor lê para escolher; sem eles a
+    // opção não diz nada e não deve aparecer na lista.
+    .filter((o) => o.turma && o.dia && o.quando)
+    .map((o) => ({
+      origem: o.origem,
+      turma: o.turma as string,
+      turmaNome: o.turma_nome ?? "turma",
+      dia: o.dia as string,
+      quando: o.quando as string,
+      tipo: o.tipo === "falta" ? ("falta" as const) : ("futura" as const),
+    }));
+}
+
+/** Põe o visitante na chamada, amarrado à aula que ele está repondo. */
+export async function registrarReposicao(
+  _anterior: EstadoChamada,
+  form: FormData,
+): Promise<EstadoChamada> {
+  const sessao = await getSessao();
+  if (!sessao) return { erro: "Sessão expirada. Entre de novo." };
+
+  const aula = String(form.get("aula") ?? "");
+  const aluno = String(form.get("aluno") ?? "");
+  const turma = String(form.get("turma") ?? "");
+  const escolha = String(form.get("escolha") ?? "");
+
+  if (!aula || !aluno) return { erro: "Falta a aula ou o aluno." };
+  if (!escolha) return { erro: "Escolha qual aula está sendo reposta." };
+
+  // A escolha vem como "origem:<id>" para falta já lançada, ou
+  // "futura:<turma>:<dia>" para aula que ainda não aconteceu.
+  const partes = escolha.split(":");
+  const corpo =
+    partes[0] === "origem"
+      ? { aula, aluno, origem: partes[1] }
+      : { aula, aluno, turma_origem: partes[1], dia_origem: partes[2] };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("registrar_reposicao", corpo);
+
+  revalidatePath(`/professor/turmas/${turma}`);
+  if (error) return { erro: error.message };
+  return { sucesso: "Reposição registrada." };
+}
+
+/** Tira o visitante da chamada. A falta dele volta a ser falta. */
+export async function desfazerReposicao(form: FormData): Promise<void> {
+  const sessao = await getSessao();
+  if (!sessao) return;
+
+  const visita = String(form.get("visita") ?? "");
+  const turma = String(form.get("turma") ?? "");
+  if (!visita) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("desfazer_reposicao", { visita });
+
+  revalidatePath(`/professor/turmas/${turma}`);
+}
