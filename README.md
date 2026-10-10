@@ -100,12 +100,35 @@ O cadastro público não consegue se atribuir `admin`: `handle_new_user()` forç
 
 ### Tipos
 
-[`src/lib/database.types.ts`](src/lib/database.types.ts) é escrito à mão e
-espelha a migration. Ao mexer em uma, mexer na outra — ou regerar:
+[`src/lib/database.types.ts`](src/lib/database.types.ts) é gerado a partir do
+schema que está no ar, não escrito à mão. Depois de aplicar uma migration,
+regerar:
 
 ```bash
-supabase gen types typescript --project-id <ref> > src/lib/database.types.ts
+SUPABASE_ACCESS_TOKEN=<pat> SUPABASE_PROJECT_REF=<ref> npm run tipos
 ```
+
+O gerador está em [`scripts/gerar-tipos.mjs`](scripts/gerar-tipos.mjs). Função
+nova que a aplicação chama precisa entrar na lista `CHAMAVEIS` de lá, senão o
+tipo não sai e o build quebra.
+
+### O banco não pode dormir
+
+No plano gratuito o Supabase pausa o projeto depois de alguns dias sem
+consulta nenhuma, e projeto pausado perde o endereço — o DNS passa a
+responder NXDOMAIN. Quem abre o sistema nesse estado lê **"acesso ou senha
+incorretos"**, porque a tela de entrada responde a mesma coisa para senha
+errada e para banco fora do ar, de propósito, para não revelar quais e-mails
+existem. Aconteceu em 10/10/2026, depois de quinze dias parado.
+
+Para não repetir, a Vercel chama [`/api/acordar`](src/app/api/acordar/route.ts)
+uma vez por dia (agendado em [`vercel.json`](vercel.json)); a rota conta
+quantos locais existem e isso basta como uso. Se o projeto chegar a pausar
+mesmo assim, a rota não ressuscita nada: é preciso reativar à mão no painel do
+Supabase.
+
+Definindo `CRON_SECRET` nas variáveis da Vercel, a rota passa a exigir esse
+segredo — a Vercel manda o cabeçalho sozinha quando a variável existe.
 
 ## Marca
 
