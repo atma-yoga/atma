@@ -75,3 +75,35 @@ export function mensagemDeCobranca({
 export function linkDaConversa(telefone: string, mensagem: string): string {
   return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
 }
+
+/**
+ * O texto para quem faltou.
+ *
+ * Perguntar, não cobrar: quem some da aula costuma estar doente, viajando ou
+ * desanimado, e nenhum desses três merece "notamos sua ausência". A mensagem
+ * que traz a pessoa de volta é a que pergunta como ela está e lembra que a
+ * turma é dela.
+ */
+export function mensagemDeFalta({
+  nome,
+  turma,
+  quando,
+}: {
+  nome: string;
+  turma: string | null;
+  quando: string;
+}): string {
+  const primeiro = nome.trim().split(/\s+/)[0];
+  const dia = new Date(quando).toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  });
+
+  return (
+    `Oi, ${primeiro}! Tudo bem? Senti sua falta na aula de ${dia}` +
+    `${turma ? ` (${turma})` : ""}. Está tudo certo por aí? ` +
+    `Seu tapete está te esperando 🙏`
+  );
+}

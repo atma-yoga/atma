@@ -31,6 +31,14 @@ function em(dias: number, hora: number, minuto = 0): string {
   return new Date(`${aa}-${mm}-${dd}T${HH}:${MM}:00-03:00`).toISOString();
 }
 
+/* A data de hoje no fuso do estúdio. Fica no alto porque várias fixtures a
+   usam, e em JavaScript um `const` não existe antes da linha que o declara. */
+const hojeSP = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+}).format(new Date());
+
+export const HOJE_SP = hojeSP;
+
 export const AULAS_DE_HOJE: AulaNaAgenda[] = [
   {
     id: "s1",
@@ -164,10 +172,42 @@ export const VAGAS_ABERTAS: AulaNaAgenda[] = AGENDA_DO_ESTUDIO.slice(0, 6);
 
 export const NUMEROS_DO_ADMIN = {
   alunosAtivos: 87,
-  emTurma: 74,
-  recebidoNoMes: 21480,
-  totalEmAtraso: 1320,
-  cobrancasEmAtraso: 4,
+  faltaram: [
+    {
+      alunoId: "a1",
+      nome: "Helena Costa",
+      telefone: "22999990001",
+      turma: "Noite 19:00",
+      quando: `${HOJE_SP}T22:00:00.000Z`,
+    },
+    {
+      alunoId: "a2",
+      nome: "Rodrigo Lima",
+      telefone: null,
+      turma: "Manhã 07:00",
+      quando: `${HOJE_SP}T10:00:00.000Z`,
+    },
+  ],
+  devendo: [
+    {
+      alunoId: "a3",
+      nome: "Marina Alves",
+      telefone: "22999990003",
+      turma: "Manhã 08:30",
+      valor: 220,
+      vencimento: `${HOJE_SP.slice(0, 7)}-05`,
+      mesReferencia: `${HOJE_SP.slice(0, 7)}-01`,
+    },
+    {
+      alunoId: "a4",
+      nome: "Pedro Nunes",
+      telefone: "22999990004",
+      turma: "Noite 18:00",
+      valor: 180,
+      vencimento: `${HOJE_SP.slice(0, 7)}-05`,
+      mesReferencia: `${HOJE_SP.slice(0, 7)}-01`,
+    },
+  ],
 };
 
 /** Pessoas fictícias para a tela de cadastro da administração. */
@@ -331,12 +371,6 @@ export const LOCAIS = [
 ];
 
 /* --- painel do aluno --- */
-
-const hojeSP = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Sao_Paulo",
-}).format(new Date());
-
-export const HOJE_SP = hojeSP;
 
 export const PROXIMA_AULA = {
   id: "s1",

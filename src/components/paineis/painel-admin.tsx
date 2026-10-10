@@ -1,57 +1,34 @@
 import Link from "next/link";
 
 import { AgendaDaSemana } from "@/components/paineis/agenda-da-semana";
+import {
+  Alertas,
+  type QuemDeve,
+  type QuemFaltou,
+} from "@/components/paineis/alertas";
 import type { EncontroNaGrade } from "@/components/paineis/grade-semanal";
-import { Numero, Vazio, brl } from "@/components/ui";
+import { Vazio } from "@/components/ui";
 
 export function PainelAdmin({
   alunosAtivos,
-  emTurma,
-  recebidoNoMes,
-  totalEmAtraso,
-  cobrancasEmAtraso,
+  faltaram,
+  devendo,
   semana,
 }: {
   alunosAtivos: number;
-  emTurma: number;
-  recebidoNoMes: number;
-  totalEmAtraso: number;
-  cobrancasEmAtraso: number;
+  faltaram: QuemFaltou[];
+  devendo: QuemDeve[];
   semana: EncontroNaGrade[];
 }) {
-  const mes = new Date().toLocaleDateString("pt-BR", {
-    month: "long",
-    year: "numeric",
-  });
-
   return (
     <>
       <h1 className="mb-8 text-2xl font-light">Visão geral do estúdio</h1>
 
-      <div className="mb-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Numero rotulo="Alunos ativos" valor={alunosAtivos} />
-        <Numero
-          rotulo="Em turma"
-          valor={emTurma}
-          detalhe={
-            alunosAtivos - emTurma > 0
-              ? `${alunosAtivos - emTurma} sem turma`
-              : undefined
-          }
-        />
-        <Numero
-          rotulo="Recebido no mês"
-          valor={brl(recebidoNoMes)}
-          detalhe={mes}
-        />
-        <Numero
-          rotulo="Em atraso"
-          valor={brl(totalEmAtraso)}
-          detalhe={`${cobrancasEmAtraso} cobrança${
-            cobrancasEmAtraso === 1 ? "" : "s"
-          }`}
-        />
-      </div>
+      <Alertas
+        alunosAtivos={alunosAtivos}
+        faltaram={faltaram}
+        devendo={devendo}
+      />
 
       {semana.length ? (
         <AgendaDaSemana encontros={semana} />
